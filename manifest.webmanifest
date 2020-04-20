@@ -1,0 +1,16 @@
+{
+  "name": "Cube Adventure Game",
+  "short_name": "Cube-Game",
+  "lang": "de-DE",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#e30613",
+  "background_color": "#ffffff",
+  "icons": [
+      {
+        "src": "public/pwa-icon.png",
+        "sizes": "512x512",
+        "type": "image\/png"
+      }
+    ]
+}
