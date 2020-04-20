@@ -23,6 +23,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "ammojs-typed": "github:giniedp/ammojs-typed",
     "three": "^0.115.0"
   }
 }

@@ -1,6 +1,12 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import LevelDemo from "../assests/models/level-demo.glb";
+import Ammo from "ammojs-typed";
+
+Ammo().then((ammo) => {
+  console.log("Ammo wurde geladen");
+  new ammo.btVector3(24, 24, 24);
+});
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(
