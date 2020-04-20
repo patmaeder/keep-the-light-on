@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import LevelDemo from "./level-demo.glb";
+import LevelDemo from "../assests/models/level-demo.glb";
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(
