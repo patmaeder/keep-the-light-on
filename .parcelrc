@@ -1,0 +1,6 @@
+{
+  "url-loader": {
+    "exts": ["glb"],
+    "limit": 66666
+  }
+}
