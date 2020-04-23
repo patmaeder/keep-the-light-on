@@ -15,7 +15,7 @@ function setupEventHandlers() {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 }
-let pause =  new BreakScreen();
+let pause = new BreakScreen();
 //TODO Move to KeyHandler.ts
 function handleKeyDown(event: KeyboardEvent) {
   switch (event.key) {
