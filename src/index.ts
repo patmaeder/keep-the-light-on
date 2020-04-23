@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
-import {BreakScreen} from "./screens/BreakScreen";
+import { BreakScreen } from "./screens/BreakScreen";
 
 let renderer, scene, camera;
 
@@ -19,15 +19,19 @@ let pause = new BreakScreen();
 //TODO Move to KeyHandler.ts
 function handleKeyDown(event: KeyboardEvent) {
   switch (event.key) {
+    case "ArrowUp":
     case "w":
       moveState.forward = 1;
       break;
+    case "ArrowDown":
     case "s":
       moveState.backwards = 1;
       break;
+    case "ArrowLeft":
     case "a":
       moveState.left = 1;
       break;
+    case "ArrowRight":
     case "d":
       moveState.right = 1;
       break;
@@ -40,15 +44,19 @@ function handleKeyDown(event: KeyboardEvent) {
 //TODO Move to KeyHandler.ts
 function handleKeyUp(event: KeyboardEvent) {
   switch (event.key) {
+    case "ArrowUp":
     case "w":
       moveState.forward = 0;
       break;
+    case "ArrowDown":
     case "s":
       moveState.backwards = 0;
       break;
+    case "ArrowLeft":
     case "a":
       moveState.left = 0;
       break;
+    case "ArrowRight":
     case "d":
       moveState.right = 0;
       break;
