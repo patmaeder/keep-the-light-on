@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
+import {BreakScreen} from "./screens/BreakScreen";
 
 let renderer, scene, camera;
 
@@ -9,40 +10,46 @@ let moveState = { forward: 0, backwards: 0, left: 0, right: 0 };
 
 let cube;
 
+//TODO Move to KeyHandler.ts
 function setupEventHandlers() {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 }
-
+let pause = new BreakScreen();
+//TODO Move to KeyHandler.ts
 function handleKeyDown(event: KeyboardEvent) {
-  switch (event.keyCode) {
-    case 87:
+  switch (event.key) {
+    case "w":
       moveState.forward = 1;
       break;
-    case 83:
+    case "s":
       moveState.backwards = 1;
       break;
-    case 65:
+    case "a":
       moveState.left = 1;
       break;
-    case 68:
+    case "d":
       moveState.right = 1;
+      break;
+    case "Escape":
+      pause.switchVisibleStatus();
       break;
   }
 }
 
+//TODO Move to KeyHandler.ts
 function handleKeyUp(event: KeyboardEvent) {
-  switch (event.keyCode) {
-    case 87:
+  switch (event.key) {
+    case "w":
       moveState.forward = 0;
       break;
-    case 83:
+    case "s":
       moveState.backwards = 0;
       break;
-    case 65:
+    case "a":
       moveState.left = 0;
       break;
-    case 68:
+    case "d":
       moveState.right = 0;
       break;
   }
@@ -78,6 +85,7 @@ const setupGraphics = async () => {
 
   var loader = new GLTFLoader();
 
+  //TODO Move to Cube.ts
   const loadCube = () =>
     new Promise((resolve, reject) => {
       loader.load(
@@ -113,7 +121,6 @@ var animate = function () {
   cube.translateZ(vector.z);
 
   requestAnimationFrame(animate);
-
   renderer.render(scene, camera);
 };
 

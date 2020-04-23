@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "postbuild": "workbox generateSW"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "ammojs-typed": "github:giniedp/ammojs-typed",
-    "three": "^0.115.0"
+    "three": "^0.115.0",
+    "workbox-cli": "^5.1.2"
   }
 }
