@@ -23,10 +23,11 @@ export class Screens {
             this.visible = true;
         }
     }
-    addButton(text, id){
+    addButton(text, id, click){
         let button = document.createElement("BUTTON");
         button.appendChild(document.createTextNode(text));
         button.id = id;
+        button.onclick = click;
         this.buttons.appendChild(button);
     }
 }
