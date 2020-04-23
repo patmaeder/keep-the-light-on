@@ -16,3 +16,7 @@ interface InputHandler {
 
   getKeyState(): KeyState;
 }
+
+// getBitKeyState --> bject.fromEntries(Object.entries(obj).map(([k, v]) => [k, v ? 1 : 0]))
+
+// not even neccessary: true - false = 1; true - true = 0; false - true = -1;
