@@ -6,7 +6,10 @@ export class BreakScreen extends Screens{
         this.initButtons()
     }
     private initButtons(){
-        super.addButton("resume","resume");
+        super.addButton("resume","resume", function () {
+            //add function here
+            console.log("Resume")
+        });
     }
 
     switchVisibleStatus(){
