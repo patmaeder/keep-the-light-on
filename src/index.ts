@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
 import {BreakScreen} from "./screens/BreakScreen";
-import Testmodul from "../assests/models/testmodule.glb";
+import Testmodul from "../assests/models/testmoduleKlein.glb";
 import { Loader } from "three";
 
 
@@ -184,6 +184,7 @@ new Promise((resolve, reject) => {
       gltfTestmodul.scene.scale.x = 0.25;
       gltfTestmodul.scene.scale.y = 0.25;
       gltfTestmodul.scene.scale.z = 0.25;
+      //testmodul.scene.scale.set(0.3, 0.3, 1);
       //gltf.scene.scale.set(0.3, 0.3, 1)
       scene.add(testmodul);
       resolve();
