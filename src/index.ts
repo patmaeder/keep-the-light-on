@@ -4,7 +4,7 @@ import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
 import {BreakScreen} from "./screens/BreakScreen";
 import Testmodul from "../assests/models/testmoduleKlein.glb";
-import { Loader } from "three";
+import { Loader, DoubleSide } from "three";
 
 
 let renderer, scene, camera;
@@ -88,27 +88,6 @@ const setupGraphics = async () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  //make cube with three.js
-  /*function makeInstance(geometry, color, x, y, z) {   
-    const material = new THREE.MeshPhongMaterial({
-    opacity: 0.5, 
-    transparent: true,
-  })
-      const cube = new THREE.Mesh(geometry, material);
-
-    scene.add(cube);
-   
-    cube.position.x = x;
-    cube.position.set(x, y, z);
-   
-    return cube;
-  }*/
-
-  
-  //cube Material
-
-
-
   
   var loader = new GLTFLoader();
 
@@ -153,6 +132,9 @@ var animate = function () {
   cube.translateY(vector.y);
   cube.translateZ(vector.z);
 
+  let axis = new THREE.Vector3( 0, 0, 0);
+  testmodul.rotateOnAxis( axis, 60 );
+
 
   /*let vectorTestmodul = new THREE.Vector3(0.1, 0.1, 0.1);
 
@@ -167,13 +149,6 @@ var animate = function () {
 };
 
 //Load Tesmodul
-/*var scale = function (){
-  let vector = new THREE.Vector3(0.25, 0.25, 0.25);
-  vector.multiplyScalar(0.13);
-  testmodul.translateX(vector.x);
-  testmodul.translateY(vector.y);
-  testmodul.translateZ(vector.z);
-}*/
 var loaderTestmodul = new GLTFLoader();
 const loadTestmodul = () =>
 new Promise((resolve, reject) => {
@@ -181,10 +156,10 @@ new Promise((resolve, reject) => {
     Testmodul,
     function (gltfTestmodul) {
       testmodul = gltfTestmodul.scene;
-      gltfTestmodul.scene.scale.x = 0.25;
-      gltfTestmodul.scene.scale.y = 0.25;
-      gltfTestmodul.scene.scale.z = 0.25;
-      //testmodul.scene.scale.set(0.3, 0.3, 1);
+      gltfTestmodul.scene.scale.x = 0.2;
+      gltfTestmodul.scene.scale.y = 0.2;
+      gltfTestmodul.scene.scale.z = 0.2;
+      //gltfTestmodul.scene.rotation
       //gltf.scene.scale.set(0.3, 0.3, 1)
       scene.add(testmodul);
       resolve();
@@ -196,6 +171,7 @@ new Promise((resolve, reject) => {
     }
   );
 });
+
 Ammo().then(start);
 
 async function start() {
