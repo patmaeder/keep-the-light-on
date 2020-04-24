@@ -11,12 +11,20 @@ const demonstrationalState: KeyState = {
   Enter: true,
 };
 
-interface InputHandler {
-  observeKey(key: Key);
+class InputHandler {
+  observed: Key[];
+  state: KeyState;
 
-  getKeyState(): KeyState;
+  attach(element: HTMLElement) {
+    element.addEventListener("keydown", () => {});
+    element.addEventListener("keyup", () => {});
+  }
+
+  observeKey(key: Key) {
+    this.observed.push(key);
+  }
+
+  getKeyState(): KeyState {
+    return this.state;
+  }
 }
-
-// getBitKeyState --> bject.fromEntries(Object.entries(obj).map(([k, v]) => [k, v ? 1 : 0]))
-
-// not even neccessary: true - false = 1; true - true = 0; false - true = -1;
