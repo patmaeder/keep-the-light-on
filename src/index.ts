@@ -77,10 +77,34 @@ const setupGraphics = async () => {
   dirLight.position.multiplyScalar(100);
   scene.add(dirLight);*/
 
+
   //pointlight
-  let pointLight = new THREE.PointLight(0xFFFFFF, 4, 2);
-  pointLight.position.set(1, 1, 1);
-  scene.add(pointLight);
+  let pointLight1 = new THREE.PointLight(0xFFFFF, 1, 2);
+  pointLight1.position.set(-1, 2, -1);
+  scene.add(pointLight1);
+
+  let pointLight2 = new THREE.PointLight(0xFFFFF, 1, 2);
+  pointLight2.position.set(-1, 2, 1);
+  scene.add(pointLight2);
+
+  let pointLight3 = new THREE.PointLight(0xFFFFF, 1, 2);
+  pointLight3.position.set(1, 1, 1);
+  scene.add(pointLight3);
+
+  //make cube with three.js
+ var geometry = new THREE.BoxGeometry(1,1,1); 
+ var cubeMaterial =[
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+   new THREE.MeshPhongMaterial({color: 0xFFFFF, side: THREE.DoubleSide}), 
+ ]
+
+ var cube1 = new THREE.Mesh(geometry, cubeMaterial)
+ scene.add(cube1)
+ cube1.position.set(-1,2,-1);
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
