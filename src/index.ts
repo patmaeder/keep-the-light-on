@@ -1,14 +1,16 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import CubeModel from "../assests/models/cube.glb";
+import CubeModel from "../assests/models/cube_white.glb";
 import Ammo from "ammojs-typed";
+import { AmbientLight } from "three";
 
 let renderer, scene, camera;
 
 let moveState = { forward: 0, backwards: 0, left: 0, right: 0 };
-
 let cube;
 
+
+//movement handler
 function setupEventHandlers() {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -48,6 +50,7 @@ function handleKeyUp(event: KeyboardEvent) {
   }
 }
 
+//scene setup
 const setupGraphics = async () => {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
@@ -57,20 +60,27 @@ const setupGraphics = async () => {
     100
   );
 
+  //camera position
   camera.position.set(0, 1, 5);
 
-  let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+  //hemispheric light
+ /*let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
   hemiLight.position.set(0, 50, 0);
-  scene.add(hemiLight);
+  scene.add(hemiLight);*/
 
   //Add directional light
-  let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  /*let dirLight = new THREE.DirectionalLight(0xffffff, 1);
   dirLight.color.setHSL(0.1, 1, 0.95);
   dirLight.position.set(-1, 1.75, 1);
   dirLight.position.multiplyScalar(100);
-  scene.add(dirLight);
+  scene.add(dirLight);*/
+
+  //pointlight
+  let pointLight = new THREE.PointLight(0xFFFFFF, 4, 2);
+  pointLight.position.set(1, 1, 1);
+  scene.add(pointLight);
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -78,6 +88,7 @@ const setupGraphics = async () => {
 
   var loader = new GLTFLoader();
 
+  //load cube
   const loadCube = () =>
     new Promise((resolve, reject) => {
       loader.load(
@@ -88,6 +99,9 @@ const setupGraphics = async () => {
           gltf.scene.scale.z = 0.25;
           //gltf.scene.scale.set(0.3, 0.3, 1);
           cube = gltf.scene;
+          //let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+          //let material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
+         // let cube = new THREE.Mesh(geometry, material);
           scene.add(cube);
           resolve();
         },
@@ -101,6 +115,7 @@ const setupGraphics = async () => {
   await loadCube();
 };
 
+//animate movement cube
 var animate = function () {
   let moveX = moveState.right - moveState.left;
   let moveZ = moveState.backwards - moveState.forward;
