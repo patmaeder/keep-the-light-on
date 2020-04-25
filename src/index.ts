@@ -82,13 +82,13 @@ const setupGraphics = async () => {
 };
 
 const getPlayerMovement = () => {
-  let left = inputHandler.isPressed([Key.ArrowRight, "D"]);
-  let right = inputHandler.isPressed([Key.ArrowLeft, "A"]);
+  let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
+  let right = inputHandler.isPressed([Key.ArrowRight, "D"]);
 
   let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
   let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
 
-  let moveX = Number(left) - Number(right);
+  let moveX = Number(right) - Number(left);
   let moveZ = Number(down) - Number(up);
 
   return new THREE.Vector3(moveX, 0, moveZ);
