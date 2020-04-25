@@ -3,65 +3,29 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
 import { BreakScreen } from "./screens/BreakScreen";
+import { Key, InputHandler } from "./input/InputHandler";
 
+let inputHandler: InputHandler;
 let renderer, scene, camera;
-
-let moveState = { forward: 0, backwards: 0, left: 0, right: 0 };
-
 let cube;
 
-//TODO Move to KeyHandler.ts
-function setupEventHandlers() {
-  window.addEventListener("keydown", handleKeyDown);
-  window.addEventListener("keyup", handleKeyUp);
-}
 let pause = new BreakScreen();
-//TODO Move to KeyHandler.ts
-function handleKeyDown(event: KeyboardEvent) {
-  switch (event.key) {
-    case "ArrowUp":
-    case "w":
-      moveState.forward = 1;
-      break;
-    case "ArrowDown":
-    case "s":
-      moveState.backwards = 1;
-      break;
-    case "ArrowLeft":
-    case "a":
-      moveState.left = 1;
-      break;
-    case "ArrowRight":
-    case "d":
-      moveState.right = 1;
-      break;
-    case "Escape":
-      pause.switchVisibleStatus();
-      break;
-  }
-}
 
-//TODO Move to KeyHandler.ts
-function handleKeyUp(event: KeyboardEvent) {
-  switch (event.key) {
-    case "ArrowUp":
-    case "w":
-      moveState.forward = 0;
-      break;
-    case "ArrowDown":
-    case "s":
-      moveState.backwards = 0;
-      break;
-    case "ArrowLeft":
-    case "a":
-      moveState.left = 0;
-      break;
-    case "ArrowRight":
-    case "d":
-      moveState.right = 0;
-      break;
-  }
-}
+const setupInputHandler = () => {
+  inputHandler = new InputHandler();
+  const detachWindow = inputHandler.attach(window);
+  inputHandler.observeKeys([
+    Key.ArrowUp,
+    Key.ArrowLeft,
+    Key.ArrowRight,
+    Key.ArrowDown,
+    "W",
+    "A",
+    "S",
+    "D",
+    Key.Escape,
+  ]);
+};
 
 const setupGraphics = async () => {
   scene = new THREE.Scene();
@@ -117,12 +81,21 @@ const setupGraphics = async () => {
   await loadCube();
 };
 
-var animate = function () {
-  let moveX = moveState.right - moveState.left;
-  let moveZ = moveState.backwards - moveState.forward;
+const getPlayerMovement = () => {
+  let left = inputHandler.isPressed([Key.ArrowRight, "D"]);
+  let right = inputHandler.isPressed([Key.ArrowLeft, "A"]);
 
-  let vector = new THREE.Vector3(moveX, 0, moveZ);
+  let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
+  let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
 
+  let moveX = Number(left) - Number(right);
+  let moveZ = Number(down) - Number(up);
+
+  return new THREE.Vector3(moveX, 0, moveZ);
+};
+
+const animate = () => {
+  const vector = getPlayerMovement();
   vector.multiplyScalar(0.13);
   cube.translateX(vector.x);
   cube.translateY(vector.y);
@@ -135,7 +108,7 @@ var animate = function () {
 Ammo().then(start);
 
 async function start() {
-  setupEventHandlers();
+  setupInputHandler();
   await setupGraphics();
   animate();
 }
