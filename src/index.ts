@@ -36,8 +36,8 @@ const setupGraphics = async () => {
     100
   );
 
-  camera.position.set(0, 1, 5);
-
+  camera.position.set(0, 4, 20);
+  
   let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
@@ -97,10 +97,14 @@ const getPlayerMovement = () => {
 const animate = () => {
   const vector = getPlayerMovement();
   vector.multiplyScalar(0.13);
-  cube.translateX(vector.x);
+  cube.rotateOnAxis(new THREE.Vector3(0,1,0), -(vector.x/4));
   cube.translateY(vector.y);
   cube.translateZ(vector.z);
 
+  let PivotPoint = new THREE.Object3D();
+  cube.add(PivotPoint);
+  PivotPoint.add(camera);
+  
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 };
