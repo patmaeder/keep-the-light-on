@@ -6,11 +6,16 @@ import { BreakScreen } from "./screens/BreakScreen";
 import { Key, InputHandler } from "./input/InputHandler";
 
 let inputHandler: InputHandler;
-let renderer, scene, camera;
+let renderer: THREE.WebGLRenderer;
+let scene: THREE.Scene;
+let camera: THREE.PerspectiveCamera;
 let cube;
 
 let pause = new BreakScreen();
 
+/**
+ * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
+ */
 const setupInputHandler = () => {
   inputHandler = new InputHandler();
   const detachWindow = inputHandler.attach(window);
@@ -23,8 +28,32 @@ const setupInputHandler = () => {
     "A",
     "S",
     "D",
-    Key.Escape,
   ]);
+};
+
+/**
+ * Event handlers regarding single-time events
+ */
+const setupEventListeners = () => {
+  window.addEventListener("keydown", ({ key }) => {
+    if (key === Key.Escape) {
+      pause.switchVisibleStatus();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // without updating the camera aspect ration, our scene will be distorted
+    camera.aspect = window.innerWidth / window.innerHeight;
+
+    // needs to be called in order to have changes taking effect
+    camera.updateProjectionMatrix();
+  });
+
+  window.addEventListener("contextmenu", (event) => {
+    if (!pause.isVisible()) event.preventDefault();
+  });
 };
 
 const setupGraphics = async () => {
@@ -108,6 +137,7 @@ const animate = () => {
 Ammo().then(start);
 
 async function start() {
+  setupEventListeners();
   setupInputHandler();
   await setupGraphics();
   animate();
