@@ -3,8 +3,10 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube.glb";
 import Ammo from "ammojs-typed";
 import {BreakScreen} from "./screens/BreakScreen";
-import Testmodul from "../assests/models/testmoduleKlein.glb";
-import { Loader, DoubleSide } from "three";
+import Testmodul from "../assests/models/testmodule.glb";
+import { Loader, DoubleSide, TetrahedronBufferGeometry } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
 
 
 let renderer, scene, camera;
@@ -69,8 +71,6 @@ const setupGraphics = async () => {
     100
   );
 
-  camera.position.set(0, 1, 5);
-
   let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
@@ -88,6 +88,9 @@ const setupGraphics = async () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  let controls = new OrbitControls(camera, renderer.domElement);
+  camera.position.set(20, 30, -10);
+  controls.update();
   
   var loader = new GLTFLoader();
 
@@ -103,6 +106,8 @@ const setupGraphics = async () => {
           //gltf.scene.scale.set(0.3, 0.3, 1);
           cube = gltf.scene;
           scene.add(cube);
+          cube.position.set(3.5, 0.95, -6);
+          cube.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
           resolve();
         },
         undefined,
@@ -113,6 +118,29 @@ const setupGraphics = async () => {
       );
     });
   await loadCube();
+
+
+  //Load Tesmodul
+  const loadTestmodul = () =>
+  new Promise((resolve, reject) => {
+    loader.load(
+      Testmodul,
+      function (gltfTestmodul) {
+        gltfTestmodul.scene.scale.x = 0.007;
+        gltfTestmodul.scene.scale.y = 0.007;
+        gltfTestmodul.scene.scale.z = 0.007;
+        testmodul = gltfTestmodul.scene;
+        scene.add(testmodul);
+        resolve();
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+        reject();
+      }
+    );
+  });
+  await loadTestmodul();
 };
 
 var scaleTestmodel = function(testmodel){
@@ -132,51 +160,14 @@ var animate = function () {
   cube.translateY(vector.y);
   cube.translateZ(vector.z);
 
-  let axis = new THREE.Vector3( 0, 0, 0);
-  testmodul.rotateOnAxis( axis, 60 );
-
-
-  /*let vectorTestmodul = new THREE.Vector3(0.1, 0.1, 0.1);
-
-
-  testmodul.translateX(vectorTestmodul.x);
-  testmodul.translateY(vectorTestmodul.y);
-  testmodul.translateZ(vectorTestmodul.z);
-  testmodul.position.set(0,0,0);*/
-
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 };
-
-//Load Tesmodul
-var loaderTestmodul = new GLTFLoader();
-const loadTestmodul = () =>
-new Promise((resolve, reject) => {
-  loaderTestmodul.load(
-    Testmodul,
-    function (gltfTestmodul) {
-      testmodul = gltfTestmodul.scene;
-      gltfTestmodul.scene.scale.x = 0.2;
-      gltfTestmodul.scene.scale.y = 0.2;
-      gltfTestmodul.scene.scale.z = 0.2;
-      //gltfTestmodul.scene.rotation
-      //gltf.scene.scale.set(0.3, 0.3, 1)
-      scene.add(testmodul);
-      resolve();
-    },
-    undefined,
-    function (error) {
-      console.error(error);
-      reject();
-    }
-  );
-});
 
 Ammo().then(start);
 
 async function start() {
   setupEventHandlers();
   await setupGraphics();
-  await loadTestmodul();
   animate();
 }
