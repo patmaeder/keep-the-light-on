@@ -3,52 +3,30 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube_white.glb";
 import Ammo from "ammojs-typed";
 import { AmbientLight } from "three";
+import { BreakScreen } from "./screens/BreakScreen";
+import { Key, InputHandler } from "./input/InputHandler";
 
+let inputHandler: InputHandler;
 let renderer, scene, camera;
-
-let moveState = { forward: 0, backwards: 0, left: 0, right: 0 };
 let cube;
 
+let pause = new BreakScreen();
 
-//movement handler
-function setupEventHandlers() {
-  window.addEventListener("keydown", handleKeyDown);
-  window.addEventListener("keyup", handleKeyUp);
-}
-
-function handleKeyDown(event: KeyboardEvent) {
-  switch (event.keyCode) {
-    case 87:
-      moveState.forward = 1;
-      break;
-    case 83:
-      moveState.backwards = 1;
-      break;
-    case 65:
-      moveState.left = 1;
-      break;
-    case 68:
-      moveState.right = 1;
-      break;
-  }
-}
-
-function handleKeyUp(event: KeyboardEvent) {
-  switch (event.keyCode) {
-    case 87:
-      moveState.forward = 0;
-      break;
-    case 83:
-      moveState.backwards = 0;
-      break;
-    case 65:
-      moveState.left = 0;
-      break;
-    case 68:
-      moveState.right = 0;
-      break;
-  }
-}
+const setupInputHandler = () => {
+  inputHandler = new InputHandler();
+  const detachWindow = inputHandler.attach(window);
+  inputHandler.observeKeys([
+    Key.ArrowUp,
+    Key.ArrowLeft,
+    Key.ArrowRight,
+    Key.ArrowDown,
+    "W",
+    "A",
+    "S",
+    "D",
+    Key.Escape,
+  ]);
+};
 
 //scene setup
 const setupGraphics = async () => {
@@ -60,11 +38,9 @@ const setupGraphics = async () => {
     100
   );
 
-  //camera position
-  camera.position.set(0, 1, 5);
-
-  //hemispheric light
- /*let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+  camera.position.set(0, 4, 20);
+  
+  let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
   hemiLight.position.set(0, 50, 0);
@@ -112,7 +88,7 @@ const setupGraphics = async () => {
 
   var loader = new GLTFLoader();
 
-  //load cube
+  //TODO Move to Cube.ts
   const loadCube = () =>
     new Promise((resolve, reject) => {
       loader.load(
@@ -139,27 +115,38 @@ const setupGraphics = async () => {
   await loadCube();
 };
 
-//animate movement cube
-var animate = function () {
-  let moveX = moveState.right - moveState.left;
-  let moveZ = moveState.backwards - moveState.forward;
+const getPlayerMovement = () => {
+  let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
+  let right = inputHandler.isPressed([Key.ArrowRight, "D"]);
 
-  let vector = new THREE.Vector3(moveX, 0, moveZ);
+  let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
+  let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
 
+  let moveX = Number(right) - Number(left);
+  let moveZ = Number(down) - Number(up);
+
+  return new THREE.Vector3(moveX, 0, moveZ);
+};
+
+const animate = () => {
+  const vector = getPlayerMovement();
   vector.multiplyScalar(0.13);
-  cube.translateX(vector.x);
+  cube.rotateOnAxis(new THREE.Vector3(0,1,0), -(vector.x/4));
   cube.translateY(vector.y);
   cube.translateZ(vector.z);
 
+  let PivotPoint = new THREE.Object3D();
+  cube.add(PivotPoint);
+  PivotPoint.add(camera);
+  
   requestAnimationFrame(animate);
-
   renderer.render(scene, camera);
 };
 
 Ammo().then(start);
 
 async function start() {
-  setupEventHandlers();
+  setupInputHandler();
   await setupGraphics();
   animate();
 }
