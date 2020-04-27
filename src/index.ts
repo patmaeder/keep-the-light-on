@@ -1,23 +1,27 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import CubeModel from "../assests/models/cube_white.glb";
 import Ammo from "ammojs-typed";
-import Testmodul from "../assests/models/testmodule.glb";
+import Testmodule from "../assests/models/testmodule.glb";
 import { Loader, DoubleSide, TetrahedronBufferGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AmbientLight } from "three";
 import { BreakScreen } from "./screens/BreakScreen";
 import { Key, InputHandler } from "./input/InputHandler";
+import PhysicsHandler from "./Physics";
+import Cube from "./beans/Cube";
+import { loadModel } from "./Loader";
+import Stats from "stats-js";
 
+let physics: PhysicsHandler;
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
-let cube;
-
-let testmodul;
-
+let clock: THREE.Clock;
+let cube: Cube;
+let stats = new Stats();
 let pause = new BreakScreen();
+
+// TODO rewrite input handler to update ammo physics
 
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
@@ -62,18 +66,10 @@ const setupEventListeners = () => {
   });
 };
 
-//scene setup
-const setupGraphics = async () => {
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.5,
-    100
-  );
-
-  camera.position.set(0, 4, 20);
-
+/*
+ * Initialize Lights
+ */
+const setupLights = async (scene: THREE.Scene) => {
   let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
@@ -99,85 +95,62 @@ const setupGraphics = async () => {
   let pointLight3 = new THREE.PointLight(0xfffff, 1, 2);
   pointLight3.position.set(1, 1, 1);
   scene.add(pointLight3);
+};
 
-  //make cube with three.js
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
-  var cubeMaterial = [
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-    new THREE.MeshPhongMaterial({ color: 0xfffff, side: THREE.DoubleSide }),
-  ];
+/*
+ * Initialize Graphics
+ */
+const setupGraphics = async () => {
+  //setup Stats KLICK to Switch
+  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 
-  var cube1 = new THREE.Mesh(geometry, cubeMaterial);
-  scene.add(cube1);
-  cube1.position.set(-1, 2, -1);
+  document.body.appendChild(stats.dom);
+
+  scene = new THREE.Scene();
+  setupLights(scene);
+  camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.5,
+    100
+  );
+  camera.position.set(0, 4, 20);
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  var loader = new GLTFLoader();
+  /**
+   * Start loading Cube
+   */
+  cube = await new Cube().init(camera);
+  //Add to Scene
+  scene.add(cube.getModel());
+  //Add to PhysicsWorld
+  physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
+  /**
+   * End loading Cube
+   */
 
-  //TODO Move to Cube.ts
-  const loadCube = () =>
-    new Promise((resolve, reject) => {
-      loader.load(
-        CubeModel,
-        function (gltf) {
-          gltf.scene.scale.x = 0.25;
-          gltf.scene.scale.y = 0.25;
-          gltf.scene.scale.z = 0.25;
-          //gltf.scene.scale.set(0.3, 0.3, 1);
-          cube = gltf.scene;
-          //let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-          //let material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
-          // let cube = new THREE.Mesh(geometry, material);
-          scene.add(cube);
-          cube.position.set(3.5, 0.95, -6);
-          cube.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
-          resolve();
-        },
-        undefined,
-        function (error) {
-          console.error(error);
-          reject();
-        }
-      );
-    });
-  await loadCube();
-
-  //Load Tesmodul
-  const loadTestmodul = () =>
-    new Promise((resolve, reject) => {
-      loader.load(
-        Testmodul,
-        function (gltfTestmodul) {
-          gltfTestmodul.scene.scale.x = 0.007;
-          gltfTestmodul.scene.scale.y = 0.007;
-          gltfTestmodul.scene.scale.z = 0.007;
-          testmodul = gltfTestmodul.scene;
-          scene.add(testmodul);
-          resolve();
-        },
-        undefined,
-        function (error) {
-          console.error(error);
-          reject();
-        }
-      );
-    });
-  await loadTestmodul();
+  /**
+   * Start loading Testmodule
+   */
+  const gltfTestModule = await loadModel(Testmodule);
+  gltfTestModule.scene.scale.x = 0.007;
+  gltfTestModule.scene.scale.y = 0.007;
+  gltfTestModule.scene.scale.z = 0.007;
+  //Add to Scene
+  scene.add(gltfTestModule.scene);
+  //Add to PhysicsWorld
+  //physics.addPhysicsToMesh(cube.getModel(), new Ammo.btRigidBody());
+  /**
+   * End loading Testmodule
+   */
 };
 
-var scaleTestmodel = function (testmodel) {
-  testmodel.scene.scale.x = 0.25;
-  testmodel.scene.scale.y = 0.25;
-  testmodel.scene.scale.z = 0.25;
-};
-
+/**
+ * Userinput for Cube Movement
+ */
 const getPlayerMovement = () => {
   let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
   let right = inputHandler.isPressed([Key.ArrowRight, "D"]);
@@ -191,24 +164,31 @@ const getPlayerMovement = () => {
   return new THREE.Vector3(moveX, 0, moveZ);
 };
 
-const animate = () => {
-  const vector = getPlayerMovement();
-  vector.multiplyScalar(0.13);
-  cube.rotateOnAxis(new THREE.Vector3(0, 1, 0), -(vector.x / 4));
-  cube.translateY(vector.y);
-  cube.translateZ(vector.z);
+/**
+ * Frame Loader - Called on every Frame
+ */
+const animate = async () => {
+  stats.begin();
+  let deltaTime = clock.getDelta();
 
-  let PivotPoint = new THREE.Object3D();
-  cube.add(PivotPoint);
-  PivotPoint.add(camera);
+  cube.move(getPlayerMovement());
 
-  requestAnimationFrame(animate);
+  physics.updatePhysics(deltaTime);
+
   renderer.render(scene, camera);
+
+  stats.end();
+  requestAnimationFrame(animate);
 };
 
-Ammo().then(start);
+/**
+ * Async application start
+ */
+Ammo(Ammo).then(start);
 
 async function start() {
+  clock = new THREE.Clock();
+  physics = new PhysicsHandler();
   setupEventListeners();
   setupInputHandler();
   await setupGraphics();
