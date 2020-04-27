@@ -2,6 +2,9 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import CubeModel from "../assests/models/cube_white.glb";
 import Ammo from "ammojs-typed";
+import Testmodul from "../assests/models/testmodule.glb";
+import { Loader, DoubleSide, TetrahedronBufferGeometry } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AmbientLight } from "three";
 import { BreakScreen } from "./screens/BreakScreen";
 import { Key, InputHandler } from "./input/InputHandler";
@@ -9,6 +12,8 @@ import { Key, InputHandler } from "./input/InputHandler";
 let inputHandler: InputHandler;
 let renderer, scene, camera;
 let cube;
+
+let testmodul;
 
 let pause = new BreakScreen();
 
@@ -86,6 +91,10 @@ const setupGraphics = async () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  let controls = new OrbitControls(camera, renderer.domElement);
+  camera.position.set(20, 30, -10);
+  controls.update();
+  
   var loader = new GLTFLoader();
 
   //TODO Move to Cube.ts
@@ -103,6 +112,8 @@ const setupGraphics = async () => {
           //let material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
          // let cube = new THREE.Mesh(geometry, material);
           scene.add(cube);
+          cube.position.set(3.5, 0.95, -6);
+          cube.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
           resolve();
         },
         undefined,
@@ -113,7 +124,36 @@ const setupGraphics = async () => {
       );
     });
   await loadCube();
+
+
+  //Load Tesmodul
+  const loadTestmodul = () =>
+  new Promise((resolve, reject) => {
+    loader.load(
+      Testmodul,
+      function (gltfTestmodul) {
+        gltfTestmodul.scene.scale.x = 0.007;
+        gltfTestmodul.scene.scale.y = 0.007;
+        gltfTestmodul.scene.scale.z = 0.007;
+        testmodul = gltfTestmodul.scene;
+        scene.add(testmodul);
+        resolve();
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+        reject();
+      }
+    );
+  });
+  await loadTestmodul();
 };
+
+var scaleTestmodel = function(testmodel){
+  testmodel.scene.scale.x = 0.25;
+  testmodel.scene.scale.y = 0.25;
+  testmodel.scene.scale.z = 0.25;
+}
 
 const getPlayerMovement = () => {
   let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
