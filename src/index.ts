@@ -44,7 +44,7 @@ const setupGraphics = async () => {
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
   hemiLight.groundColor.setHSL(0.1, 1, 0.4);
   hemiLight.position.set(0, 50, 0);
-  scene.add(hemiLight);*/
+  scene.add(hemiLight);
 
   //Add directional light
   /*let dirLight = new THREE.DirectionalLight(0xffffff, 1);
