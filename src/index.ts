@@ -116,7 +116,8 @@ const setupGraphics = async () => {
   );
   camera.position.set(0, 4, 20);
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
@@ -173,7 +174,7 @@ const animate = async () => {
 
   cube.move(getPlayerMovement());
 
-  physics.updatePhysics(deltaTime);
+  //physics.updatePhysics(deltaTime);
 
   renderer.render(scene, camera);
 
