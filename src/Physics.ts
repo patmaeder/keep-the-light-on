@@ -21,7 +21,8 @@ export default class PhysicsHandler {
     this.tmpTrans = new Ammo.btTransform();
     this.objects = [];
 
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.82, 0));
+    //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
   }
 
   addPhysicsToMesh(mesh: Object3D, rigidBody: Ammo.btRigidBody) {
@@ -44,6 +45,8 @@ export default class PhysicsHandler {
         let q = this.tmpTrans.getRotation();
         objThree.position.set(p.x(), p.y(), p.z());
         objThree.quaternion.set(q.x(), q.y(), q.z(), q.w());
+        // console.log("motion state", p.x(), p.y(), p.z());
+        // console.log("rotation state", q.x(), q.y(), q.z());
       }
     }
   }

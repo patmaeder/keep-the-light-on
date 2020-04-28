@@ -10,6 +10,7 @@ import PhysicsHandler from "./Physics";
 import Cube from "./beans/Cube";
 import { loadModel } from "./Loader";
 import Stats from "stats-js";
+import World from "./beans/World";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -112,7 +113,7 @@ const setupGraphics = async () => {
     45,
     window.innerWidth / window.innerHeight,
     0.5,
-    100
+    1000
   );
   camera.position.set(0, 4, 20);
 
@@ -136,14 +137,10 @@ const setupGraphics = async () => {
   /**
    * Start loading Testmodule
    */
-  const gltfTestModule = await loadModel(Testmodule);
-  gltfTestModule.scene.scale.x = 0.007;
-  gltfTestModule.scene.scale.y = 0.007;
-  gltfTestModule.scene.scale.z = 0.007;
-  //Add to Scene
-  scene.add(gltfTestModule.scene);
-  //Add to PhysicsWorld
-  //physics.addPhysicsToMesh(cube.getModel(), new Ammo.btRigidBody());
+  const world = await new World().init();
+  scene.add(world.getModel());
+  physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
+
   /**
    * End loading Testmodule
    */
@@ -162,7 +159,7 @@ const getPlayerMovement = () => {
   let moveX = Number(right) - Number(left);
   let moveZ = Number(down) - Number(up);
 
-  return new THREE.Vector3(moveX, 0, moveZ);
+  return new Ammo.btVector3(moveX, 0, moveZ);
 };
 
 /**
@@ -174,7 +171,7 @@ const animate = async () => {
 
   cube.move(getPlayerMovement());
 
-  //physics.updatePhysics(deltaTime);
+  physics.updatePhysics(deltaTime);
 
   renderer.render(scene, camera);
 

@@ -28,6 +28,7 @@
     "ammojs-typed": "github:giniedp/ammojs-typed",
     "stats-js": "^1.0.1",
     "three": "^0.115.0",
+    "three-to-ammo": "^1.0.0",
     "workbox-cli": "^5.1.2"
   }
 }
