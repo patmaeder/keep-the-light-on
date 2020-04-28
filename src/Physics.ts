@@ -21,8 +21,12 @@ export default class PhysicsHandler {
     this.tmpTrans = new Ammo.btTransform();
     this.objects = [];
 
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.82, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
     //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
+  }
+
+  getPhysicsWorld(): Ammo.btDiscreteDynamicsWorld {
+    return this.physicsWorld;
   }
 
   addPhysicsToMesh(mesh: Object3D, rigidBody: Ammo.btRigidBody) {

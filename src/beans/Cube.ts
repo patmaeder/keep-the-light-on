@@ -12,8 +12,9 @@ import {
   Material,
 } from "three";
 import Ammo from "ammojs-typed";
+import { State } from "../utils/Constants";
 
-export default class model {
+export default class Cube {
   //make model with three.js
   private modelMaterial: Material = new MeshPhongMaterial({
     color: 0xffffff,
@@ -23,10 +24,10 @@ export default class model {
   private model: Object3D;
   private scale = { x: 0.25, y: 0.25, z: 0.25 };
   private pos = { x: 10, y: 5, z: 0 };
-  private quat = { x: 0, y: 0, z: 0, w: 1 };
-  private mass = 1;
+  private quat = { x: 0, y: 0, z: 0, w: 100 };
+  private mass = 100;
 
-  async init(camera: Camera): Promise<model> {
+  async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
     this.model = gltf.scene;
     this.model.traverse((child) => {
@@ -54,14 +55,17 @@ export default class model {
 
   move(vector: Ammo.btVector3) {
     //Triggerd on player move (WASD, Arrow Keys)
-    //vector.op_mul(0.13);
+    vector.op_mul(20);
 
     const physicsBody: Ammo.btRigidBody = this.model.userData.rigidBody;
 
+    const vector3 = new Vector3(vector.x(), 0, vector.z());
+
     physicsBody.setLinearVelocity(
-      new Ammo.btVector3(0, vector.y(), vector.z())
+      new Ammo.btVector3(vector3.x, vector3.y, vector3.z)
     );
-    physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x(), 0));
+
+    //physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x() / 12, 0));
   }
 
   initRigidBody(): Ammo.btRigidBody {
@@ -88,6 +92,10 @@ export default class model {
       localInertia
     );
 
-    return new Ammo.btRigidBody(rbInfo);
+    const physicsBody = new Ammo.btRigidBody(rbInfo);
+    // will prevent that the cube enters a standby-mode and freezes
+    physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
+
+    return physicsBody;
   }
 }

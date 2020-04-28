@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import Ammo from "ammojs-typed";
 import Testmodule from "../assests/models/testmodule.glb";
-import { Loader, DoubleSide, TetrahedronBufferGeometry } from "three";
+import {
+  Loader,
+  DoubleSide,
+  TetrahedronBufferGeometry,
+  MeshPhongMaterial,
+} from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AmbientLight } from "three";
 import { BreakScreen } from "./screens/BreakScreen";
@@ -11,6 +16,7 @@ import Cube from "./beans/Cube";
 import { loadModel } from "./Loader";
 import Stats from "stats-js";
 import World from "./beans/World";
+import DebugDrawer from "./utils/DebugDrawer";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -21,6 +27,7 @@ let clock: THREE.Clock;
 let cube: Cube;
 let stats = new Stats();
 let pause = new BreakScreen();
+let debugDrawer = new DebugDrawer();
 
 // TODO rewrite input handler to update ammo physics
 
@@ -172,7 +179,7 @@ const animate = async () => {
   cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
-
+  debugDrawer.animate();
   renderer.render(scene, camera);
 
   stats.end();
@@ -185,10 +192,12 @@ const animate = async () => {
 Ammo(Ammo).then(start);
 
 async function start() {
+  globalThis.Ammo = Ammo;
   clock = new THREE.Clock();
   physics = new PhysicsHandler();
   setupEventListeners();
   setupInputHandler();
   await setupGraphics();
+  debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
