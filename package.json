@@ -25,6 +25,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "ammo-debug-drawer": "^1.0.1",
     "ammojs-typed": "github:giniedp/ammojs-typed",
     "stats-js": "^1.0.1",
     "three": "^0.115.0",
