@@ -38,22 +38,21 @@ export default class DebugDrawer {
       physicsWorld
     );
     this.debugDrawer.enable();
+    this.debugDrawer.setDebugMode(2);
 
-    setInterval(() => {
-      let mode = (this.debugDrawer.getDebugMode() + 1) % 3;
-      this.debugDrawer.setDebugMode(mode);
-      console.log(this.debugDrawer);
-    }, 1000);
+    // setInterval(() => {
+    //   let mode = (this.debugDrawer.getDebugMode() + 1) % 3;
+    //   this.debugDrawer.setDebugMode(mode);
+    // }, 1000);
   }
 
   animate() {
     if (this.debugDrawer) {
       if (this.debugDrawer.index !== 0) {
-        console.log("debug animate");
-
         this.debugGeometry.attributes.position.needsUpdate = true;
         this.debugGeometry.attributes.color.needsUpdate = true;
       }
+      this.debugDrawer.update();
 
       this.debugGeometry.setDrawRange(0, this.debugDrawer.index);
     }
