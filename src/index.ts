@@ -66,6 +66,10 @@ const setupEventListeners = () => {
 
 //scene setup
 const setupGraphics = async () => {
+  const audio = document.querySelector("audio");
+  audio.volume = 0.2;
+  audio.play();
+  
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
     45,
