@@ -8,14 +8,16 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AmbientLight } from "three";
 import { BreakScreen } from "./screens/BreakScreen";
 import { Key, InputHandler } from "./input/InputHandler";
+import Portal from "../assests/portal/portal.glb";
+import { BasisTextureLoader } from "three/examples/jsm/loaders/BasisTextureLoader.js"
 
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let cube;
-
 let testmodul;
+let portal, portalTexture;
 
 let pause = new BreakScreen();
 
@@ -170,6 +172,37 @@ const setupGraphics = async () => {
       );
     });
   await loadTestmodul();
+
+  //Load Portal
+  const loadPortal = () =>
+  new Promise((resolve, reject) => {
+    loader.load(
+      Portal,
+      function (gltfPortal) {
+        gltfPortal.scene.scale.y = 2.5;
+        gltfPortal.scene.scale.z = 3;
+        portal = gltfPortal.scene;
+        scene.add(portal);
+        resolve();
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+        reject();
+      }
+    );
+  });
+  await loadPortal();
+
+  portal.position.set(0.58, 0.7, -21)
+
+  let pointLightPortal1 = new THREE.PointLight(0xffffff, 1.8, 10, 2);
+  pointLightPortal1.position.set(0.1, 0.5, 0);
+  portal.add(pointLightPortal1);
+
+  let pointLightPortal2 = new THREE.PointLight(0x990e96, 1.5, 12, 2);
+  pointLightPortal2.position.set(1, 0.5, 0);
+  portal.add(pointLightPortal2);
 };
 
 var scaleTestmodel = function (testmodel) {
@@ -191,6 +224,26 @@ const getPlayerMovement = () => {
   return new THREE.Vector3(moveX, 0, moveZ);
 };
 
+const checkIfWon = () => {
+
+  let atGoalX: boolean = false;
+  let atGoalZ: boolean = false;
+
+  if (0.58 < cube.position.x && cube.position.x < 1){
+    atGoalX = true
+  }
+
+  if (-21.5 < cube.position.z && cube.position.z < -20.5) {
+    atGoalZ = true;
+  }
+
+  if(atGoalX && atGoalZ) {
+    
+    alert("YOU WON!");
+    location.reload();
+  }
+}
+
 const animate = () => {
   const vector = getPlayerMovement();
   vector.multiplyScalar(0.13);
@@ -201,6 +254,8 @@ const animate = () => {
   let PivotPoint = new THREE.Object3D();
   cube.add(PivotPoint);
   PivotPoint.add(camera);
+
+  checkIfWon();
 
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
