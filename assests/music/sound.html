@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<title>Game-Music</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<style>
+body,h1 {
+    font-family: "Raleway", sans-serif;
+    color: cadetblue;
+    
+    }
+
+body {
+    background-color: rgb(228, 169, 93);
+}
+body, html {
+    height: 100%
+    
+    }
+    button {
+  font-size: 16px;
+  color: #eee;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  padding: 15px;
+  border: none;
+  border-radius: 2px;
+  outline: none;
+  background: rgba(115, 67, 167, 0.8);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  opacity: 0.8;
+  cursor: pointer;
+  transition: all 0.4s ease-out;
+}
+
+button.fade:hover {
+  opacity: 0.8;
+}
+
+.fade {
+  opacity: 0.2;
+  top: 0;
+  left: 0;
+  transform: translate(0, 0);
+}
+
+audio {
+  display: none;
+}
+
+</style>
+
+<body>
+
+<!-- Play Music Button -->
+<button id="button">
+    <i class="fas fa-volume-up"></i>
+</button>
+
+<!-- Audio Datei -->
+<audio src="Melt-Down_Looping.mp3"></audio>
+
+
+<script>
+    
+    const button = document.querySelector("#button");
+    const icon = document.querySelector("#button > i");
+    const audio = document.querySelector("audio");
+    
+    button.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.volume = 0.2;
+        audio.play();
+        icon.classList.remove('fa-volume-up');
+        icon.classList.add('fa-volume-mute');
+        
+      } else {
+        audio.pause();
+        icon.classList.remove('fa-volume-mute');
+        icon.classList.add('fa-volume-up');
+      }
+      button.classList.add("fade");
+    });
+    
+    
+</script>
+
+</body>
+
+</html>
