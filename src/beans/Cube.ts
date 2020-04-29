@@ -23,7 +23,7 @@ export default class Cube {
 
   private model: Object3D;
   private scale = { x: 0.25, y: 0.25, z: 0.25 };
-  private pos = { x: 10, y: 5, z: 0 };
+  private pos = { x: -10, y: 5, z: 0 };
   private quat = { x: 0, y: 0, z: 0, w: 100 };
   private mass = 100;
 

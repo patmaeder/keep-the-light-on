@@ -69,62 +69,39 @@ export default class World {
   private scale = { x: 0.007, y: 0.007, z: 0.007 };
   private pos = { x: 0, y: 0, z: 0 };
   private mass = 0;
+  private meshes: Mesh[];
 
   async init(): Promise<World> {
     const gltf = await loadModel(Testmodule);
     this.model = gltf.scene;
+    this.meshes = [];
     // this.model.traverse((child) => {
     //   if (child instanceof Mesh) {
     //     child.material = this.cubeMaterial;
     //   }
     // });
 
-    var modelScale = 50;
     console.log(gltf.scene);
-    let triangle_mesh;
 
     gltf.scene.children.forEach((object: Object3D) => {
       if (object.type === "Mesh") {
         const mesh: Mesh = <Mesh>object;
         const buffer: BufferGeometry = <BufferGeometry>mesh.geometry;
-        const positions = buffer.attributes.position.array;
-        console.log(positions);
-        triangle_mesh = new Ammo.btTriangleMesh();
 
-        var triangle;
-        var _vec3_1 = new Ammo.btVector3(0, 0, 0);
-        var _vec3_2 = new Ammo.btVector3(0, 0, 0);
-        var _vec3_3 = new Ammo.btVector3(0, 0, 0);
-        for (var i = 0; i < positions.length; i += 9) {
-          triangle = positions[i];
+        var volume = new Mesh(
+          buffer,
+          new MeshPhongMaterial({ color: 0xffffff })
+        );
 
-          _vec3_1.setX(positions[i]);
-          _vec3_1.setY(positions[i + 1]);
-          _vec3_1.setZ(positions[i + 2]);
-
-          _vec3_2.setX(positions[i + 3]);
-          _vec3_2.setY(positions[i + 4]);
-          _vec3_2.setZ(positions[i + 5]);
-
-          _vec3_3.setX(positions[i + 6]);
-          _vec3_3.setY(positions[i + 7]);
-          _vec3_3.setZ(positions[i + 8]);
-
-          triangle_mesh.addTriangle(_vec3_1, _vec3_2, _vec3_3, true);
-        }
-
-        // for (var i = 0; i < positions.length; i += 3) {
-        //   vec3.setValue(positions[i], positions[i + 1], positions[i + 2]);
-        //   this.hullShape.addPoint(vec3, i == positions.length - 3);
-        // }
+        this.meshes.push(volume);
       }
     });
 
-    this.hullShape = new Ammo.btBvhTriangleMeshShape(triangle_mesh, true, true);
-    this.hullShape.setMargin(0);
-    console.log(this.hullShape);
-    //this.hullShape.setLocalScaling(vec3);
-    //this.hullShape.initializePolyhedralFeatures(0);
+    // this.hullShape = new Ammo.btBvhTriangleMeshShape(triangle_mesh, true, true);
+    // this.hullShape.setMargin(0);
+    // console.log(this.hullShape);
+    // this.hullShape.setLocalScaling(vec3);
+    // this.hullShape.initializePolyhedralFeatures(0);
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
@@ -136,6 +113,30 @@ export default class World {
   }
 
   initRigidBody(): Ammo.btRigidBody {
+    console.log(this.meshes);
+
+    let hull = new Ammo.btConvexHullShape();
+
+    console.log("So many meshes are defined: ", this.meshes.length);
+
+    for (let mesh of this.meshes) {
+      console.log(mesh);
+      const buffer = <BufferGeometry>mesh.geometry;
+      const triangles = buffer.index.array;
+      console.log(triangles.length, triangles.length % 2, triangles.length % 3);
+      for (let i = 0; i < triangles.length; i += 3) {
+        //if (i + 2 >= triangles.length) continue;
+
+        console.log(triangles[i], triangles[i + 1], triangles[i + 2]);
+        hull.addPoint(
+          new Ammo.btVector3(triangles[i], triangles[i + 1], triangles[i + 2])
+        );
+      }
+      console.log("Mesh done: ", hull);
+    }
+
+    hull.setLocalScaling(new Ammo.btVector3(0.007, 0.007, 0.007));
+
     let transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
@@ -146,15 +147,12 @@ export default class World {
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
 
-    // this.hullShape.calculateLocalInertia(
-    //   this.mass,
-    //   new Ammo.btVector3(0, 0, 0)
-    // );
+    hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
 
     let rbInfo = new Ammo.btRigidBodyConstructionInfo(
       this.mass,
       motionState,
-      this.hullShape,
+      hull,
       localInertia
     );
 
