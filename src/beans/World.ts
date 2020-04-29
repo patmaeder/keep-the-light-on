@@ -15,7 +15,12 @@ import {
 } from "three";
 import Ammo from "ammojs-typed";
 import { State, Flags } from "../utils/Constants";
-import { TYPE, iterateGeometries, createCollisionShapes } from "three-to-ammo";
+import {
+  TYPE,
+  FIT,
+  iterateGeometries,
+  createCollisionShapes,
+} from "three-to-ammo";
 
 export default class World {
   //make cube with three.js
@@ -75,57 +80,99 @@ export default class World {
 
   initRigidBody(): Ammo.btRigidBody[] {
     console.log(this.meshes);
+    const matrixWorld = new Matrix4();
 
     let rigidbodies: Ammo.btRigidBody[] = [];
 
     console.log("So many meshes are defined: ", this.meshes.length);
 
+    let vertices,
+      matrices,
+      indexes = [];
     for (let mesh of this.meshes) {
-      let hull = new Ammo.btConvexHullShape();
-
-      console.log(mesh);
-      const buffer = <BufferGeometry>mesh.geometry;
-      const triangles = buffer.index.array;
-      console.log(triangles.length, triangles.length % 2, triangles.length % 3);
-      for (let i = 0; i < triangles.length; i += 3) {
-        //if (i + 2 >= triangles.length) continue;
-
-        console.log(triangles[i], triangles[i + 1], triangles[i + 2]);
-        hull.addPoint(
-          new Ammo.btVector3(triangles[i], triangles[i + 1], triangles[i + 2])
-        );
-      }
-      console.log("Mesh done: ", hull);
-
-      let transform = new Ammo.btTransform();
-      transform.setIdentity();
-      transform.setOrigin(
-        new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z)
+      vertices = [];
+      matrices = [];
+      indexes = [];
+      iterateGeometries(mesh, {}, (vertexArray, matrixArray, indexArray) => {
+        vertices.push(vertexArray);
+        matrices.push(matrixArray);
+        indexes.push(indexArray);
+      });
+      console.log(vertices, matrices, indexes);
+      const options = {
+        type: TYPE.MESH,
+        fit: FIT.ALL,
+      };
+      const shape = createCollisionShapes(
+        vertices,
+        matrices,
+        indexes,
+        matrixWorld.elements,
+        options
       );
-
-      let motionState = new Ammo.btDefaultMotionState(transform);
-
-      console.log(this.model);
-
+      console.log(shape);
+      let motionState = new Ammo.btDefaultMotionState();
       let localInertia = new Ammo.btVector3(0, 0, 0);
-
-      hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
 
       let rbInfo = new Ammo.btRigidBodyConstructionInfo(
         this.mass,
         motionState,
-        hull,
+        shape,
         localInertia
       );
 
-      const physicsBody = new Ammo.btRigidBody(rbInfo);
-
-      // kinematic object which are physics not applied to
-      physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
-      physicsBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-
-      rigidbodies.push(physicsBody);
+      const rigidBody = new Ammo.btRigidBody(rbInfo);
+      rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+      rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+      rigidbodies.push(rigidBody);
+      console.log(rigidBody);
     }
+    // for (let mesh of this.meshes) {
+    //   let hull = new Ammo.btConvexHullShape();
+
+    //   console.log(mesh);
+    //   const buffer = <BufferGeometry>mesh.geometry;
+    //   const triangles = buffer.index.array;
+    //   console.log(triangles.length, triangles.length % 2, triangles.length % 3);
+    //   for (let i = 0; i < triangles.length; i += 3) {
+    //     //if (i + 2 >= triangles.length) continue;
+
+    //     console.log(triangles[i], triangles[i + 1], triangles[i + 2]);
+    //     hull.addPoint(
+    //       new Ammo.btVector3(triangles[i], triangles[i + 1], triangles[i + 2])
+    //     );
+    //   }
+    //   console.log("Mesh done: ", hull);
+
+    //   let transform = new Ammo.btTransform();
+    //   transform.setIdentity();
+    //   transform.setOrigin(
+    //     new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z)
+    //   );
+
+    //   let motionState = new Ammo.btDefaultMotionState(transform);
+
+    //   console.log(this.model);
+
+    //   let localInertia = new Ammo.btVector3(0, 0, 0);
+
+    //   hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
+
+    //   let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+    //     this.mass,
+    //     motionState,
+    //     hull,
+    //     localInertia
+    //   );
+
+    //   const physicsBody = new Ammo.btRigidBody(rbInfo);
+
+    //   // kinematic object which are physics not applied to
+    //   physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
+    //   physicsBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+
+    //   rigidbodies.push(physicsBody);
+    // }
 
     return rigidbodies;
   }
