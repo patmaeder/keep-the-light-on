@@ -1,5 +1,5 @@
 import { loadModel } from "../Loader";
-import Testmodule from "../../assests/models/testmodule.glb";
+import Testmodule from "../../assests/models/labyrinth.glb";
 import {
   MeshPhongMaterial,
   DoubleSide,
@@ -17,46 +17,6 @@ import Ammo from "ammojs-typed";
 import { State, Flags } from "../utils/Constants";
 import { TYPE, iterateGeometries, createCollisionShapes } from "three-to-ammo";
 
-function createSoftVolume(bufferGeom, mass, pressure) {
-  var volume = new Mesh(bufferGeom, new MeshPhongMaterial({ color: 0xffffff }));
-
-  // Volume physic object
-  var softBodyHelpers = new Ammo.btSoftBodyHelpers();
-  var volumeSoftBody = softBodyHelpers.CreateFromTriMesh(
-    physicsWorld.getWorldInfo(),
-    bufferGeom.ammoVertices,
-    bufferGeom.ammoIndices,
-    bufferGeom.ammoIndices.length / 3,
-    true
-  );
-
-  // var sbConfig = volumeSoftBody.get_m_cfg();
-  // sbConfig.set_viterations(40);
-  // sbConfig.set_piterations(40);
-
-  // // Soft-soft and soft-rigid collisions
-  // sbConfig.set_collisions(0x11);
-
-  // // Friction
-  // sbConfig.set_kDF(0.1);
-  // // Damping
-  // sbConfig.set_kDP(0.01);
-  // // Pressure
-  // sbConfig.set_kPR(pressure);
-  // // Stiffness
-  // volumeSoftBody.get_m_materials().at(0).set_m_kLST(0.9);
-  // volumeSoftBody.get_m_materials().at(0).set_m_kAST(0.9);
-
-  // volumeSoftBody.setTotalMass(mass, false);
-  Ammo.cast(volumeSoftBody, Ammo.btCollisionObject)
-    .getCollisionShape()
-    .setMargin(margin);
-  physicsWorld.addSoftBody(volumeSoftBody, 1, -1);
-
-  // Disable deactivation
-  volumeSoftBody.setActivationState(4);
-}
-
 export default class World {
   //make cube with three.js
   private cubeMaterial: Material = new MeshPhongMaterial({
@@ -66,7 +26,7 @@ export default class World {
 
   private model: Object3D;
   private hullShape: Ammo.btBvhTriangleMeshShape;
-  private scale = { x: 0.007, y: 0.007, z: 0.007 };
+  private scale = { x: 1, y: 1, z: 1 };
   private pos = { x: 0, y: 0, z: 0 };
   private mass = 0;
   private meshes: Mesh[];
@@ -88,12 +48,13 @@ export default class World {
         const mesh: Mesh = <Mesh>object;
         const buffer: BufferGeometry = <BufferGeometry>mesh.geometry;
 
-        var volume = new Mesh(
-          buffer,
-          new MeshPhongMaterial({ color: 0xffffff })
-        );
+        // var volume = new Mesh(
+        //   buffer,
+        //   new MeshPhongMaterial({ color: 0xffffff })
+        // );
 
-        this.meshes.push(volume);
+        this.meshes.push(mesh);
+      } else if (object.type === "Group") {
       }
     });
 
@@ -112,14 +73,16 @@ export default class World {
     return this.model;
   }
 
-  initRigidBody(): Ammo.btRigidBody {
+  initRigidBody(): Ammo.btRigidBody[] {
     console.log(this.meshes);
 
-    let hull = new Ammo.btConvexHullShape();
+    let rigidbodies: Ammo.btRigidBody[] = [];
 
     console.log("So many meshes are defined: ", this.meshes.length);
 
     for (let mesh of this.meshes) {
+      let hull = new Ammo.btConvexHullShape();
+
       console.log(mesh);
       const buffer = <BufferGeometry>mesh.geometry;
       const triangles = buffer.index.array;
@@ -133,35 +96,37 @@ export default class World {
         );
       }
       console.log("Mesh done: ", hull);
+
+      let transform = new Ammo.btTransform();
+      transform.setIdentity();
+      transform.setOrigin(
+        new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z)
+      );
+
+      let motionState = new Ammo.btDefaultMotionState(transform);
+
+      console.log(this.model);
+
+      let localInertia = new Ammo.btVector3(0, 0, 0);
+
+      hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
+
+      let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+        this.mass,
+        motionState,
+        hull,
+        localInertia
+      );
+
+      const physicsBody = new Ammo.btRigidBody(rbInfo);
+
+      // kinematic object which are physics not applied to
+      physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
+      physicsBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+
+      rigidbodies.push(physicsBody);
     }
 
-    hull.setLocalScaling(new Ammo.btVector3(0.007, 0.007, 0.007));
-
-    let transform = new Ammo.btTransform();
-    transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
-
-    let motionState = new Ammo.btDefaultMotionState(transform);
-
-    console.log(this.model);
-
-    let localInertia = new Ammo.btVector3(0, 0, 0);
-
-    hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
-
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-      this.mass,
-      motionState,
-      hull,
-      localInertia
-    );
-
-    const physicsBody = new Ammo.btRigidBody(rbInfo);
-
-    // kinematic object which are physics not applied to
-    physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
-    physicsBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-
-    return physicsBody;
+    return rigidbodies;
   }
 }
