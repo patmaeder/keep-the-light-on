@@ -108,26 +108,6 @@ export default class World {
         rigidbodies.push(rigidBody);
       }
       console.log(rigidbodies.length);
-
-      // geometry.vertices.forEach((vector: Vector3) => {
-      //   // WHY TF DO I HAVE TO SCALE THIS DOWN TO 0.025 !!?
-      //   vector.multiplyScalar(0.025);
-      //   //console.log(vector.x, vector.y, vector.z);
-      //   shape.addPoint(new Ammo.btVector3(vector.x, vector.y, vector.z));
-      // });
-
-      // let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-      //   this.mass,
-      //   motionState,
-      //   shape,
-      //   localInertia
-      // );
-
-      // const rigidBody = new Ammo.btRigidBody(rbInfo);
-      // //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-      // //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-      // rigidbodies.push(rigidBody);
-      // console.log(rigidBody);
     }
 
     return rigidbodies;
