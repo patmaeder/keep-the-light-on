@@ -1,5 +1,5 @@
 import {loadModel} from "../Loader";
-import portalModel from "../../assests/portal/portal.glb";
+import portalModel from "../../assets/portal/portal.glb";
 import * as THREE from "three";
 import {Object3D} from "three";
 

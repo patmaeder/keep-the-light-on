@@ -1,5 +1,5 @@
 import { loadModel } from "../Loader";
-import Testmodule from "../../assests/models/labyrinth.glb";
+import Testmodule from "../../assets/models/labyrinth.glb";
 import {
   MeshPhongMaterial,
   DoubleSide,
