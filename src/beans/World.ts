@@ -46,27 +46,12 @@ export default class World {
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = this.cubeMaterial;
+        console.log(child);
+        this.meshes.push(child);
       }
     });
 
     console.log(gltf.scene);
-
-    gltf.scene.children.forEach((object: Object3D) => {
-      if (object.type === "Mesh") {
-        const mesh: Mesh = <Mesh>object;
-        const buffer: BufferGeometry = <BufferGeometry>mesh.geometry;
-
-        // this way of coloring ain't work:
-        // var volume = new Mesh(
-        //   buffer,
-        //   new MeshPhongMaterial({ color: 0xffffff })
-        // );
-
-        this.meshes.push(mesh);
-      } else if (object.type === "Group") {
-        // TODO we should also iterate other objects
-      }
-    });
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
@@ -99,8 +84,9 @@ export default class World {
       const shape = new Ammo.btConvexHullShape();
       console.log(geometry.vertices.length);
       geometry.vertices.forEach((vector: Vector3) => {
+        // WHY TF DO I HAVE TO SCALE THIS DOWN TO 0.025 !!?
         vector.multiplyScalar(0.025);
-        console.log(vector.x, vector.y, vector.z);
+        //console.log(vector.x, vector.y, vector.z);
         shape.addPoint(new Ammo.btVector3(vector.x, vector.y, vector.z));
       });
 
