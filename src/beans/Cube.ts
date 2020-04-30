@@ -24,8 +24,8 @@ export default class Cube {
   private model: Object3D;
   private scale = { x: 0.25, y: 0.25, z: 0.25 };
   private pos = { x: -10, y: 5, z: 0 };
-  private quat = { x: 0, y: 0, z: 0, w: 100 };
-  private mass = 100;
+  private quat = { x: 0, y: 0, z: 0, w: 1 };
+  private mass = 1;
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
@@ -80,7 +80,7 @@ export default class Cube {
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
     );
-    colShape.setMargin(0.05);
+    //colShape.setMargin(0.05);
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);

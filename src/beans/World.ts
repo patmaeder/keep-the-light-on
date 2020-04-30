@@ -12,6 +12,7 @@ import {
   Material,
   BufferGeometry,
   Matrix4,
+  Geometry,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State, Flags } from "../utils/Constants";
@@ -40,11 +41,13 @@ export default class World {
     const gltf = await loadModel(Testmodule);
     this.model = gltf.scene;
     this.meshes = [];
-    // this.model.traverse((child) => {
-    //   if (child instanceof Mesh) {
-    //     child.material = this.cubeMaterial;
-    //   }
-    // });
+
+    // this works when coloring the model
+    this.model.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.material = this.cubeMaterial;
+      }
+    });
 
     console.log(gltf.scene);
 
@@ -53,6 +56,7 @@ export default class World {
         const mesh: Mesh = <Mesh>object;
         const buffer: BufferGeometry = <BufferGeometry>mesh.geometry;
 
+        // this way of coloring ain't work:
         // var volume = new Mesh(
         //   buffer,
         //   new MeshPhongMaterial({ color: 0xffffff })
@@ -60,14 +64,9 @@ export default class World {
 
         this.meshes.push(mesh);
       } else if (object.type === "Group") {
+        // TODO we should also iterate other objects
       }
     });
-
-    // this.hullShape = new Ammo.btBvhTriangleMeshShape(triangle_mesh, true, true);
-    // this.hullShape.setMargin(0);
-    // console.log(this.hullShape);
-    // this.hullShape.setLocalScaling(vec3);
-    // this.hullShape.initializePolyhedralFeatures(0);
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
@@ -90,29 +89,20 @@ export default class World {
       matrices,
       indexes = [];
     for (let mesh of this.meshes) {
-      vertices = [];
-      matrices = [];
-      indexes = [];
-      iterateGeometries(mesh, {}, (vertexArray, matrixArray, indexArray) => {
-        vertices.push(vertexArray);
-        matrices.push(matrixArray);
-        indexes.push(indexArray);
-      });
-      console.log(vertices, matrices, indexes);
-      const options = {
-        type: TYPE.MESH,
-        fit: FIT.ALL,
-      };
-      const shape = createCollisionShapes(
-        vertices,
-        matrices,
-        indexes,
-        matrixWorld.elements,
-        options
-      );
-      console.log(shape);
+      let geometry = new Geometry();
+      const buffer = <BufferGeometry>mesh.geometry;
+      geometry.fromBufferGeometry(buffer);
+
       let motionState = new Ammo.btDefaultMotionState();
       let localInertia = new Ammo.btVector3(0, 0, 0);
+
+      const shape = new Ammo.btConvexHullShape();
+      console.log(geometry.vertices.length);
+      geometry.vertices.forEach((vector: Vector3) => {
+        vector.multiplyScalar(0.025);
+        console.log(vector.x, vector.y, vector.z);
+        shape.addPoint(new Ammo.btVector3(vector.x, vector.y, vector.z));
+      });
 
       let rbInfo = new Ammo.btRigidBodyConstructionInfo(
         this.mass,
@@ -122,57 +112,11 @@ export default class World {
       );
 
       const rigidBody = new Ammo.btRigidBody(rbInfo);
-      rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-      rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+      //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+      //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
       rigidbodies.push(rigidBody);
       console.log(rigidBody);
     }
-    // for (let mesh of this.meshes) {
-    //   let hull = new Ammo.btConvexHullShape();
-
-    //   console.log(mesh);
-    //   const buffer = <BufferGeometry>mesh.geometry;
-    //   const triangles = buffer.index.array;
-    //   console.log(triangles.length, triangles.length % 2, triangles.length % 3);
-    //   for (let i = 0; i < triangles.length; i += 3) {
-    //     //if (i + 2 >= triangles.length) continue;
-
-    //     console.log(triangles[i], triangles[i + 1], triangles[i + 2]);
-    //     hull.addPoint(
-    //       new Ammo.btVector3(triangles[i], triangles[i + 1], triangles[i + 2])
-    //     );
-    //   }
-    //   console.log("Mesh done: ", hull);
-
-    //   let transform = new Ammo.btTransform();
-    //   transform.setIdentity();
-    //   transform.setOrigin(
-    //     new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z)
-    //   );
-
-    //   let motionState = new Ammo.btDefaultMotionState(transform);
-
-    //   console.log(this.model);
-
-    //   let localInertia = new Ammo.btVector3(0, 0, 0);
-
-    //   hull.calculateLocalInertia(this.mass, new Ammo.btVector3(0, 0, 0));
-
-    //   let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-    //     this.mass,
-    //     motionState,
-    //     hull,
-    //     localInertia
-    //   );
-
-    //   const physicsBody = new Ammo.btRigidBody(rbInfo);
-
-    //   // kinematic object which are physics not applied to
-    //   physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
-    //   physicsBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-
-    //   rigidbodies.push(physicsBody);
-    // }
 
     return rigidbodies;
   }

@@ -38,7 +38,7 @@ export default class DebugDrawer {
       physicsWorld
     );
     this.debugDrawer.enable();
-    this.debugDrawer.setDebugMode(2);
+    this.debugDrawer.setDebugMode(1);
 
     // setInterval(() => {
     //   let mode = (this.debugDrawer.getDebugMode() + 1) % 3;
