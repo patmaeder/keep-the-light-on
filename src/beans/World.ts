@@ -78,30 +78,56 @@ export default class World {
       const buffer = <BufferGeometry>mesh.geometry;
       geometry.fromBufferGeometry(buffer);
 
-      let motionState = new Ammo.btDefaultMotionState();
-      let localInertia = new Ammo.btVector3(0, 0, 0);
+      for (let i = 0; i + 1 < geometry.vertices.length; i += 2) {
+        let motionState = new Ammo.btDefaultMotionState();
+        let localInertia = new Ammo.btVector3(0, 0, 0);
 
-      const shape = new Ammo.btConvexHullShape();
-      console.log(geometry.vertices.length);
-      geometry.vertices.forEach((vector: Vector3) => {
-        // WHY TF DO I HAVE TO SCALE THIS DOWN TO 0.025 !!?
-        vector.multiplyScalar(0.025);
-        //console.log(vector.x, vector.y, vector.z);
-        shape.addPoint(new Ammo.btVector3(vector.x, vector.y, vector.z));
-      });
+        const shape = new Ammo.btConvexHullShape();
+        console.log(geometry.vertices.length);
+        let a = geometry.vertices[i];
+        let b = geometry.vertices[i + 1];
 
-      let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-        this.mass,
-        motionState,
-        shape,
-        localInertia
-      );
+        // let scalea = mesh.getWorldScale(a);
+        // let scaleb = mesh.getWorldScale(b);
 
-      const rigidBody = new Ammo.btRigidBody(rbInfo);
-      //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-      //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-      rigidbodies.push(rigidBody);
-      console.log(rigidBody);
+        let va = new Ammo.btVector3(a.x, a.y, a.z);
+        let vb = new Ammo.btVector3(b.x, b.y, b.z);
+
+        shape.addPoint(va.op_mul(0.02539999969303608));
+        shape.addPoint(vb.op_mul(0.02539999969303608));
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+          this.mass,
+          motionState,
+          shape,
+          localInertia
+        );
+
+        const rigidBody = new Ammo.btRigidBody(rbInfo);
+        //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+        //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+        rigidbodies.push(rigidBody);
+      }
+      console.log(rigidbodies.length);
+
+      // geometry.vertices.forEach((vector: Vector3) => {
+      //   // WHY TF DO I HAVE TO SCALE THIS DOWN TO 0.025 !!?
+      //   vector.multiplyScalar(0.025);
+      //   //console.log(vector.x, vector.y, vector.z);
+      //   shape.addPoint(new Ammo.btVector3(vector.x, vector.y, vector.z));
+      // });
+
+      // let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+      //   this.mass,
+      //   motionState,
+      //   shape,
+      //   localInertia
+      // );
+
+      // const rigidBody = new Ammo.btRigidBody(rbInfo);
+      // //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+      // //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+      // rigidbodies.push(rigidBody);
+      // console.log(rigidBody);
     }
 
     return rigidbodies;
