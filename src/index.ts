@@ -18,7 +18,7 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 
 import Portal from "../assests/portal/portal.glb";
-import { BasisTextureLoader } from "three/examples/jsm/loaders/BasisTextureLoader.js"
+import { BasisTextureLoader } from "three/examples/jsm/loaders/BasisTextureLoader.js";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -28,7 +28,7 @@ let camera: THREE.PerspectiveCamera;
 let clock: THREE.Clock;
 let cube: Cube;
 let stats = new Stats();
-let portal, portalTexture;
+let portalTexture;
 let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
@@ -116,10 +116,10 @@ const setupGraphics = async () => {
   const audio = document.querySelector("audio");
   audio.volume = 0.2;
   audio.play();
-  
+
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom);
-  
+
   scene = new THREE.Scene();
   setupLights(scene);
   camera = new THREE.PerspectiveCamera(
@@ -134,7 +134,7 @@ const setupGraphics = async () => {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  
+
   /**
    * Start loading Cube
    */
@@ -158,44 +158,29 @@ const setupGraphics = async () => {
   /**
    * End loading Testmodule
    */
-  
+
   /**
    * Start loading Portal
    */
-  const loadPortal = () =>
-  new Promise((resolve, reject) => {
-    loader.load(
-      Portal,
-      function (gltfPortal) {
-        gltfPortal.scene.scale.y = 2.5;
-        gltfPortal.scene.scale.z = 3;
-        portal = gltfPortal.scene;
-        scene.add(portal);
-        resolve();
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-        reject();
-      }
-    );
-  });
-  await loadPortal();
+  const { scene: gltfPortalScene } = await loadModel(Portal);
+  gltfPortalScene.scale.y = 2.5;
+  gltfPortalScene.scale.z = 3;
+  scene.add(gltfPortalScene);
 
-  portal.position.set(0.58, 0.7, -21)
+  gltfPortalScene.position.set(0.58, 0.7, -21);
 
   let pointLightPortal1 = new THREE.PointLight(0xffffff, 1.8, 10, 2);
   pointLightPortal1.position.set(0.1, 0.5, 0);
-  portal.add(pointLightPortal1);
+  gltfPortalScene.add(pointLightPortal1);
 
   let pointLightPortal2 = new THREE.PointLight(0x990e96, 1.5, 12, 2);
   pointLightPortal2.position.set(1, 0.5, 0);
-  portal.add(pointLightPortal2);
-    /**
+  gltfPortalScene.add(pointLightPortal2);
+  /**
    * End loading Portal
    */
 };
- 
+
 /**
  * Userinput for Cube Movement
  */
@@ -218,38 +203,38 @@ const getPlayerMovement = () => {
 const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
-  
+
   cube.move(getPlayerMovement());
-  
+
   physics.updatePhysics(deltaTime);
   debugDrawer.animate();
   renderer.render(scene, camera);
-  
+
   const checkIfWon = () => {
+    let atGoalX: boolean = false;
+    let atGoalZ: boolean = false;
 
-  let atGoalX: boolean = false;
-  let atGoalZ: boolean = false;
+    if (0.58 < cube.getModel().position.x && cube.getModel().position.x < 1) {
+      atGoalX = true;
+    }
 
-  if (0.58 < cube.position.x && cube.position.x < 1){
-    atGoalX = true
-  }
+    if (
+      -21.5 < cube.getModel().position.z &&
+      cube.getModel().position.z < -20.5
+    ) {
+      atGoalZ = true;
+    }
 
-  if (-21.5 < cube.position.z && cube.position.z < -20.5) {
-    atGoalZ = true;
-  }
+    if (atGoalX && atGoalZ) {
+      alert("YOU WON!");
+      location.reload();
+    }
+  };
 
-  if(atGoalX && atGoalZ) {
-    
-    alert("YOU WON!");
-    location.reload();
-  }
- }
-  
   checkIfWon();
   requestAnimationFrame(animate);
 
   stats.end();
- 
 };
 /**
  * Async application start
