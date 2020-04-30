@@ -102,16 +102,12 @@ const setupLights = async (scene: THREE.Scene) => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
-    /*
-    const audio = document.querySelector("audio");
-    audio.volume = 0.2;
-    audio.play();
-    */
+    //TODO music class creation
     stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(stats.dom);
 
     scene = new THREE.Scene();
-    setupLights(scene);
+    await setupLights(scene);
     camera = new THREE.PerspectiveCamera(
         45,
         window.innerWidth / window.innerHeight,
@@ -230,6 +226,9 @@ async function start() {
     setupEventListeners();
     setupInputHandler();
     await setupGraphics();
+    /**
+     * Comment the line below to deactivate the hitbox debugger
+     */
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
-    animate();
+    await animate();
 }
