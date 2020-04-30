@@ -23,7 +23,7 @@ export default class Cube {
 
   private model: Object3D;
   private scale = { x: 0.25, y: 0.25, z: 0.25 };
-  private pos = { x: -10, y: 5, z: 0 };
+  private _pos = { x: -10, y: 7, z: 0 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 1;
 
@@ -71,7 +71,7 @@ export default class Cube {
   initRigidBody(): Ammo.btRigidBody {
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
+    transform.setOrigin(new Ammo.btVector3(this._pos.x, this._pos.y, this._pos.z));
     transform.setRotation(
       new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
@@ -97,5 +97,9 @@ export default class Cube {
     physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
 
     return physicsBody;
+  }
+
+  get pos(): { x: number; y: number; z: number } {
+    return this._pos;
   }
 }
