@@ -22,10 +22,10 @@ export default class Cube {
   });
 
   private model: Object3D;
-  private scale = { x: 0.25, y: 0.25, z: 0.25 };
-  private pos = { x: -10, y: 5, z: 0 };
+  private scale = { x: 1, y: 1, z: 1 };
+  private pos = { x: 26, y: 28, z: -16 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
-  private mass = 1;
+  private mass = 1000;
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
@@ -59,11 +59,20 @@ export default class Cube {
 
     const physicsBody: Ammo.btRigidBody = this.model.userData.rigidBody;
 
-    const vector3 = new Vector3(vector.x(), 0, vector.z());
-
     physicsBody.setLinearVelocity(
-      new Ammo.btVector3(vector3.x, vector3.y, vector3.z)
+      new Ammo.btVector3(
+        physicsBody.getGravity().x() + vector.x(),
+        physicsBody.getGravity().y(),
+        physicsBody.getGravity().z() + vector.z()
+      )
     );
+
+    // physicsBody.applyCentralImpulse(
+    //   new Ammo.btVector3(vector.x(), 0, vector.z())
+    // );
+    if (vector.y() !== 0) {
+      physicsBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass * 25, 0));
+    }
 
     //physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x() / 12, 0));
   }
@@ -95,7 +104,7 @@ export default class Cube {
     const physicsBody = new Ammo.btRigidBody(rbInfo);
     // will prevent that the cube enters a standby-mode and freezes
     physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
-
+    physicsBody.setDamping(0.1, 100);
     return physicsBody;
   }
 }

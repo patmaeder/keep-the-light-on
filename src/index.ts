@@ -50,6 +50,7 @@ const setupInputHandler = () => {
     "A",
     "S",
     "D",
+    " ",
   ]);
 };
 
@@ -126,7 +127,7 @@ const setupGraphics = async () => {
     45,
     window.innerWidth / window.innerHeight,
     0.5,
-    1000
+    10000
   );
   camera.position.set(0, 4, 20);
 
@@ -191,10 +192,13 @@ const getPlayerMovement = () => {
   let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
   let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
 
+  let space = inputHandler.isPressed(" ");
+
   let moveX = Number(right) - Number(left);
+  let moveY = Number(space);
   let moveZ = Number(down) - Number(up);
 
-  return new Ammo.btVector3(moveX, 0, moveZ);
+  return new Ammo.btVector3(moveX, moveY, moveZ);
 };
 
 /**

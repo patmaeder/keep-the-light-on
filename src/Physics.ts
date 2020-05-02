@@ -21,7 +21,7 @@ export default class PhysicsHandler {
     this.tmpTrans = new Ammo.btTransform();
     this.objects = [];
 
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
     //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
   }
 
@@ -37,7 +37,7 @@ export default class PhysicsHandler {
 
   updatePhysics(deltaTime: number) {
     // Step world
-    this.physicsWorld.stepSimulation(deltaTime, 10);
+    this.physicsWorld.stepSimulation(deltaTime, 1, 1 / 60);
     // Update rigid bodies
     for (let i = 0; i < this.objects.length; i++) {
       let objThree = this.objects[i];

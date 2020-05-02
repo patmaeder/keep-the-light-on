@@ -32,7 +32,7 @@ export default class World {
 
   private model: Object3D;
   private hullShape: Ammo.btBvhTriangleMeshShape;
-  private scale = { x: 1, y: 1, z: 1 };
+  private scale = { x: 6, y: 6, z: 6 };
   private pos = { x: 0, y: 0, z: 0 };
   private mass = 0;
   private meshes: Mesh[];
@@ -46,12 +46,12 @@ export default class World {
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = this.cubeMaterial;
-        console.log(child);
+        //console.log(child);
         this.meshes.push(child);
       }
     });
 
-    console.log(gltf.scene);
+    //console.log(gltf.scene);
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
@@ -63,7 +63,7 @@ export default class World {
   }
 
   initRigidBody(): Ammo.btRigidBody[] {
-    console.log(this.meshes);
+    //console.log(this.meshes);
     const matrixWorld = new Matrix4();
 
     let rigidbodies: Ammo.btRigidBody[] = [];
@@ -83,7 +83,7 @@ export default class World {
         let localInertia = new Ammo.btVector3(0, 0, 0);
 
         const shape = new Ammo.btConvexHullShape();
-        console.log(geometry.vertices.length);
+        //console.log(geometry.vertices.length);
         let a = geometry.vertices[i];
         let b = geometry.vertices[i + 1];
 
@@ -93,8 +93,8 @@ export default class World {
         let va = new Ammo.btVector3(a.x, a.y, a.z);
         let vb = new Ammo.btVector3(b.x, b.y, b.z);
 
-        shape.addPoint(va.op_mul(0.02539999969303608));
-        shape.addPoint(vb.op_mul(0.02539999969303608));
+        shape.addPoint(va.op_mul(0.02539999969303608 * 6));
+        shape.addPoint(vb.op_mul(0.02539999969303608 * 6));
         let rbInfo = new Ammo.btRigidBodyConstructionInfo(
           this.mass,
           motionState,
@@ -104,10 +104,10 @@ export default class World {
 
         const rigidBody = new Ammo.btRigidBody(rbInfo);
         //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-        //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+        rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
         rigidbodies.push(rigidBody);
       }
-      console.log(rigidbodies.length);
+      //console.log(rigidbodies.length);
     }
 
     return rigidbodies;
