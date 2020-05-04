@@ -9,7 +9,7 @@ import {
   Camera,
   Object3D,
   Mesh,
-  Material,
+  Material, default as THREE,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -35,6 +35,7 @@ export default class Cube {
         child.material = this.modelMaterial;
       }
     });
+
 
     //this.model.position.set(3.5, 0.95, -6);
     //this.model.rotateOnAxis(new Vector3(0, 1, 0), Math.PI);
@@ -67,6 +68,29 @@ export default class Cube {
 
     //physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x() / 12, 0));
   }
+
+  //pointlight
+  private setupLights(){
+    let pointLight1 = new THREE.PointLight(0xfffff, 50, 50);
+    pointLight1.position.set(-11, 7, 0);
+    this.model.add(pointLight1);
+
+    let pointLight2 = new THREE.PointLight(0xfffff, 50, 50);
+    pointLight2.position.set(-9, 7, 0);
+    this.model.add(pointLight2);
+
+    let pointLight3 = new THREE.PointLight(0xfffff, 50, 50);
+    pointLight3.position.set(-10, 2, 0);
+    this.model.add(pointLight3);
+
+    const PivotPoint = new Object3D();
+    this.model.add(PivotPoint);
+    PivotPoint.add(pointLight1);
+    PivotPoint.add(pointLight2);
+    PivotPoint.add(pointLight3);
+
+
+  };
 
   initRigidBody(): Ammo.btRigidBody {
     let transform = new Ammo.btTransform();
