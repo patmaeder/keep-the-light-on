@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "ammo-debug-drawer": "^1.0.1",
+    "ammo.js": "0.0.10",
     "ammojs-typed": "github:giniedp/ammojs-typed",
     "stats-js": "^1.0.1",
     "three": "^0.115.0",
