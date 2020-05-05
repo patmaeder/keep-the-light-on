@@ -206,7 +206,7 @@ const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
 
-  cube.move(getPlayerMovement());
+  cube.move(getPlayerMovement(), physics.getPhysicsWorld());
 
   physics.updatePhysics(deltaTime);
   debugDrawer.animate();

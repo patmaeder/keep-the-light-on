@@ -52,16 +52,29 @@ export default class Cube {
     return this.model;
   }
 
-  move(vector: Ammo.btVector3) {
+  move(vector: Ammo.btVector3, physicsWorld: Ammo.btDiscreteDynamicsWorld) {
     if (vector.length() === 0) return;
 
     this.rigidBody.activate();
 
     if (vector.y() !== 0) {
-      this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
+      const position = this.rigidBody.getWorldTransform().getOrigin();
+      const to = new Ammo.btVector3(position.x(), -0.1, position.z());
+
+      const rayResult = new Ammo.ClosestRayResultCallback(position, to);
+
+      physicsWorld.rayTest(position, to, rayResult);
+      console.log(
+        "closest hit fraction is < 0.1",
+        rayResult.get_m_closestHitFraction() < 0.1
+      );
+
+      if (rayResult.get_m_closestHitFraction() < 0.1)
+        this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
+    vector.setY(0);
     vector.op_mul(this.mass * 10);
 
     this.rigidBody.applyCentralForce(vector);
