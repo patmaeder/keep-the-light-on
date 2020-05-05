@@ -37,7 +37,7 @@ export default class PhysicsHandler {
 
   updatePhysics(deltaTime: number) {
     // Step world
-    this.physicsWorld.stepSimulation(deltaTime, 1, 1 / 60);
+    this.physicsWorld.stepSimulation(deltaTime, 10);
     // Update rigid bodies
     for (let i = 0; i < this.objects.length; i++) {
       let objThree = this.objects[i];
