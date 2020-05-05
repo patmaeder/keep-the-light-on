@@ -153,9 +153,7 @@ const setupGraphics = async () => {
    */
   const world = await new World().init();
   scene.add(world.getModel());
-  world.initRigidBody().forEach((rigid: Ammo.btRigidBody) => {
-    physics.addPhysicsToMesh(world.getModel(), rigid);
-  });
+  physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
   /**
    * End loading Testmodule
    */

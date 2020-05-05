@@ -13,6 +13,7 @@ import {
   BufferGeometry,
   Matrix4,
   Geometry,
+  Face3,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State, Flags } from "../utils/Constants";
@@ -62,17 +63,19 @@ export default class World {
     return this.model;
   }
 
-  initRigidBody(): Ammo.btRigidBody[] {
+  initRigidBody(): Ammo.btRigidBody {
     this.model.updateMatrixWorld();
 
     //console.log(this.meshes);
-    let rigidbodies: Ammo.btRigidBody[] = [];
 
     console.log("So many meshes are defined: ", this.meshes.length);
 
     let vertices,
       matrices,
       indexes = [];
+
+    const compoundShape = new Ammo.btCompoundShape();
+
     for (let mesh of this.meshes) {
       let geometry = new Geometry();
       const buffer = <BufferGeometry>mesh.geometry;
@@ -82,35 +85,81 @@ export default class World {
         new Matrix4().fromArray(mesh.matrixWorld.elements)
       );
 
-      for (let i = 0; i + 1 < geometry.vertices.length; i += 2) {
-        let motionState = new Ammo.btDefaultMotionState();
-        let localInertia = new Ammo.btVector3(0, 0, 0);
+      // const shape = new Ammo.btConvexHullShape();
 
-        const shape = new Ammo.btConvexHullShape();
-        //console.log(geometry.vertices.length);
-        let a = geometry.vertices[i].multiply(scale);
-        let b = geometry.vertices[i + 1].multiply(scale);
+      // for (let i = 0; i + 1 < geometry.vertices.length; i += 1) {
+      //   let a = geometry.vertices[i].multiply(scale)
+      //   let va = new Ammo.btVector3(a.x, a.y, a.z);
+      //   shape.addPoint(va);
+      // }
 
-        console.log(a);
-        let va = new Ammo.btVector3(a.x, a.y, a.z);
-        let vb = new Ammo.btVector3(b.x, b.y, b.z);
-        shape.addPoint(va);
-        shape.addPoint(vb);
-        let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-          this.mass,
-          motionState,
-          shape,
-          localInertia
+      // let motionState = new Ammo.btDefaultMotionState();
+      // let localInertia = new Ammo.btVector3(0, 0, 0);
+
+      // let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+      //   this.mass,
+      //   motionState,
+      //   shape,
+      //   localInertia
+      // );
+
+      // const rigidBody = new Ammo.btRigidBody(rbInfo);
+      // //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+      // rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+      // rigidbodies.push(rigidBody);
+
+      console.log(geometry.faces);
+      const shape = new Ammo.btTriangleMesh();
+
+      console.log(geometry.faces);
+      for (let face of geometry.faces) {
+        let a = geometry.vertices[face.a];
+        let b = geometry.vertices[face.b];
+        let c = geometry.vertices[face.c];
+
+        let va = new Ammo.btVector3(
+          a.x * scale.x,
+          a.y * scale.y,
+          a.z * scale.z
+        );
+        let vb = new Ammo.btVector3(
+          b.x * scale.x,
+          b.y * scale.y,
+          b.z * scale.z
+        );
+        let vc = new Ammo.btVector3(
+          c.x * scale.x,
+          c.y * scale.y,
+          c.z * scale.z
         );
 
-        const rigidBody = new Ammo.btRigidBody(rbInfo);
-        //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-        rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-        rigidbodies.push(rigidBody);
+        shape.addTriangle(va, vb, vc, false);
       }
-      //console.log(rigidbodies.length);
+
+      const localTransform = new Ammo.btTransform();
+      localTransform.setIdentity();
+      localTransform.setOrigin(new Ammo.btVector3(0, 0, 0));
+
+      const collisionShape = new Ammo.btBvhTriangleMeshShape(shape, false);
+      collisionShape.setMargin(0.1);
+
+      compoundShape.addChildShape(localTransform, collisionShape);
     }
 
-    return rigidbodies;
+    let motionState = new Ammo.btDefaultMotionState();
+    let localInertia = new Ammo.btVector3(0, 0, 0);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+      this.mass,
+      motionState,
+      compoundShape,
+      localInertia
+    );
+
+    const rigidBody = new Ammo.btRigidBody(rbInfo);
+    //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
+    rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
+
+    return rigidBody;
   }
 }
