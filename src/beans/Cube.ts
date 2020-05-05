@@ -1,6 +1,7 @@
 import { loadModel } from "../Loader";
 import modelModel from "../../assets/models/cube_white.glb";
 import {
+  PointLight,
   MeshPhongMaterial,
   DoubleSide,
   BoxGeometry,
@@ -9,7 +10,7 @@ import {
   Camera,
   Object3D,
   Mesh,
-  Material, default as THREE,
+  Material, /*default as THREE,*/
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -42,9 +43,17 @@ export default class Cube {
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
     console.log(this.model.position, this.model.scale);
 
-    //Camera turns with model move
+    //create light to shine on environment and on cube
+    let pointLight1 = new PointLight(0xfffff, 30, 5);
+    pointLight1.position.set(0, 2, 2);
+    let pointLight2 = new PointLight(0xfffff, 30, 5);
+    pointLight2.position.set(0, 2, 0);
+
+    //Camera + light moves/turns with model move
     const PivotPoint = new Object3D();
     this.model.add(PivotPoint);
+    //PivotPoint.add(pointLight1);
+    PivotPoint.add(pointLight2);
     PivotPoint.add(camera);
 
     return this;
@@ -68,29 +77,6 @@ export default class Cube {
 
     //physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x() / 12, 0));
   }
-
-  //pointlight
-  private setupLights(){
-    let pointLight1 = new THREE.PointLight(0xfffff, 50, 50);
-    pointLight1.position.set(-11, 7, 0);
-    this.model.add(pointLight1);
-
-    let pointLight2 = new THREE.PointLight(0xfffff, 50, 50);
-    pointLight2.position.set(-9, 7, 0);
-    this.model.add(pointLight2);
-
-    let pointLight3 = new THREE.PointLight(0xfffff, 50, 50);
-    pointLight3.position.set(-10, 2, 0);
-    this.model.add(pointLight3);
-
-    const PivotPoint = new Object3D();
-    this.model.add(PivotPoint);
-    PivotPoint.add(pointLight1);
-    PivotPoint.add(pointLight2);
-    PivotPoint.add(pointLight3);
-
-
-  };
 
   initRigidBody(): Ammo.btRigidBody {
     let transform = new Ammo.btTransform();
