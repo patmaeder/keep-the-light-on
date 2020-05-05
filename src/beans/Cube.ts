@@ -21,11 +21,12 @@ export default class Cube {
     side: DoubleSide,
   });
 
+  private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
   private pos = { x: 26, y: 28, z: -16 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
-  private mass = 1000;
+  private mass = 10;
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
@@ -36,8 +37,6 @@ export default class Cube {
       }
     });
 
-    //this.model.position.set(3.5, 0.95, -6);
-    //this.model.rotateOnAxis(new Vector3(0, 1, 0), Math.PI);
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
     console.log(this.model.position, this.model.scale);
 
@@ -54,27 +53,18 @@ export default class Cube {
   }
 
   move(vector: Ammo.btVector3) {
-    //Triggerd on player move (WASD, Arrow Keys)
-    vector.op_mul(20);
+    if (vector.length() === 0) return;
 
-    const physicsBody: Ammo.btRigidBody = this.model.userData.rigidBody;
+    this.rigidBody.activate();
 
-    physicsBody.setLinearVelocity(
-      new Ammo.btVector3(
-        physicsBody.getGravity().x() + vector.x(),
-        physicsBody.getGravity().y(),
-        physicsBody.getGravity().z() + vector.z()
-      )
-    );
-
-    // physicsBody.applyCentralImpulse(
-    //   new Ammo.btVector3(vector.x(), 0, vector.z())
-    // );
     if (vector.y() !== 0) {
-      physicsBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass * 25, 0));
+      this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
     }
 
-    //physicsBody.setAngularVelocity(new Ammo.btVector3(0, -vector.x() / 12, 0));
+    //Triggerd on player move (WASD, Arrow Keys)
+    vector.op_mul(this.mass * 10);
+
+    this.rigidBody.applyCentralForce(vector);
   }
 
   initRigidBody(): Ammo.btRigidBody {
@@ -101,10 +91,8 @@ export default class Cube {
       localInertia
     );
 
-    const physicsBody = new Ammo.btRigidBody(rbInfo);
-    // will prevent that the cube enters a standby-mode and freezes
-    physicsBody.setActivationState(State.DISABLE_DEACTIVATION);
-    physicsBody.setDamping(0.1, 100);
-    return physicsBody;
+    this.rigidBody = new Ammo.btRigidBody(rbInfo);
+
+    return this.rigidBody;
   }
 }
