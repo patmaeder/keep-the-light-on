@@ -85,62 +85,27 @@ export default class World {
         new Matrix4().fromArray(mesh.matrixWorld.elements)
       );
 
-      // const shape = new Ammo.btConvexHullShape();
-
-      // for (let i = 0; i + 1 < geometry.vertices.length; i += 1) {
-      //   let a = geometry.vertices[i].multiply(scale)
-      //   let va = new Ammo.btVector3(a.x, a.y, a.z);
-      //   shape.addPoint(va);
-      // }
-
-      // let motionState = new Ammo.btDefaultMotionState();
-      // let localInertia = new Ammo.btVector3(0, 0, 0);
-
-      // let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-      //   this.mass,
-      //   motionState,
-      //   shape,
-      //   localInertia
-      // );
-
-      // const rigidBody = new Ammo.btRigidBody(rbInfo);
-      // //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
-      // rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-      // rigidbodies.push(rigidBody);
-
       console.log(geometry.faces);
       const shape = new Ammo.btTriangleMesh();
 
       console.log(geometry.faces);
       for (let face of geometry.faces) {
-        let a = geometry.vertices[face.a];
-        let b = geometry.vertices[face.b];
-        let c = geometry.vertices[face.c];
+        let a = geometry.vertices[face.a].clone().multiply(scale);
+        let b = geometry.vertices[face.b].clone().multiply(scale);
+        let c = geometry.vertices[face.c].clone().multiply(scale);
 
-        let va = new Ammo.btVector3(
-          a.x * scale.x,
-          a.y * scale.y,
-          a.z * scale.z
-        );
-        let vb = new Ammo.btVector3(
-          b.x * scale.x,
-          b.y * scale.y,
-          b.z * scale.z
-        );
-        let vc = new Ammo.btVector3(
-          c.x * scale.x,
-          c.y * scale.y,
-          c.z * scale.z
-        );
+        let va = new Ammo.btVector3(a.x, a.y, a.z);
+        let vb = new Ammo.btVector3(b.x, b.y, b.z);
+        let vc = new Ammo.btVector3(c.x, c.y, c.z);
 
-        shape.addTriangle(va, vb, vc, false);
+        shape.addTriangle(va, vb, vc, true);
       }
 
       const localTransform = new Ammo.btTransform();
       localTransform.setIdentity();
       localTransform.setOrigin(new Ammo.btVector3(0, 0, 0));
 
-      const collisionShape = new Ammo.btBvhTriangleMeshShape(shape, false);
+      const collisionShape = new Ammo.btBvhTriangleMeshShape(shape, true, true);
       collisionShape.setMargin(0.1);
 
       compoundShape.addChildShape(localTransform, collisionShape);
@@ -157,6 +122,7 @@ export default class World {
     );
 
     const rigidBody = new Ammo.btRigidBody(rbInfo);
+
     //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
     rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
 
