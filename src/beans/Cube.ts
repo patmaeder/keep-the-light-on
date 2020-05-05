@@ -52,12 +52,15 @@ export default class Cube {
     return this.model;
   }
 
-  move(vector: Ammo.btVector3, physicsWorld: Ammo.btDiscreteDynamicsWorld) {
-    if (vector.length() === 0) return;
+  move(
+    changedAxes: Ammo.btVector3,
+    physicsWorld: Ammo.btDiscreteDynamicsWorld
+  ) {
+    if (changedAxes.length() === 0) return;
 
     this.rigidBody.activate();
 
-    if (vector.y() !== 0) {
+    if (changedAxes.y() !== 0) {
       const position = this.rigidBody.getWorldTransform().getOrigin();
       const to = new Ammo.btVector3(position.x(), -0.1, position.z());
 
@@ -74,10 +77,10 @@ export default class Cube {
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
-    vector.setY(0);
-    vector.op_mul(this.mass * 10);
+    changedAxes.setY(0);
+    changedAxes.op_mul(this.mass * 10);
 
-    this.rigidBody.applyCentralForce(vector);
+    this.rigidBody.applyCentralForce(changedAxes);
   }
 
   initRigidBody(): Ammo.btRigidBody {
