@@ -63,9 +63,9 @@ export default class World {
   }
 
   initRigidBody(): Ammo.btRigidBody[] {
-    //console.log(this.meshes);
-    const matrixWorld = new Matrix4();
+    this.model.updateMatrixWorld();
 
+    //console.log(this.meshes);
     let rigidbodies: Ammo.btRigidBody[] = [];
 
     console.log("So many meshes are defined: ", this.meshes.length);
@@ -78,23 +78,24 @@ export default class World {
       const buffer = <BufferGeometry>mesh.geometry;
       geometry.fromBufferGeometry(buffer);
 
+      const scale = new Vector3(0, 0, 0).setFromMatrixScale(
+        new Matrix4().fromArray(mesh.matrixWorld.elements)
+      );
+
       for (let i = 0; i + 1 < geometry.vertices.length; i += 2) {
         let motionState = new Ammo.btDefaultMotionState();
         let localInertia = new Ammo.btVector3(0, 0, 0);
 
         const shape = new Ammo.btConvexHullShape();
         //console.log(geometry.vertices.length);
-        let a = geometry.vertices[i];
-        let b = geometry.vertices[i + 1];
+        let a = geometry.vertices[i].multiply(scale);
+        let b = geometry.vertices[i + 1].multiply(scale);
 
-        // let scalea = mesh.getWorldScale(a);
-        // let scaleb = mesh.getWorldScale(b);
-
+        console.log(a);
         let va = new Ammo.btVector3(a.x, a.y, a.z);
         let vb = new Ammo.btVector3(b.x, b.y, b.z);
-
-        shape.addPoint(va.op_mul(0.02539999969303608 * 6));
-        shape.addPoint(vb.op_mul(0.02539999969303608 * 6));
+        shape.addPoint(va);
+        shape.addPoint(vb);
         let rbInfo = new Ammo.btRigidBodyConstructionInfo(
           this.mass,
           motionState,
