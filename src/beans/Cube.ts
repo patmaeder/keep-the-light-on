@@ -44,16 +44,16 @@ export default class Cube {
     console.log(this.model.position, this.model.scale);
 
     //create light to shine on environment and on cube
-    let pointLight1 = new PointLight(0xfffff, 30, 5);
-    pointLight1.position.set(0, 2, 2);
-    let pointLight2 = new PointLight(0xfffff, 30, 5);
-    pointLight2.position.set(0, 2, 0);
+    let pointLight1 = new PointLight(0xfffff, 30, 50);
+    pointLight1.position.set(this._pos.x, this._pos.y, this._pos.z);
+    //let pointLight2 = new PointLight(0xfffff, 30, 5);
+    //pointLight2.position.set(0, 2, 0);
 
     //Camera + light moves/turns with model move
     const PivotPoint = new Object3D();
     this.model.add(PivotPoint);
-    //PivotPoint.add(pointLight1);
-    PivotPoint.add(pointLight2);
+    PivotPoint.add(pointLight1);
+    //PivotPoint.add(pointLight2);
     PivotPoint.add(camera);
 
     return this;
