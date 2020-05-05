@@ -8,6 +8,7 @@ import Stats from "stats-js";
 import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
+import Timer from "./Timer";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -21,6 +22,7 @@ let portal: Portal;
 let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
+export let timer: Timer;
 
 // TODO rewrite input handler to update ammo physics
 
@@ -223,9 +225,11 @@ async function start() {
     globalThis.Ammo = Ammo;
     clock = new THREE.Clock();
     physics = new PhysicsHandler();
+    timer = new Timer;
     setupEventListeners();
     setupInputHandler();
     await setupGraphics();
+    timer.start(60);
     /**
      * Comment the line below to deactivate the hitbox debugger
      */
