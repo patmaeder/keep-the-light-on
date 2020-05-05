@@ -47,12 +47,9 @@ export default class World {
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = this.cubeMaterial;
-        //console.log(child);
         this.meshes.push(child);
       }
     });
-
-    //console.log(gltf.scene);
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
@@ -65,8 +62,6 @@ export default class World {
 
   initRigidBody(): Ammo.btRigidBody {
     this.model.updateMatrixWorld();
-
-    //console.log(this.meshes);
 
     console.log("So many meshes are defined: ", this.meshes.length);
 
@@ -85,10 +80,8 @@ export default class World {
         new Matrix4().fromArray(mesh.matrixWorld.elements)
       );
 
-      console.log(geometry.faces);
       const shape = new Ammo.btTriangleMesh();
 
-      console.log(geometry.faces);
       for (let face of geometry.faces) {
         let a = geometry.vertices[face.a].clone().multiply(scale);
         let b = geometry.vertices[face.b].clone().multiply(scale);
