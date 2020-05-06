@@ -21,7 +21,7 @@ export default class PhysicsHandler {
     this.tmpTrans = new Ammo.btTransform();
     this.objects = [];
 
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
     //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
   }
 
