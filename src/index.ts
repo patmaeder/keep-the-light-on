@@ -29,7 +29,7 @@ let clock: THREE.Clock;
 let cube: Cube;
 let stats = new Stats();
 let portalTexture;
-let debugDrawer = new DebugDrawer();
+//let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
 
@@ -83,14 +83,14 @@ const setupEventListeners = () => {
  * Initialize Lights
  */
 const setupLights = async (scene: THREE.Scene) => {
-  let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
-  hemiLight.color.setHSL(0.6, 0.6, 0.6);
-  hemiLight.groundColor.setHSL(0.1, 1, 0.4);
-  hemiLight.position.set(0, 50, 0);
-  scene.add(hemiLight);
+  // let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+  // hemiLight.color.setHSL(0.6, 0.6, 0.6);
+  // hemiLight.groundColor.setHSL(0.1, 1, 0.4);
+  // hemiLight.position.set(0, 50, 0);
+  // scene.add(hemiLight);
 
   //Add directional light
-  let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  let dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
   dirLight.color.setHSL(0.1, 1, 0.95);
   dirLight.position.set(-1, 1.75, 1);
   dirLight.position.multiplyScalar(100);
@@ -209,7 +209,7 @@ const animate = async () => {
   cube.move(getPlayerMovement(), physics.getPhysicsWorld());
 
   physics.updatePhysics(deltaTime);
-  debugDrawer.animate();
+  //debugDrawer.animate();
   renderer.render(scene, camera);
 
   const checkIfWon = () => {
@@ -250,6 +250,6 @@ async function start() {
   setupEventListeners();
   setupInputHandler();
   await setupGraphics();
-  debugDrawer.initDebug(scene, physics.getPhysicsWorld());
+  //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
