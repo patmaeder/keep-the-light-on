@@ -1,6 +1,7 @@
 import { loadModel } from "../Loader";
 import modelModel from "../../assets/models/cube/cube_white.glb";
 import {
+  PointLight,
   MeshPhongMaterial,
   DoubleSide,
   BoxGeometry,
@@ -9,7 +10,7 @@ import {
   Camera,
   Object3D,
   Mesh,
-  Material,
+  Material, /*default as THREE,*/
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -36,14 +37,23 @@ export default class Cube {
       }
     });
 
+
     //this.model.position.set(3.5, 0.95, -6);
     //this.model.rotateOnAxis(new Vector3(0, 1, 0), Math.PI);
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
     console.log(this.model.position, this.model.scale);
 
-    //Camera turns with model move
+    //create light to shine on environment and on cube
+    let pointLight1 = new PointLight(0xfffff, 30, 50);
+    pointLight1.position.set(this._pos.x, this._pos.y, this._pos.z);
+    //let pointLight2 = new PointLight(0xfffff, 30, 5);
+    //pointLight2.position.set(0, 2, 0);
+
+    //Camera + light moves/turns with model move
     const PivotPoint = new Object3D();
     this.model.add(PivotPoint);
+    PivotPoint.add(pointLight1);
+    //PivotPoint.add(pointLight2);
     PivotPoint.add(camera);
 
     return this;
