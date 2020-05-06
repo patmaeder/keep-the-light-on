@@ -1,5 +1,5 @@
 import { loadModel } from "../Loader";
-import Testmodule from "../../assets/models/labyrinth.glb";
+import labyrinth from "../../assets/models/world/labyrinth.glb";
 import {
   MeshPhongMaterial,
   DoubleSide,
@@ -38,7 +38,7 @@ export default class World {
   private meshes: Mesh[];
 
   async init(): Promise<World> {
-    const gltf = await loadModel(Testmodule);
+    const gltf = await loadModel(labyrinth);
     this.model = gltf.scene;
     this.meshes = [];
 
@@ -66,7 +66,7 @@ export default class World {
     console.log(this.meshes);
     const matrixWorld = new Matrix4();
 
-    let rigidbodies: Ammo.btRigidBody[] = [];
+    let rigidBodies: Ammo.btRigidBody[] = [];
 
     console.log("So many meshes are defined: ", this.meshes.length);
 
@@ -100,10 +100,10 @@ export default class World {
       const rigidBody = new Ammo.btRigidBody(rbInfo);
       //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
       //rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-      rigidbodies.push(rigidBody);
+      rigidBodies.push(rigidBody);
       console.log(rigidBody);
     }
 
-    return rigidbodies;
+    return rigidBodies;
   }
 }
