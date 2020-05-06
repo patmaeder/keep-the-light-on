@@ -1,4 +1,5 @@
 import {Screens} from "./Screens";
+import { timer } from "..";
 
 export class BreakScreen extends Screens{
     constructor() {
@@ -13,6 +14,14 @@ export class BreakScreen extends Screens{
     }
 
     switchVisibleStatus(){
-        super.switchVisibleStatus();
+        if (this.visible) {
+            this.screen.style.display = "none";
+            this.visible = false;
+            timer.resume();
+        } else {
+            this.screen.style.display = "block";
+            this.visible = true;
+            timer.pause();
+        }
     }
 }

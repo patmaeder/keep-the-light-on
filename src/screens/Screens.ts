@@ -1,7 +1,7 @@
 export class Screens {
-  private screen = document.createElement("DIV");
+  protected screen = document.createElement("DIV");
   private buttons = document.createElement("DIV");
-  private visible: boolean = false;
+  protected visible: boolean = false;
 
   constructor(title: string) {
     this.screen.id = "screen";

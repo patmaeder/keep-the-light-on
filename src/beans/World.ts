@@ -1,5 +1,5 @@
 import { loadModel } from "../Loader";
-import Testmodule from "../../assests/models/labyrinth.glb";
+import labyrinth from "../../assets/models/world/labyrinth.glb";
 import {
   MeshPhongMaterial,
   DoubleSide,
@@ -39,7 +39,7 @@ export default class World {
   private meshes: Mesh[];
 
   async init(): Promise<World> {
-    const gltf = await loadModel(Testmodule);
+    const gltf = await loadModel(labyrinth);
     this.model = gltf.scene;
     this.meshes = [];
 
