@@ -78,11 +78,14 @@ export default class Cube {
       physicsWorld.rayTest(position, to, rayResult);
       console.log(
         "closest hit fraction is < 0.1",
-        rayResult.get_m_closestHitFraction() < 0.1
+        rayResult.get_m_closestHitFraction() < 0.1,
+        rayResult.get_m_closestHitFraction()
       );
 
       if (rayResult.get_m_closestHitFraction() < 0.1)
-        this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
+        this.rigidBody.applyCentralImpulse(
+          new Ammo.btVector3(0, this.mass / 2, 0)
+        );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
@@ -117,6 +120,7 @@ export default class Cube {
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
+    this.rigidBody.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
 
     return this.rigidBody;
   }
