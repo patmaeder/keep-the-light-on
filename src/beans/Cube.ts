@@ -1,5 +1,5 @@
 import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube_white.glb";
+import modelModel from "../../assets/models/cube/cube_white.glb";
 import {
   MeshPhongMaterial,
   DoubleSide,
