@@ -20,8 +20,8 @@ let cube: Cube;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
-let licht1;
-let licht2;
+let licht1: Cube;
+let licht2: Cube;
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -173,13 +173,13 @@ const setupGraphics = async () => {
   licht2 = new Cube;
   //Add to Scene
   scene.add(cube.getModel());
-  //scene.add(licht1.getModel());
-  //scene.add(licht2.getModel());
+  scene.add(licht1.getModel());
+  scene.add(licht2.getModel());
 
   //Add to PhysicsWorld
   physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
-  //physics.addPhysicsToMesh(licht1.getModel(), licht1.initRigidBody());
-  //physics.addPhysicsToMesh(licht2.getModel(), licht2.initRigidBody());
+  physics.addPhysicsToMesh(licht1.getModel(), licht1.initRigidBody());
+  physics.addPhysicsToMesh(licht2.getModel(), licht2.initRigidBody());
 
   /**
    * End loading Cube
