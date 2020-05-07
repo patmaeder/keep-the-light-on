@@ -288,6 +288,7 @@ const animate = async () => {
   let deltaTime = clock.getDelta();
 
   //GUI
+  //TODO collected Lights
   gui.updateCollectedLights(1);
   gui.updateTime(timer.Time);
   cube.move(getPlayerMovement(), physics.getPhysicsWorld());
