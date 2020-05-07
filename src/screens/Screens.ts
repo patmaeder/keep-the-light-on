@@ -28,11 +28,13 @@ export class Screens {
   }
 
   addButton(text, id, click) {
+    let p = document.createElement("P");
     let button = document.createElement("BUTTON");
     button.appendChild(document.createTextNode(text));
     button.id = id;
     button.onclick = click;
-    this.buttons.appendChild(button);
+    p.appendChild(button);
+    this.buttons.appendChild(p);
   }
 
   isVisible(): boolean {
