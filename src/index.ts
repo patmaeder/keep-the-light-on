@@ -69,7 +69,16 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
+
+  const onclick = () => {
+    new Sound();
+    window.removeEventListener("click", onclick);
+  };
+
+  window.addEventListener("click", onclick)
 };
+
+
 
 /**
  * Event handlers regarding mouse input to rotate the camera
@@ -271,7 +280,7 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  new Sound();
+  
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
