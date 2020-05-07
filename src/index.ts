@@ -9,6 +9,7 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
+import Sound from "./effects/Sound";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -68,7 +69,16 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
+
+  const onclick = () => {
+    new Sound();
+    window.removeEventListener("click", onclick);
+  };
+
+  window.addEventListener("click", onclick)
 };
+
+
 
 /**
  * Event handlers regarding mouse input to rotate the camera
@@ -270,6 +280,11 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
+
+
+
+
