@@ -22,6 +22,7 @@ export default class Cube {
     side: DoubleSide,
   });
 
+  private camera: Camera;
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
@@ -31,10 +32,14 @@ export default class Cube {
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
+
+    this.camera = camera;
     this.model = gltf.scene;
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = this.modelMaterial;
+        child.castShadow = true;
+        child.receiveShadow = true;
       }
     });
 
@@ -42,16 +47,91 @@ export default class Cube {
     console.log(this.model.position, this.model.scale);
 
     //create light to shine on environment and on cube
-    let pointLight1 = new PointLight(0xfffff, 30, 50);
-    pointLight1.position.set(this.pos.x, this.pos.y, this.pos.z);
-    //let pointLight2 = new PointLight(0xfffff, 30, 5);
-    //pointLight2.position.set(0, 2, 0);
+    //strong light
+    //Licht aus dem Würfel nach außen heraus
+    let pointLight0 = new PointLight(0xfffff, 5, 20);
+    pointLight0.position.set(0, 0, 0);
+    //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
+    let pointLight11 = new PointLight(0xfffff, 5, 3);
+    pointLight11.position.set(0, 0, 3);
+    let pointLight12 = new PointLight(0xfffff, 5, 3);
+    pointLight12.position.set(3, 0, 0);
+    let pointLight13 = new PointLight(0xfffff, 5, 3);
+    pointLight13.position.set(-3, 0, 0);
+    let pointLight14 = new PointLight(0xfffff, 5, 3);
+    pointLight14.position.set(0, 0, -3);
+    let pointLight15 = new PointLight(0xfffff, 5, 3);
+    pointLight15.position.set(0, 3, 0);
+    let pointLight16 = new PointLight(0xfffff, 5, 3);
+    pointLight16.position.set(0, -3, 0);
+
+    //medium light
+    //Licht aus dem Würfel nach außen heraus
+    /*let pointLight0 = new PointLight(0xfffff, 5, 20);
+    pointLight0.position.set(0, 0, 0);
+          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
+    let pointLight11 = new PointLight(0xfffff, 3, 3);
+    pointLight11.position.set(0, 0, 3);
+    let pointLight12 = new PointLight(0xfffff, 3, 3);
+    pointLight12.position.set(3, 0, 0);
+    let pointLight13 = new PointLight(0xfffff, 3, 3);
+    pointLight13.position.set(-3, 0, 0);
+    let pointLight14 = new PointLight(0xfffff, 3, 3);
+    pointLight14.position.set(0, 0, -3);
+    let pointLight15 = new PointLight(0xfffff, 3, 3);
+    pointLight15.position.set(0, 3, 0);
+    let pointLight16 = new PointLight(0xfffff, 3, 3);
+    pointLight16.position.set(0, -3, 0);*/
+
+    //gonna die light
+    //Licht aus dem Würfel nach außen heraus
+    /*let pointLight0 = new PointLight(0xfffff, 3, 12);
+    pointLight0.position.set(0, 0, 0);
+          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
+    let pointLight11 = new PointLight(0xfffff, 1, 3);
+    pointLight11.position.set(0, 0, 3);
+    let pointLight12 = new PointLight(0xfffff, 1, 3);
+    pointLight12.position.set(3, 0, 0);
+    let pointLight13 = new PointLight(0xfffff, 1, 3);
+    pointLight13.position.set(-3, 0, 0);
+    let pointLight14 = new PointLight(0xfffff, 1, 3);
+    pointLight14.position.set(0, 0, -3);
+    let pointLight15 = new PointLight(0xfffff, 1, 3);
+    pointLight15.position.set(0, 3, 0);
+    let pointLight16 = new PointLight(0xfffff, 1, 3);
+    pointLight16.position.set(0, -3, 0);*/
+
+    //gonna die light in a few secs light
+    //Licht aus dem Würfel nach außen heraus
+    /*let pointLight0 = new PointLight(0xfffff, 0.5, 12);
+    pointLight0.position.set(0, 0, 0);
+          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
+    let pointLight11 = new PointLight(0xfffff, 0.3, 3);
+    pointLight11.position.set(0, 0, 3);
+    let pointLight12 = new PointLight(0xfffff, 0.3, 3);
+    pointLight12.position.set(3, 0, 0);
+    let pointLight13 = new PointLight(0xfffff, 0.3, 3);
+    pointLight13.position.set(-3, 0, 0);
+    let pointLight14 = new PointLight(0xfffff, 0.3, 3);
+    pointLight14.position.set(0, 0, -3);
+    let pointLight15 = new PointLight(0xfffff, 0.3, 3);
+    pointLight15.position.set(0, 3, 0);
+    let pointLight16 = new PointLight(0xfffff, 0.3, 3);
+    pointLight16.position.set(0, -3, 0);*/
 
     //Camera + light moves/turns with model move
     const PivotPoint = new Object3D();
     this.model.add(PivotPoint);
-    PivotPoint.add(pointLight1);
-    //PivotPoint.add(pointLight2);
+    //Licht aus dem Würfel heraus
+    PivotPoint.add(pointLight0);
+    //Licht, das den Würfel anscheint
+    PivotPoint.add(pointLight11);
+    PivotPoint.add(pointLight12);
+    PivotPoint.add(pointLight13);
+    PivotPoint.add(pointLight14);
+    PivotPoint.add(pointLight15);
+    PivotPoint.add(pointLight16);
+
     PivotPoint.add(camera);
 
     return this;
@@ -78,18 +158,42 @@ export default class Cube {
       physicsWorld.rayTest(position, to, rayResult);
       console.log(
         "closest hit fraction is < 0.1",
-        rayResult.get_m_closestHitFraction() < 0.1
+        rayResult.get_m_closestHitFraction() < 0.1,
+        rayResult.get_m_closestHitFraction()
       );
 
       if (rayResult.get_m_closestHitFraction() < 0.1)
-        this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
+        this.rigidBody.applyCentralImpulse(
+          new Ammo.btVector3(0, this.mass / 2, 0)
+        );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
     changedAxes.setY(0);
-    changedAxes.op_mul(this.mass * 10);
 
-    this.rigidBody.applyCentralForce(changedAxes);
+    const vectorForward = this.camera.getWorldDirection(new Vector3());
+    // cross product will give us a vector that is orthogonal to the other vectors, thus pointing to the right
+    const vectorRight = this.camera.up.clone().cross(vectorForward);
+
+    vectorForward.normalize();
+    vectorRight.normalize();
+
+    if (changedAxes.x() !== 0) {
+      this.rigidBody.applyCentralForce(
+        new Ammo.btVector3(vectorRight.x, vectorRight.y, vectorRight.z).op_mul(
+          this.mass * 10 * -changedAxes.x()
+        )
+      );
+    }
+    if (changedAxes.z() !== 0) {
+      this.rigidBody.applyCentralForce(
+        new Ammo.btVector3(
+          vectorForward.x,
+          vectorForward.y,
+          vectorForward.z
+        ).op_mul(this.mass * 10 * -changedAxes.z())
+      );
+    }
   }
 
   initRigidBody(): Ammo.btRigidBody {
@@ -104,7 +208,7 @@ export default class Cube {
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
     );
-    colShape.setMargin(0.1);
+    //colShape.setMargin(0.1);
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);
@@ -117,7 +221,8 @@ export default class Cube {
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
-
+    this.rigidBody.setAngularFactor(new Ammo.btVector3(0, 1, 0));
+    this.rigidBody.setDamping(0.65, 1);
     return this.rigidBody;
   }
 }

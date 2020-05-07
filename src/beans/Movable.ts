@@ -1,5 +1,3 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -11,44 +9,33 @@ import {
   Object3D,
   Mesh,
   Material /*default as THREE,*/,
+  BufferGeometry,
+  Geometry,
+  Matrix4,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
-import Cube from "./Cube";
 
-export default class Light extends Cube {
+export default class Movable {
   //make model with three.js
   private modelMaterial: Material = new MeshPhongMaterial({
     color: 0xffffff,
     side: DoubleSide,
-    opacity: 0.7,
-    transparent: true,
   });
 
   private rigidBody: Ammo.btRigidBody;
-  private model: Object3D;
+  private model: Mesh;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 26, y: 28, z: -16 };
+  private pos = { x: 0, y: 0, z: 0 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
+
   private mass = 10;
 
-  async init(camera: Camera): Promise<Light> {
-    const gltf = await loadModel(modelModel);
-    this.model = gltf.scene;
-    this.model.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.material = this.modelMaterial;
-      }
-    });
-
+  async init(object: Mesh, pos): Promise<Object> {
+    this.model = object;
+    this.pos = pos;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
-    console.log(this.model.position, this.model.scale);
 
-    //create light to shine on environment and on cube
-    let pointLight1 = new PointLight(0xfffff, 30, 50);
-    pointLight1.position.set(this.pos.x, this.pos.y, this.pos.z);
-    //let pointLight2 = new PointLight(0xfffff, 30, 5);
-    //pointLight2.position.set(0, 2, 0);
     return this;
   }
 
@@ -57,6 +44,8 @@ export default class Light extends Cube {
   }
 
   initRigidBody(): Ammo.btRigidBody {
+    let geometry = <Geometry>this.model.geometry;
+
     let transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
@@ -65,10 +54,27 @@ export default class Light extends Cube {
     );
     let motionState = new Ammo.btDefaultMotionState(transform);
 
+    const scale = new Vector3(0, 0, 0).setFromMatrixScale(
+      new Matrix4().fromArray(this.model.matrixWorld.elements)
+    );
+
+    const shape = new Ammo.btTriangleMesh();
+
+    for (let face of geometry.faces) {
+      let a = geometry.vertices[face.a].clone().multiply(scale);
+      let b = geometry.vertices[face.b].clone().multiply(scale);
+      let c = geometry.vertices[face.c].clone().multiply(scale);
+
+      let va = new Ammo.btVector3(a.x, a.y, a.z);
+      let vb = new Ammo.btVector3(b.x, b.y, b.z);
+      let vc = new Ammo.btVector3(c.x, c.y, c.z);
+
+      shape.addTriangle(va, vb, vc, true);
+    }
+
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
     );
-    colShape.setMargin(0.1);
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);
@@ -81,7 +87,6 @@ export default class Light extends Cube {
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
-
     return this.rigidBody;
   }
 }

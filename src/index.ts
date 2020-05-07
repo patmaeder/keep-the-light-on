@@ -9,6 +9,7 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
+import Movable from "./beans/Movable";
 import Sound from "./effects/Sound";
 import GUI from "./GUI";
 
@@ -22,6 +23,8 @@ let cube: Cube;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
+let licht1;
+let licht2;
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -86,53 +89,52 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-    let previousValue: number;
-    let isPressed: boolean = false;
-    let angle: number = 0;
+  let previousValue: number;
+  let isPressed: boolean = false;
+  let angle: number = 0;
 
-    function setCameraPosition() {
-
-        document.addEventListener("mousemove", function getDifference (event: MouseEvent) {
-
-            if(isPressed) {
-                let difference = previousValue - event.clientX;
-                console.log("Differenz: " + difference)
-                previousValue = event.clientX;
-
-                if(difference < 0) {
-
-                    difference = difference*(-1);
-                    angle = angle + (Math.round(Math.sqrt(difference)))*(-1);
-
-                }else {
-
-                    angle = angle + Math.round(Math.sqrt(difference));
-                }
-
-                let radians = angle*(Math.PI/180);
-                let xValue = Math.sin(radians) * 20;
-                let zValue = Math.cos(radians) * 20;
-                console.log("Y-Wert: " + xValue, "X-Wert: "  + zValue);
-                camera.position.set(xValue, 4, zValue);
-                camera.lookAt(cube.getModel().position.x, (cube.getModel().position.y + 1), cube.getModel().position.z);
-                
-            }else{
-                document.removeEventListener("mousemove", getDifference)
-            }
-        })
-    }
-
-    document.addEventListener("mousedown", (event: MouseEvent) => {
+  function setCameraPosition() {
+    document.addEventListener("mousemove", function getDifference(
+      event: MouseEvent
+    ) {
+      if (isPressed) {
+        let difference = previousValue - event.clientX;
+        console.log("Differenz: " + difference);
         previousValue = event.clientX;
-        setCameraPosition(); 
-        isPressed = true;      
-    })
 
-    document.addEventListener("mouseup", (event: MouseEvent) => {
-        isPressed = false;
-    })
+        if (difference < 0) {
+          difference = difference * -1;
+          angle = angle + Math.round(Math.sqrt(difference)) * -1;
+        } else {
+          angle = angle + Math.round(Math.sqrt(difference));
+        }
 
-}
+        let radians = angle * (Math.PI / 180);
+        let xValue = Math.sin(radians) * 20;
+        let zValue = Math.cos(radians) * 20;
+        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
+        camera.position.set(xValue, 4, zValue);
+        camera.lookAt(
+          cube.getModel().position.x,
+          cube.getModel().position.y + 1,
+          cube.getModel().position.z
+        );
+      } else {
+        document.removeEventListener("mousemove", getDifference);
+      }
+    });
+  }
+
+  document.addEventListener("mousedown", (event: MouseEvent) => {
+    previousValue = event.clientX;
+    setCameraPosition();
+    isPressed = true;
+  });
+
+  document.addEventListener("mouseup", (event: MouseEvent) => {
+    isPressed = false;
+  });
+};
 
 /*
  * Initialize Lights
@@ -179,10 +181,18 @@ const setupGraphics = async () => {
    * Start loading Cube
    */
   cube = await new Cube().init(camera);
+  licht1 = new Cube;
+  licht2 = new Cube;
   //Add to Scene
   scene.add(cube.getModel());
+  //scene.add(licht1.getModel());
+  //scene.add(licht2.getModel());
+
   //Add to PhysicsWorld
   physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
+  //physics.addPhysicsToMesh(licht1.getModel(), licht1.initRigidBody());
+  //physics.addPhysicsToMesh(licht2.getModel(), licht2.initRigidBody());
+
   /**
    * End loading Cube
    */
@@ -206,6 +216,25 @@ const setupGraphics = async () => {
   /**
    * End loading Portal
    */
+
+  /**
+   * Start movable object
+   */
+  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var material = new THREE.MeshPhongMaterial({
+    refractionRatio: 0.92,
+    reflectivity: 0,
+    shininess: 30,
+    flatShading: true,
+  });
+  var box = new THREE.Mesh(geometry, material);
+  box.castShadow = true;
+  box.receiveShadow = true;
+  const movable = new Movable();
+  console.log(box);
+  await movable.init(box, { x: 26, y: 48, z: -20 });
+  scene.add(box);
+  physics.addPhysicsToMesh(box, movable.initRigidBody());
 };
 
 /**
