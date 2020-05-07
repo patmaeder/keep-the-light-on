@@ -48,10 +48,10 @@ export default class Cube {
 
     //create light to shine on environment and on cube
     //strong light
-      //Licht aus dem Würfel nach außen heraus
+    //Licht aus dem Würfel nach außen heraus
     let pointLight0 = new PointLight(0xfffff, 5, 20);
     pointLight0.position.set(0, 0, 0);
-      //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
+    //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
     let pointLight11 = new PointLight(0xfffff, 5, 3);
     pointLight11.position.set(0, 0, 3);
     let pointLight12 = new PointLight(0xfffff, 5, 3);
@@ -66,7 +66,7 @@ export default class Cube {
     pointLight16.position.set(0, -3, 0);
 
     //medium light
-          //Licht aus dem Würfel nach außen heraus
+    //Licht aus dem Würfel nach außen heraus
     /*let pointLight0 = new PointLight(0xfffff, 5, 20);
     pointLight0.position.set(0, 0, 0);
           //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
@@ -84,7 +84,7 @@ export default class Cube {
     pointLight16.position.set(0, -3, 0);*/
 
     //gonna die light
-          //Licht aus dem Würfel nach außen heraus
+    //Licht aus dem Würfel nach außen heraus
     /*let pointLight0 = new PointLight(0xfffff, 3, 12);
     pointLight0.position.set(0, 0, 0);
           //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
@@ -102,7 +102,7 @@ export default class Cube {
     pointLight16.position.set(0, -3, 0);*/
 
     //gonna die light in a few secs light
-          //Licht aus dem Würfel nach außen heraus
+    //Licht aus dem Würfel nach außen heraus
     /*let pointLight0 = new PointLight(0xfffff, 0.5, 12);
     pointLight0.position.set(0, 0, 0);
           //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
@@ -222,7 +222,7 @@ export default class Cube {
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
     this.rigidBody.setAngularFactor(new Ammo.btVector3(0, 1, 0));
-    this.rigidBody.setDamping(0, 0.9);
+    this.rigidBody.setDamping(0.65, 1);
     return this.rigidBody;
   }
 }
