@@ -22,6 +22,7 @@ export default class Cube {
     side: DoubleSide,
   });
 
+  private camera: Camera;
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
@@ -31,10 +32,14 @@ export default class Cube {
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
+
+    this.camera = camera;
     this.model = gltf.scene;
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
         child.material = this.modelMaterial;
+        child.castShadow = true;
+        child.receiveShadow = true;
       }
     });
 
@@ -153,18 +158,42 @@ export default class Cube {
       physicsWorld.rayTest(position, to, rayResult);
       console.log(
         "closest hit fraction is < 0.1",
-        rayResult.get_m_closestHitFraction() < 0.1
+        rayResult.get_m_closestHitFraction() < 0.1,
+        rayResult.get_m_closestHitFraction()
       );
 
       if (rayResult.get_m_closestHitFraction() < 0.1)
-        this.rigidBody.applyCentralImpulse(new Ammo.btVector3(0, this.mass, 0));
+        this.rigidBody.applyCentralImpulse(
+          new Ammo.btVector3(0, this.mass / 2, 0)
+        );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
     changedAxes.setY(0);
-    changedAxes.op_mul(this.mass * 10);
 
-    this.rigidBody.applyCentralForce(changedAxes);
+    const vectorForward = this.camera.getWorldDirection(new Vector3());
+    // cross product will give us a vector that is orthogonal to the other vectors, thus pointing to the right
+    const vectorRight = this.camera.up.clone().cross(vectorForward);
+
+    vectorForward.normalize();
+    vectorRight.normalize();
+
+    if (changedAxes.x() !== 0) {
+      this.rigidBody.applyCentralForce(
+        new Ammo.btVector3(vectorRight.x, vectorRight.y, vectorRight.z).op_mul(
+          this.mass * 10 * -changedAxes.x()
+        )
+      );
+    }
+    if (changedAxes.z() !== 0) {
+      this.rigidBody.applyCentralForce(
+        new Ammo.btVector3(
+          vectorForward.x,
+          vectorForward.y,
+          vectorForward.z
+        ).op_mul(this.mass * 10 * -changedAxes.z())
+      );
+    }
   }
 
   initRigidBody(): Ammo.btRigidBody {
@@ -179,7 +208,7 @@ export default class Cube {
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
     );
-    colShape.setMargin(0.1);
+    //colShape.setMargin(0.1);
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);
@@ -192,7 +221,8 @@ export default class Cube {
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
-
+    this.rigidBody.setAngularFactor(new Ammo.btVector3(0, 1, 0));
+    this.rigidBody.setDamping(0, 0.9);
     return this.rigidBody;
   }
 }

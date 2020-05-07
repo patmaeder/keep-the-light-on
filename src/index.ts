@@ -9,6 +9,7 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
+import Movable from "./beans/Movable";
 import Sound from "./effects/Sound";
 
 let physics: PhysicsHandler;
@@ -86,53 +87,52 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-    let previousValue: number;
-    let isPressed: boolean = false;
-    let angle: number = 0;
+  let previousValue: number;
+  let isPressed: boolean = false;
+  let angle: number = 0;
 
-    function setCameraPosition() {
-
-        document.addEventListener("mousemove", function getDifference (event: MouseEvent) {
-
-            if(isPressed) {
-                let difference = previousValue - event.clientX;
-                console.log("Differenz: " + difference)
-                previousValue = event.clientX;
-
-                if(difference < 0) {
-
-                    difference = difference*(-1);
-                    angle = angle + (Math.round(Math.sqrt(difference)))*(-1);
-
-                }else {
-
-                    angle = angle + Math.round(Math.sqrt(difference));
-                }
-
-                let radians = angle*(Math.PI/180);
-                let xValue = Math.sin(radians) * 20;
-                let zValue = Math.cos(radians) * 20;
-                console.log("Y-Wert: " + xValue, "X-Wert: "  + zValue);
-                camera.position.set(xValue, 4, zValue);
-                camera.lookAt(cube.getModel().position.x, (cube.getModel().position.y + 1), cube.getModel().position.z);
-                
-            }else{
-                document.removeEventListener("mousemove", getDifference)
-            }
-        })
-    }
-
-    document.addEventListener("mousedown", (event: MouseEvent) => {
+  function setCameraPosition() {
+    document.addEventListener("mousemove", function getDifference(
+      event: MouseEvent
+    ) {
+      if (isPressed) {
+        let difference = previousValue - event.clientX;
+        console.log("Differenz: " + difference);
         previousValue = event.clientX;
-        setCameraPosition(); 
-        isPressed = true;      
-    })
 
-    document.addEventListener("mouseup", (event: MouseEvent) => {
-        isPressed = false;
-    })
+        if (difference < 0) {
+          difference = difference * -1;
+          angle = angle + Math.round(Math.sqrt(difference)) * -1;
+        } else {
+          angle = angle + Math.round(Math.sqrt(difference));
+        }
 
-}
+        let radians = angle * (Math.PI / 180);
+        let xValue = Math.sin(radians) * 20;
+        let zValue = Math.cos(radians) * 20;
+        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
+        camera.position.set(xValue, 4, zValue);
+        camera.lookAt(
+          cube.getModel().position.x,
+          cube.getModel().position.y + 1,
+          cube.getModel().position.z
+        );
+      } else {
+        document.removeEventListener("mousemove", getDifference);
+      }
+    });
+  }
+
+  document.addEventListener("mousedown", (event: MouseEvent) => {
+    previousValue = event.clientX;
+    setCameraPosition();
+    isPressed = true;
+  });
+
+  document.addEventListener("mouseup", (event: MouseEvent) => {
+    isPressed = false;
+  });
+};
 
 /*
  * Initialize Lights
@@ -214,6 +214,25 @@ const setupGraphics = async () => {
   /**
    * End loading Portal
    */
+
+  /**
+   * Start movable object
+   */
+  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var material = new THREE.MeshPhongMaterial({
+    refractionRatio: 0.92,
+    reflectivity: 0,
+    shininess: 30,
+    flatShading: true,
+  });
+  var box = new THREE.Mesh(geometry, material);
+  box.castShadow = true;
+  box.receiveShadow = true;
+  const movable = new Movable();
+  console.log(box);
+  await movable.init(box, { x: 26, y: 48, z: -20 });
+  scene.add(box);
+  physics.addPhysicsToMesh(box, movable.initRigidBody());
 };
 
 /**
