@@ -1,11 +1,11 @@
 import {loadModel} from "../Loader";
 import portalModel from "../../assets/portal/portal.glb";
 import * as THREE from "three";
-import {Object3D} from "three";
+import {Object3D, Vector3} from "three";
 
 export default class Portal{
-    private scale = { x: 0, y: 2.5, z: 3 };
-    private _pos = { x: 0.58, y: 0.7, z: -21 };
+    private scale = { x: 0, y:5, z: 6 };
+    private _pos = { x:13, y: 2, z: -43 };
 
     private model: Object3D;
     async init(): Promise<Portal> {
@@ -13,6 +13,7 @@ export default class Portal{
         this.model = gltf.scene;
         this.model.scale.set(this.scale.x,this.scale.y,this.scale.z);
         this.model.position.set(this._pos.x,this._pos.y,this._pos.z);
+        this.model.rotateOnAxis(new Vector3(0, 1, 0), Math.PI);
         this.setupLights();
         return this;
     }
