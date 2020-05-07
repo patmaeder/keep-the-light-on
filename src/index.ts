@@ -10,6 +10,7 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Sound from "./effects/Sound";
+import GUI from "./GUI";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -72,6 +73,7 @@ const setupEventListeners = () => {
 
   const onclick = () => {
     new Sound();
+    new GUI();
     window.removeEventListener("click", onclick);
   };
 
