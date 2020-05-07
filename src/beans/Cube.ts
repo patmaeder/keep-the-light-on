@@ -1,5 +1,5 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
+import { loadModelObj } from "../Loader";
+import modelModel from "../../assets/models/cube/Cuby.obj";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -30,7 +30,7 @@ export default class Cube {
   private mass = 10;
 
   async init(camera: Camera): Promise<Cube> {
-    const gltf = await loadModel(modelModel);
+    const gltf = await loadModelObj(modelModel);
     this.model = gltf.scene;
     this.model.traverse((child) => {
       if (child instanceof Mesh) {
