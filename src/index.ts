@@ -10,6 +10,7 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
+import Sound from "./effects/Sound";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -21,6 +22,8 @@ let cube: Cube;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
+let licht1;
+let licht2;
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -69,7 +72,16 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
+
+  const onclick = () => {
+    new Sound();
+    window.removeEventListener("click", onclick);
+  };
+
+  window.addEventListener("click", onclick)
 };
+
+
 
 /**
  * Event handlers regarding mouse input to rotate the camera
@@ -167,10 +179,18 @@ const setupGraphics = async () => {
    * Start loading Cube
    */
   cube = await new Cube().init(camera);
+  licht1 = new Cube;
+  licht2 = new Cube;
   //Add to Scene
   scene.add(cube.getModel());
+  //scene.add(licht1.getModel());
+  //scene.add(licht2.getModel());
+
   //Add to PhysicsWorld
   physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
+  //physics.addPhysicsToMesh(licht1.getModel(), licht1.initRigidBody());
+  //physics.addPhysicsToMesh(licht2.getModel(), licht2.initRigidBody());
+
   /**
    * End loading Cube
    */
@@ -289,6 +309,11 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
+
+
+
+
