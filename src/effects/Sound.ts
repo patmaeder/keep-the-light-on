@@ -1,6 +1,7 @@
 export default class Sound {
     constructor(){
-        this.init
+        this.init()
+
     }
     init() {
         const audio = document.querySelector("audio");
