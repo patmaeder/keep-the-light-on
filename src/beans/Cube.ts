@@ -44,7 +44,7 @@ export default class Cube {
     //create light to shine on environment and on cube
     //strong light
       //Licht aus dem Würfel nach außen heraus
-    let pointLight0 = new PointLight(0xfffff, 5, 40);
+    let pointLight0 = new PointLight(0xfffff, 5, 20);
     pointLight0.position.set(0, 0, 0);
       //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
     let pointLight11 = new PointLight(0xfffff, 5, 3);
