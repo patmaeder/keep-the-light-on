@@ -75,7 +75,6 @@ export default class Movable {
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
     );
-    colShape.setMargin(0.0);
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);

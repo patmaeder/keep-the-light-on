@@ -199,8 +199,15 @@ const setupGraphics = async () => {
    * Start movable object
    */
   var geometry = new THREE.BoxGeometry(1, 1, 1);
-  var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  var material = new THREE.MeshPhongMaterial({
+    refractionRatio: 0.92,
+    reflectivity: 0,
+    shininess: 30,
+    flatShading: true,
+  });
   var box = new THREE.Mesh(geometry, material);
+  box.castShadow = true;
+  box.receiveShadow = true;
   const movable = new Movable();
   console.log(box);
   await movable.init(box, { x: 26, y: 48, z: -20 });
