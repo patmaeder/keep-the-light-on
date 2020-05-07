@@ -2,7 +2,9 @@ export default class GUI{
     protected gui = document.createElement("DIV");
     protected head = document.createElement("DIV");
     private collectedLights: number = 0;
-    private light: number = 80;
+    private light: number = 100;
+    private time;
+    private lightCount;
 
     constructor() {
         this.gui.id = "gui";
@@ -19,22 +21,22 @@ export default class GUI{
     }
 
     private setupCollectedLights() {
-        let lightCount = document.createElement("H2");
-        lightCount.id = "lightCount";
-        lightCount.innerHTML = this.collectedLights + " &#11044;";
-        this.head.appendChild(lightCount);
+        this.lightCount = document.createElement("H2");
+        this.lightCount.id = "lightCount";
+        this.lightCount.innerHTML = this.collectedLights + " &#11044;";
+        this.head.appendChild(this.lightCount);
     }
 
     private setupTime(){
-        let time = document.createElement("H2");
-        time.id = "time";
-        time.innerHTML = '<svg width="100%" height="43">' +
+        this.time = document.createElement("H2");
+        this.time.id = "time";
+        this.time.innerHTML = '<svg width="100%" height="43">' +
             '  <rect x="0" y="0" width="100%" height="43" rx="5" ry="5"' +
             '  style="fill:white;border-radius:10px;opacity:0.5" />' +
             ' <rect x="0" y="0" width="' + this.light + '%" height="43" rx="5" ry="5"' +
             '  style="fill:white;border-radius:10px;" />' +
             '</svg>';
-        this.head.appendChild(time);
+        this.head.appendChild(this.time);
         this.setupLeft();
     }
 
@@ -45,10 +47,20 @@ export default class GUI{
     }
 
     public updateCollectedLights(collectedLights: number){
-        this.collectedLights = collectedLights
+        this.collectedLights = collectedLights;
+        //TODO Make it better for performance
+        this.lightCount.innerHTML = this.collectedLights + " &#11044;";
+
     }
 
     public updateTime(time: number){
         this.light = time;
+        //TODO Make it better for performance
+        this.time.innerHTML = '<svg width="100%" height="43">' +
+            '  <rect x="0" y="0" width="100%" height="43" rx="5" ry="5"' +
+            '  style="fill:white;border-radius:10px;opacity:0.5" />' +
+            ' <rect x="0" y="0" width="' + this.light + '%" height="43" rx="5" ry="5"' +
+            '  style="fill:white;border-radius:10px;" />' +
+            '</svg>';
     }
 }
