@@ -25,6 +25,7 @@ let portalTexture;
 let portal: Portal;
 let licht1;
 let licht2;
+let gui: GUI;
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -76,7 +77,6 @@ const setupEventListeners = () => {
 
   const onclick = () => {
     new Sound();
-    new GUI();
     window.removeEventListener("click", onclick);
   };
 
@@ -158,7 +158,7 @@ const setupLights = (scene: THREE.Scene) => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
-  //TODO music class creation
+  gui = new GUI();
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom);
 
@@ -220,14 +220,14 @@ const setupGraphics = async () => {
   /**
    * Start movable object
    */
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
-  var material = new THREE.MeshPhongMaterial({
+  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let material = new THREE.MeshPhongMaterial({
     refractionRatio: 0.92,
     reflectivity: 0,
     shininess: 30,
     flatShading: true,
   });
-  var box = new THREE.Mesh(geometry, material);
+  let box = new THREE.Mesh(geometry, material);
   box.castShadow = true;
   box.receiveShadow = true;
   const movable = new Movable();
@@ -287,6 +287,9 @@ const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
 
+  //GUI
+  gui.updateCollectedLights(1);
+  gui.updateTime(timer.Time);
   cube.move(getPlayerMovement(), physics.getPhysicsWorld());
 
   physics.updatePhysics(deltaTime);
@@ -311,7 +314,9 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  
+  //Init Timer
+  timer = new Timer();
+  timer.start(100);
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
