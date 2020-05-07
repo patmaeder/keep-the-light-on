@@ -9,6 +9,7 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
+import Sound from "./effects/Sound";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -270,6 +271,11 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  new Sound();
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   animate();
 }
+
+
+
+
