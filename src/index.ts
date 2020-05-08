@@ -10,8 +10,9 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
-import Sound from "./effects/Sound";
+import Sound, {toggleBackgroundMusic} from "./effects/Sound";
 import GUI from "./GUI";
+import {StartScreen} from "./screens/StartScreen";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -55,12 +56,6 @@ const setupInputHandler = () => {
  * Event handlers regarding single-time events
  */
 const setupEventListeners = () => {
-  window.addEventListener("keydown", ({ key }) => {
-    if (key === Key.Escape) {
-      pause.switchVisibleStatus();
-    }
-  });
-
   window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -75,12 +70,6 @@ const setupEventListeners = () => {
     if (!pause.isVisible()) event.preventDefault();
   });
 
-  const onclick = () => {
-    new Sound();
-    window.removeEventListener("click", onclick);
-  };
-
-  window.addEventListener("click", onclick)
 };
 
 
@@ -158,7 +147,6 @@ const setupLights = (scene: THREE.Scene) => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
-  gui = new GUI();
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom);
 
@@ -304,6 +292,37 @@ const animate = async () => {
 };
 
 /**
+ * Startscreen
+ */
+const setupStartScreen = () => {
+  let test = new StartScreen;
+  test.addButton("start","start", () => {
+    //Init Timer
+    timer = new Timer();
+    timer.start(100);
+    //init GUI
+    gui = new GUI();
+    //toggle sound on
+    //TODO make sound class able to put this in start()
+    toggleBackgroundMusic();
+    //Start game
+    animate();
+    //hide main menu
+    test.switchVisibleStatus();
+
+    //Start Break Menu Event Listener
+    window.addEventListener("keydown", ({ key }) => {
+      if (key === Key.Escape) {
+        pause.switchVisibleStatus();
+      }
+    });
+
+  });
+  test.initButtons();
+  test.switchVisibleStatus();
+};
+
+/**
  * Async application start
  */
 Ammo(Ammo).then(start);
@@ -315,11 +334,8 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  //Init Timer
-  timer = new Timer();
-  timer.start(100);
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
-  animate();
+  setupStartScreen();
 }
 
 
