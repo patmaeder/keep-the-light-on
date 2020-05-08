@@ -3,12 +3,21 @@ export class Screens {
   private buttons = document.createElement("DIV");
   protected visible: boolean = false;
 
-  constructor(title: string) {
+  constructor(title: string, imgUrl?: string) {
     this.screen.id = "screen";
     this.buttons.id = "menu";
+    if(imgUrl){
+      this.setImage(imgUrl);
+    }
     this.setTitle(title);
     this.screen.appendChild(this.buttons);
     document.body.appendChild(this.screen);
+  }
+
+  private setImage(imgUrl){
+    let image = document.createElement("IMG");
+    image.setAttribute("src", imgUrl);
+    this.screen.appendChild(image);
   }
 
   private setTitle(title) {

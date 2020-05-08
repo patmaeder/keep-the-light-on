@@ -13,5 +13,9 @@ export class BreakScreen extends Screens{
         super.addButton("toggle sound","resume", () => {
             toggleBackgroundMusic();
         });
+        super.addButton("main menu","backToMain", () => {
+            location.reload();
+        });
+
     }
 }

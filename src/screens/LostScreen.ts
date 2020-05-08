@@ -14,5 +14,8 @@ export class LostScreen extends Screens{
         super.addButton("toggle sound","resume", () => {
             toggleBackgroundMusic();
         });
+        super.addButton("Main Menu","backToMain", () => {
+            location.reload();
+        });
     }
 }
