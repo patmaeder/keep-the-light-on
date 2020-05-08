@@ -10,7 +10,7 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
-import Sound from "./effects/Sound";
+import Sound, {toggleBackgroundMusic} from "./effects/Sound";
 import GUI from "./GUI";
 import {StartScreen} from "./screens/StartScreen";
 
@@ -56,12 +56,6 @@ const setupInputHandler = () => {
  * Event handlers regarding single-time events
  */
 const setupEventListeners = () => {
-  window.addEventListener("keydown", ({ key }) => {
-    if (key === Key.Escape) {
-      pause.switchVisibleStatus();
-    }
-  });
-
   window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -302,15 +296,27 @@ const animate = async () => {
  */
 const setupStartScreen = () => {
   let test = new StartScreen;
-  //Init Timer
   test.addButton("start","start", () => {
+    //Init Timer
     timer = new Timer();
     timer.start(100);
+    //init GUI
     gui = new GUI();
-    //TODO Sound before Game Starts
-    new Sound();
+    //toggle sound on
+    //TODO make sound class able to put this in start()
+    toggleBackgroundMusic();
+    //Start game
     animate();
+    //hide main menu
     test.switchVisibleStatus();
+
+    //Start Break Menu Event Listener
+    window.addEventListener("keydown", ({ key }) => {
+      if (key === Key.Escape) {
+        pause.switchVisibleStatus();
+      }
+    });
+
   });
   test.initButtons();
   test.switchVisibleStatus();
