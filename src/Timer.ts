@@ -1,3 +1,5 @@
+import {LostScreen} from "./screens/LostScreen";
+
 export default class Timer {
 
     private remainingTime: number;
@@ -11,6 +13,7 @@ export default class Timer {
             this.remainingTime = this.remainingTime - 1;
             if(this.remainingTime === 0) {
                 clearInterval(this.countdown);
+                new LostScreen();
                 //Spiel beenden (PlayerMovement anhalten) + Ausgabe LostScreen 
             }
         },1000);
@@ -26,5 +29,8 @@ export default class Timer {
 
     resume() {
         this.start(this.remainingTime);
+    }
+    get Time(){
+        return this.remainingTime;
     }
 }

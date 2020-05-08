@@ -1,5 +1,4 @@
 import {Screens} from "./Screens";
-import { timer } from "..";
 import {toggleBackgroundMusic} from "../effects/Sound";
 
 export class BreakScreen extends Screens{

@@ -17,14 +17,15 @@
     width: 20%;
     text-align: right;
     font-size: xx-large;
-    padding: 10px;
 }
+
 #time {
     color: white;
     float: right;
     width: 60%;
     font-size: xx-large;
 }
+
 #left {
     color: white;
     float: right;
