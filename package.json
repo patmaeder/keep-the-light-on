@@ -1,7 +1,7 @@
 {
-  "name": "adventure-game",
+  "name": "keep-the-light-on",
   "version": "1.0.0",
-  "description": "adventure-game",
+  "description": "Keep the light on - a game brought to you by Cuby",
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
