@@ -1,7 +1,17 @@
+const backgroundMusic = document.querySelector("audio");
+
 export default class Sound {
-    init() {
-        const audio = document.querySelector("audio");
-        audio.volume = 0.2;
-        audio.play();
+    constructor(){
+        this.init()
+
     }
+    init() {
+        backgroundMusic.volume = 0.2;
+        backgroundMusic.loop = true;
+        toggleBackgroundMusic()
+    }
+} 
+
+export function toggleBackgroundMusic() {
+    return backgroundMusic.paused ? backgroundMusic.play() : backgroundMusic.pause();
 }

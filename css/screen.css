@@ -22,6 +22,8 @@
 
 #screen #menu {
      margin-top: 5vh;
+     display: block;
+     text-align: center;
 }
 
 #screen #menu button {
@@ -32,4 +34,5 @@
      border: 2px solid white;
      text-transform: uppercase;
      cursor: pointer;
+     width: 15%;
 }

@@ -9,6 +9,10 @@ import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
+import Movable from "./beans/Movable";
+import Sound, {toggleBackgroundMusic} from "./effects/Sound";
+import GUI from "./GUI";
+import {StartScreen} from "./screens/StartScreen";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -22,6 +26,7 @@ let portalTexture;
 let portal: Portal;
 let licht1: Cube;
 let licht2: Cube;
+let gui: GUI;
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -51,12 +56,6 @@ const setupInputHandler = () => {
  * Event handlers regarding single-time events
  */
 const setupEventListeners = () => {
-  window.addEventListener("keydown", ({ key }) => {
-    if (key === Key.Escape) {
-      pause.switchVisibleStatus();
-    }
-  });
-
   window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -70,59 +69,61 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
+
 };
+
+
 
 /**
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-    let previousValue: number;
-    let isPressed: boolean = false;
-    let angle: number = 0;
+  let previousValue: number;
+  let isPressed: boolean = false;
+  let angle: number = 0;
 
-    function setCameraPosition() {
-
-        document.addEventListener("mousemove", function getDifference (event: MouseEvent) {
-
-            if(isPressed) {
-                let difference = previousValue - event.clientX;
-                console.log("Differenz: " + difference)
-                previousValue = event.clientX;
-
-                if(difference < 0) {
-
-                    difference = difference*(-1);
-                    angle = angle + (Math.round(Math.sqrt(difference)))*(-1);
-
-                }else {
-
-                    angle = angle + Math.round(Math.sqrt(difference));
-                }
-
-                let radians = angle*(Math.PI/180);
-                let xValue = Math.sin(radians) * 20;
-                let zValue = Math.cos(radians) * 20;
-                console.log("Y-Wert: " + xValue, "X-Wert: "  + zValue);
-                camera.position.set(xValue, 4, zValue);
-                camera.lookAt(cube.getModel().position.x, (cube.getModel().position.y + 1), cube.getModel().position.z);
-                
-            }else{
-                document.removeEventListener("mousemove", getDifference)
-            }
-        })
-    }
-
-    document.addEventListener("mousedown", (event: MouseEvent) => {
+  function setCameraPosition() {
+    document.addEventListener("mousemove", function getDifference(
+      event: MouseEvent
+    ) {
+      if (isPressed) {
+        let difference = previousValue - event.clientX;
+        console.log("Differenz: " + difference);
         previousValue = event.clientX;
-        setCameraPosition(); 
-        isPressed = true;      
-    })
 
-    document.addEventListener("mouseup", (event: MouseEvent) => {
-        isPressed = false;
-    })
+        if (difference < 0) {
+          difference = difference * -1;
+          angle = angle + Math.round(Math.sqrt(difference)) * -1;
+        } else {
+          angle = angle + Math.round(Math.sqrt(difference));
+        }
 
-}
+        let radians = angle * (Math.PI / 180);
+        let xValue = Math.sin(radians) * 20;
+        let zValue = Math.cos(radians) * 20;
+        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
+        camera.position.set(xValue, 4, zValue);
+        camera.lookAt(
+          cube.getModel().position.x,
+          cube.getModel().position.y + 1,
+          cube.getModel().position.z
+        );
+      } else {
+        document.removeEventListener("mousemove", getDifference);
+      }
+    });
+  }
+
+  document.addEventListener("mousedown", (event: MouseEvent) => {
+    previousValue = event.clientX;
+    setCameraPosition();
+    isPressed = true;
+  });
+
+  document.addEventListener("mouseup", (event: MouseEvent) => {
+    isPressed = false;
+  });
+};
 
 /*
  * Initialize Lights
@@ -146,7 +147,6 @@ const setupLights = (scene: THREE.Scene) => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
-  //TODO music class creation
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom);
 
@@ -204,6 +204,25 @@ const setupGraphics = async () => {
   /**
    * End loading Portal
    */
+
+  /**
+   * Start movable object
+   */
+  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let material = new THREE.MeshPhongMaterial({
+    refractionRatio: 0.92,
+    reflectivity: 0,
+    shininess: 30,
+    flatShading: true,
+  });
+  let box = new THREE.Mesh(geometry, material);
+  box.castShadow = true;
+  box.receiveShadow = true;
+  const movable = new Movable();
+  console.log(box);
+  await movable.init(box, { x: 26, y: 48, z: -20 });
+  scene.add(box);
+  physics.addPhysicsToMesh(box, movable.initRigidBody());
 };
 
 /**
@@ -256,6 +275,10 @@ const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
 
+  //GUI
+  //TODO collected Lights
+  gui.updateCollectedLights(1);
+  gui.updateTime(timer.Time);
   cube.move(getPlayerMovement(), physics.getPhysicsWorld());
 
   physics.updatePhysics(deltaTime);
@@ -266,6 +289,37 @@ const animate = async () => {
   requestAnimationFrame(animate);
 
   stats.end();
+};
+
+/**
+ * Startscreen
+ */
+const setupStartScreen = () => {
+  let test = new StartScreen;
+  test.addButton("start","start", () => {
+    //Init Timer
+    timer = new Timer();
+    timer.start(100);
+    //init GUI
+    gui = new GUI();
+    //toggle sound on
+    //TODO make sound class able to put this in start()
+    toggleBackgroundMusic();
+    //Start game
+    animate();
+    //hide main menu
+    test.switchVisibleStatus();
+
+    //Start Break Menu Event Listener
+    window.addEventListener("keydown", ({ key }) => {
+      if (key === Key.Escape) {
+        pause.switchVisibleStatus();
+      }
+    });
+
+  });
+  test.initButtons();
+  test.switchVisibleStatus();
 };
 
 /**
@@ -281,5 +335,9 @@ async function start() {
   setupInputHandler();
   await setupGraphics();
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
-  animate();
+  setupStartScreen();
 }
+
+
+
+
