@@ -1,5 +1,3 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -11,77 +9,91 @@ import {
   Object3D,
   Mesh,
   Material /*default as THREE,*/,
+  BufferGeometry,
+  Geometry,
+  Matrix4,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
-import Cube from "./Cube";
 
-export default class Light extends Cube {
+export default class Light {
   //make model with three.js
-  private modelMaterialLight: Material = new MeshPhongMaterial({
-    color: 0xffffff,
-    side: DoubleSide,
-    opacity: 0.7,
+  private modelMaterial: Material = new MeshPhongMaterial({
+    opacity: 0.3,
     transparent: true,
+    color: 0xffff,
+    side: DoubleSide,
   });
 
-  private rigidBodyLight: Ammo.btRigidBody;
-  private modelLight: Object3D;
-  private scaleLight = { x: 1, y: 1, z: 1 };
-  private posL = { x: 20, y: 28, z: -16 };
-  private quatL = { x: 0, y: 0, z: 0, w: 1 };
-  private massL = 11;
+  private rigidBody: Ammo.btRigidBody;
+  private model: Mesh;
+  private light: PointLight;
+  private scale = {x: 1, y: 1, z: 1};
+  private pos = {x: 1, y: 0, z: 0};
+  private quat = {x: 0, y: 0, z: 0, w: 1};
+  private mass = 10;
 
-  async inits(): Promise<Light> {
-    const gltf = await loadModel(modelModel);
-    this.modelLight = gltf.scene;
-    this.modelLight.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.material = this.modelMaterialLight;
-      }
-    });
-
-    this.modelLight.scale.set(this.scaleLight.x, this.scaleLight.y, this.scaleLight.z);
-    console.log(this.modelLight.position, this.modelLight.scale);
-
-    //create light to shine on environment and on cube
-    let pointLight1 = new PointLight(0xfffff, 30, 50);
-    pointLight1.position.set(this.posL.x, this.posL.y, this.posL.z);
-    //let pointLight2 = new PointLight(0xfffff, 30, 5);
-    //pointLight2.position.set(0, 2, 0);
+  async init(object: Mesh, pos, light): Promise<Object> {
+    this.light=light;
+    this.model = object;
+    this.pos = pos;
+    this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
+    light.position.set(0, 0, 0);
+    const PivotPoint = new Object3D();
+    PivotPoint.add(light);
+    this.model.add(PivotPoint);
+    //Licht aus dem Würfel heraus
     return this;
   }
 
   getModel(): Object3D {
-    return this.modelLight;
+    return this.model;
   }
 
   initRigidBody(): Ammo.btRigidBody {
+    let geometry = <Geometry>this.model.geometry;
+
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.posL.x, this.posL.y, this.posL.z));
+    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
     transform.setRotation(
-      new Ammo.btQuaternion(this.quatL.x, this.quatL.y, this.quatL.z, this.quatL.w)
+        new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
     let motionState = new Ammo.btDefaultMotionState(transform);
 
-    let colShape = new Ammo.btBoxShape(
-      new Ammo.btVector3(this.scaleLight.x, this.scaleLight.y, this.scaleLight.z)
+    const scale = new Vector3(0, 0, 0).setFromMatrixScale(
+        new Matrix4().fromArray(this.model.matrixWorld.elements)
     );
-    colShape.setMargin(0.1);
+
+    const shape = new Ammo.btTriangleMesh();
+
+    for (let face of geometry.faces) {
+      let a = geometry.vertices[face.a].clone().multiply(scale);
+      let b = geometry.vertices[face.b].clone().multiply(scale);
+      let c = geometry.vertices[face.c].clone().multiply(scale);
+
+      let va = new Ammo.btVector3(a.x, a.y, a.z);
+      let vb = new Ammo.btVector3(b.x, b.y, b.z);
+      let vc = new Ammo.btVector3(c.x, c.y, c.z);
+
+      shape.addTriangle(va, vb, vc, true);
+    }
+
+    let colShape = new Ammo.btBoxShape(
+        new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
+    );
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
-    colShape.calculateLocalInertia(this.massL, localInertia);
+    colShape.calculateLocalInertia(this.mass, localInertia);
 
     let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-      this.massL,
-      motionState,
-      colShape,
-      localInertia
+        this.mass,
+        motionState,
+        colShape,
+        localInertia
     );
 
-    this.rigidBodyLight = new Ammo.btRigidBody(rbInfo);
-
-    return this.rigidBodyLight;
+    this.rigidBody = new Ammo.btRigidBody(rbInfo);
+    return this.rigidBody;
   }
 }

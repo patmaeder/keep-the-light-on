@@ -12,7 +12,10 @@ import Timer from "./Timer";
 import Movable from "./beans/Movable";
 import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
-import { StartScreen } from "./screens/StartScreen";
+import {StartScreen} from "./screens/StartScreen";
+import Light from "./beans/Light";
+import {Object3D, PointLight} from "three";
+import {DoubleSide} from "three";
 
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
@@ -26,11 +29,20 @@ let world: World;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
-let licht1: Cube;
-let licht2: Cube;
 let gui: GUI;
 let debugDrawer = new DebugDrawer();
-
+let posArr= [
+    {x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605},
+    {x: 22, y: 48, z: -20},
+    {x: 26.181129455566406, y: 17.419992446899414, z: -10.475132942199707},
+    {x: 51.5322151184082, y: 17.419994354248047, z: -3.3070199489593506},
+    {x: 12.259516716003418, y: 17.419992446899414, z: -40.222694396972656},
+    {x: 40.884971618652344, y: 12.319998741149902, z: -63.711273193359375},
+    {x: 66.48548889160156, y: 15.548307418823242, z: -75.95284271240234},
+    {x: 59.88838195800781, y: 1.339999794960022, z: -98.68903350830078},
+    {x: 160.81817626953125, y: 1.339999794960022, z: -99.19303894042969},
+    {x: 20.437543869018555, y: 1.3399999141693115, z: -95.42516326904297}
+    ];
 let pause = new BreakScreen();
 export let timer: Timer;
 
@@ -155,14 +167,14 @@ const setupGraphics = async () => {
   scene = new THREE.Scene();
   setupLights(scene);
   camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.5,
-    10000
+      45,
+      window.innerWidth / window.innerHeight,
+      0.5,
+      10000
   );
   camera.position.set(0, 4, 20);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
@@ -171,17 +183,12 @@ const setupGraphics = async () => {
    * Start loading Cube
    */
   cube = await new Cube().init(camera);
-  licht1 = new Cube();
-  licht2 = new Cube();
+
   //Add to Scene
   scene.add(cube.getModel());
-  scene.add(licht1.getModel());
-  scene.add(licht2.getModel());
 
   //Add to PhysicsWorld
   physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
-  physics.addPhysicsToMesh(licht1.getModel(), licht1.initRigidBody());
-  physics.addPhysicsToMesh(licht2.getModel(), licht2.initRigidBody());
 
   /**
    * End loading Cube
@@ -222,12 +229,34 @@ const setupGraphics = async () => {
   box.receiveShadow = true;
   const movable = new Movable();
   console.log(box);
-  await movable.init(box, { x: 26, y: 48, z: -20 });
+  await movable.init(box, {x: 26, y: 48, z: -20});
   scene.add(box);
   physics.addPhysicsToMesh(box, movable.initRigidBody());
+
+
+  let geoL = new THREE.BoxGeometry(1, 1, 1);
+  let matL = new THREE.MeshPhongMaterial({
+    /*opacity: 0.3,
+    transparent: true,*/
+    color: 0xffff,
+    side: DoubleSide,
+  });
+
+  for (let i = 0; i < posArr.length; i++) {
+    let light = new THREE.PointLight(0xfffff, 5, 20)
+    let MeshL = new THREE.Mesh(geoL, matL);
+    const lichter = new Light();
+    await lichter.init(MeshL, posArr[i], light);
+    scene.add(light);
+    scene.add(MeshL);
+    physics.addPhysicsToMesh(MeshL, lichter.initRigidBody());
+    var cons: Ammo.btRigidBody = lichter.getModel().userData.rigidBody;
+    console.log(cons.getWorldTransform().getOrigin().x(),cons.getWorldTransform().getOrigin().y(), cons.getWorldTransform().getOrigin().z());
+  }
 };
 
-/**
+
+  /**
  * Userinput for Cube Movement
  */
 const getPlayerMovement = () => {
@@ -283,6 +312,12 @@ const animate = async () => {
   let deltaTime = clock.getDelta();
   //GUI
   //TODO collected Lights
+
+  /*const collectLights = () => {
+    if ()
+  }*/
+
+
   gui.updateCollectedLights(1);
   gui.updateTime(timer.Time);
   cube.move(getPlayerMovement());
