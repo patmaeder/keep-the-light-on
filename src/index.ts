@@ -78,51 +78,24 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-  let previousValue: number;
-  let isPressed: boolean = false;
-  let angle: number = 0;
+  let reference: number  = window.innerWidth/2;
+  
+  document.addEventListener("mousemove", function getDifference(
+    event: MouseEvent
+  ) {
+      let difference = reference - event.clientX;
+      let radians = difference * (Math.PI*2/reference);
+      let xValue = Math.sin(radians) * 10;
+      let zValue = Math.cos(radians) * 10;
 
-  function setCameraPosition() {
-    document.addEventListener("mousemove", function getDifference(
-      event: MouseEvent
-    ) {
-      if (isPressed) {
-        let difference = previousValue - event.clientX;
-        console.log("Differenz: " + difference);
-        previousValue = event.clientX;
-
-        if (difference < 0) {
-          difference = difference * -1;
-          angle = angle + Math.round(Math.sqrt(difference)) * -1;
-        } else {
-          angle = angle + Math.round(Math.sqrt(difference));
-        }
-
-        let radians = angle * (Math.PI / 180);
-        let xValue = Math.sin(radians) * 20;
-        let zValue = Math.cos(radians) * 20;
-        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
-        camera.position.set(xValue, 4, zValue);
-        camera.lookAt(
-          cube.getModel().position.x,
-          cube.getModel().position.y + 1,
-          cube.getModel().position.z
-        );
-      } else {
-        document.removeEventListener("mousemove", getDifference);
-      }
-    });
-  }
-
-  document.addEventListener("mousedown", (event: MouseEvent) => {
-    previousValue = event.clientX;
-    setCameraPosition();
-    isPressed = true;
-  });
-
-  document.addEventListener("mouseup", (event: MouseEvent) => {
-    isPressed = false;
-  });
+      camera.position.set(xValue, 4, zValue);
+      camera.lookAt(
+        cube.getModel().position.x,
+        cube.getModel().position.y + 2,
+        cube.getModel().position.z
+      );
+    }
+  )  
 };
 
 /*
