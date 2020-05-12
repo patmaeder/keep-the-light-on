@@ -242,7 +242,7 @@ const setupGraphics = async () => {
   });
 
   for (let i = 0; i < posArr.length; i++) {
-    let light = new THREE.PointLight(0xfffff, 5, 20);
+    let light = new THREE.PointLight(0x751085, 3, 3);
     light.name = "Light-" + i;
     let MeshL = new THREE.Mesh(geoL, matL);
     light.name = "Mesh-" + i;
