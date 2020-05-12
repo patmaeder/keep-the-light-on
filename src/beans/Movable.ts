@@ -2,6 +2,7 @@ import {
   PointLight,
   MeshPhongMaterial,
   DoubleSide,
+  BoxHelper,
   BoxGeometry,
   Vector3,
   Group,
@@ -12,6 +13,7 @@ import {
   BufferGeometry,
   Geometry,
   Matrix4,
+  Box3,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -71,9 +73,18 @@ export default class Movable {
 
       shape.addTriangle(va, vb, vc, true);
     }
+    console.log(this.model);
+
+    const appliedScale = new Box3()
+      .setFromObject(this.model)
+      .getSize(new Vector3(0, 0, 0));
 
     let colShape = new Ammo.btBoxShape(
-      new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
+      new Ammo.btVector3(
+        appliedScale.x / 2,
+        appliedScale.y / 2,
+        appliedScale.z / 2
+      )
     );
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
