@@ -182,7 +182,7 @@ export default class Cube {
         ).op_mul(this.mass * 10 * -changedAxes.z())
       );
     }
-    console.log(this.model.position);
+    //console.log(this.model.position);
   }
 
   initRigidBody(): Ammo.btRigidBody {

@@ -44,6 +44,9 @@ let posArr = [
   { x: 20.437543869018555, y: 1.3399999141693115, z: -95.42516326904297 },
 ];
 let pause = new BreakScreen();
+let lightCounter = 0;
+let lichterArr: Array<Ammo.btRigidBody> = [];
+
 export let timer: Timer;
 
 // TODO rewrite input handler to update ammo physics
@@ -243,7 +246,6 @@ const setupGraphics = async () => {
 
   for (let i = 0; i < posArr.length; i++) {
     let light = new THREE.PointLight(0x751085, 3, 3);
-    light.name = "Light-" + i;
     let MeshL = new THREE.Mesh(geoL, matL);
     light.name = "Mesh-" + i;
     const lichter = new Light();
@@ -252,6 +254,7 @@ const setupGraphics = async () => {
     scene.add(MeshL);
     physics.addPhysicsToMesh(MeshL, lichter.initRigidBody());
     var cons: Ammo.btRigidBody = lichter.getModel().userData.rigidBody;
+    lichterArr.push(cons);
     console.log(
       cons.getWorldTransform().getOrigin().x(),
       cons.getWorldTransform().getOrigin().y(),
@@ -259,6 +262,28 @@ const setupGraphics = async () => {
     );
   }
 };
+
+const collectLights = () => {
+  for (let i = 0; i < posArr.length; i++) {
+    /*console.log((posArr[i].x + 1) > cube.getModel().position.x && (posArr[i].x -1) < cube.getModel().position.x,
+        (posArr[i].y + 1) > cube.getModel().position.y && (posArr[i].y - 1) < cube.getModel().position.y ,
+        (posArr[i].z + 1) > cube.getModel().position.z && (posArr[i].z -1) < cube.getModel().position.z);*/
+    if ((posArr[i].x + 1) > cube.getModel().position.x && (posArr[i].x -1) < cube.getModel().position.x
+        && (posArr[i].y + 1) > cube.getModel().position.y && (posArr[i].y - 1) < cube.getModel().position.y){
+      console.log(scene.getObjectByName("Mesh-" + i));
+      if (lichterArr[i]){
+        lightCounter+=1;
+        console.log("licht entfernt")
+        let MeshL = scene.getObjectByName("Mesh-" + i);
+        scene.remove(MeshL);
+        physics.getPhysicsWorld().removeRigidBody(lichterArr[i]);
+        lichterArr[i] = undefined;
+      }
+    }
+  }
+  return lightCounter;
+  }
+
 
 /**
  * Userinput for Cube Movement
@@ -275,7 +300,6 @@ const getPlayerMovement = () => {
   let moveX = Number(right) - Number(left);
   let moveY = Number(space);
   let moveZ = Number(down) - Number(up);
-
   return new Ammo.btVector3(moveX, moveY, moveZ);
 };
 
@@ -314,11 +338,9 @@ const animate = async () => {
   //GUI
   //TODO collected Lights
 
-  /*const collectLights = () => {
-    if ()
-  }*/
 
-  gui.updateCollectedLights(1);
+
+  gui.updateCollectedLights(collectLights());
   gui.updateTime(timer.Time);
   cube.move(getPlayerMovement());
 
