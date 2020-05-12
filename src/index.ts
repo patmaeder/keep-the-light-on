@@ -10,10 +10,11 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
-import Sound, {toggleBackgroundMusic} from "./effects/Sound";
+import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
-import {StartScreen} from "./screens/StartScreen";
+import { StartScreen } from "./screens/StartScreen";
 
+let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
@@ -21,12 +22,14 @@ let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let clock: THREE.Clock;
 let cube: Cube;
+let world: World;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
 let licht1;
 let licht2;
 let gui: GUI;
+let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -69,10 +72,7 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
-
 };
-
-
 
 /**
  * Event handlers regarding mouse input to rotate the camera
@@ -135,12 +135,14 @@ const setupLights = (scene: THREE.Scene) => {
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
 
-  //Add directional light
-  let dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
-  dirLight.color.setHSL(0.1, 1, 0.95);
-  dirLight.position.set(-1, 1.75, 1);
-  dirLight.position.multiplyScalar(100);
-  scene.add(dirLight);
+  if (debugging) {
+    //Add directional light
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-1, 1.75, 1);
+    dirLight.position.multiplyScalar(100);
+    scene.add(dirLight);
+  }
 };
 
 /*
@@ -169,8 +171,8 @@ const setupGraphics = async () => {
    * Start loading Cube
    */
   cube = await new Cube().init(camera);
-  licht1 = new Cube;
-  licht2 = new Cube;
+  licht1 = new Cube();
+  licht2 = new Cube();
   //Add to Scene
   scene.add(cube.getModel());
   //scene.add(licht1.getModel());
@@ -188,7 +190,7 @@ const setupGraphics = async () => {
   /**
    * Start loading Testmodule
    */
-  const world = await new World().init();
+  world = await new World().init();
   scene.add(world.getModel());
   physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
   /**
@@ -279,7 +281,6 @@ const checkIfWon = () => {
 const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
-
   //GUI
   //TODO collected Lights
   gui.updateCollectedLights(1);
@@ -287,7 +288,11 @@ const animate = async () => {
   cube.move(getPlayerMovement(), physics.getPhysicsWorld());
 
   physics.updatePhysics(deltaTime);
-  //debugDrawer.animate();
+
+  if (debugging) {
+    debugDrawer.animate();
+  }
+
   renderer.render(scene, camera);
 
   checkIfWon();
@@ -300,8 +305,8 @@ const animate = async () => {
  * Startscreen
  */
 const setupStartScreen = () => {
-  let test = new StartScreen;
-  test.addButton("start","start", () => {
+  let test = new StartScreen();
+  test.addButton("start", "start", () => {
     //Init Timer
     timer = new Timer();
     timer.start(100);
@@ -321,7 +326,6 @@ const setupStartScreen = () => {
         pause.switchVisibleStatus();
       }
     });
-
   });
   test.initButtons();
   test.switchVisibleStatus();
@@ -339,10 +343,9 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   setupStartScreen();
+
+  if (debugging) {
+    debugDrawer.initDebug(scene, physics.getPhysicsWorld());
+  }
 }
-
-
-
-
