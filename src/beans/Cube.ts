@@ -141,31 +141,19 @@ export default class Cube {
     return this.model;
   }
 
-  move(
-    changedAxes: Ammo.btVector3,
-    physicsWorld: Ammo.btDiscreteDynamicsWorld
-  ) {
+  move(changedAxes: Ammo.btVector3) {
     if (changedAxes.length() === 0) return;
 
     this.rigidBody.activate();
 
-    if (changedAxes.y() !== 0) {
-      const position = this.rigidBody.getWorldTransform().getOrigin();
-      const to = new Ammo.btVector3(position.x(), -0.1, position.z());
-
-      const rayResult = new Ammo.ClosestRayResultCallback(position, to);
-
-      physicsWorld.rayTest(position, to, rayResult);
-      console.log(
-        "closest hit fraction is < 0.1",
-        rayResult.get_m_closestHitFraction() < 0.1,
-        rayResult.get_m_closestHitFraction()
+    if (
+      changedAxes.y() !== 0 &&
+      Math.abs(this.rigidBody.getLinearVelocity().y()) < 0.01
+    ) {
+      console.log("jump");
+      this.rigidBody.applyCentralImpulse(
+        new Ammo.btVector3(0, this.mass * 10, 0)
       );
-
-      if (rayResult.get_m_closestHitFraction() < 0.1)
-        this.rigidBody.applyCentralImpulse(
-          new Ammo.btVector3(0, this.mass / 2, 0)
-        );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)

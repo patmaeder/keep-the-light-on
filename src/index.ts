@@ -285,7 +285,7 @@ const animate = async () => {
   //TODO collected Lights
   gui.updateCollectedLights(1);
   gui.updateTime(timer.Time);
-  cube.move(getPlayerMovement(), physics.getPhysicsWorld());
+  cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
 
@@ -344,7 +344,6 @@ async function start() {
   setupInputHandler();
   await setupGraphics();
   setupStartScreen();
-
   if (debugging) {
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   }
