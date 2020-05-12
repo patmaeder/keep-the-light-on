@@ -10,9 +10,9 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
-import Sound, {toggleBackgroundMusic} from "./effects/Sound";
+import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
-import {StartScreen} from "./screens/StartScreen";
+import { StartScreen } from "./screens/StartScreen";
 
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -69,10 +69,7 @@ const setupEventListeners = () => {
   window.addEventListener("contextmenu", (event) => {
     if (!pause.isVisible()) event.preventDefault();
   });
-
 };
-
-
 
 /**
  * Event handlers regarding mouse input to rotate the camera
@@ -169,8 +166,8 @@ const setupGraphics = async () => {
    * Start loading Cube
    */
   cube = await new Cube().init(camera);
-  licht1 = new Cube;
-  licht2 = new Cube;
+  licht1 = new Cube();
+  licht2 = new Cube();
   //Add to Scene
   scene.add(cube.getModel());
   //scene.add(licht1.getModel());
@@ -279,7 +276,7 @@ const animate = async () => {
   //TODO collected Lights
   gui.updateCollectedLights(1);
   gui.updateTime(timer.Time);
-  cube.move(getPlayerMovement(), physics.getPhysicsWorld());
+  cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
   //debugDrawer.animate();
@@ -295,8 +292,8 @@ const animate = async () => {
  * Startscreen
  */
 const setupStartScreen = () => {
-  let test = new StartScreen;
-  test.addButton("start","start", () => {
+  let test = new StartScreen();
+  test.addButton("start", "start", () => {
     //Init Timer
     timer = new Timer();
     timer.start(100);
@@ -316,7 +313,6 @@ const setupStartScreen = () => {
         pause.switchVisibleStatus();
       }
     });
-
   });
   test.initButtons();
   test.switchVisibleStatus();
@@ -337,7 +333,3 @@ async function start() {
   //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   setupStartScreen();
 }
-
-
-
-
