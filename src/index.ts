@@ -249,15 +249,20 @@ const getPlayerMovement = () => {
  */
 const checkIfWon = () => {
   let atGoalX: boolean = false;
+  let atGoalY: boolean = false;
   let atGoalZ: boolean = false;
 
-  if (0.58 < cube.getModel().position.x && cube.getModel().position.x < 1) {
+  if (8 < cube.getModel().position.x && cube.getModel().position.x < 13) {
+    atGoalX = true;
+  }
+
+  if (0 < cube.getModel().position.y && cube.getModel().position.y < 2) {
     atGoalX = true;
   }
 
   if (
-    -21.5 < cube.getModel().position.z &&
-    cube.getModel().position.z < -20.5
+    -45 < cube.getModel().position.z &&
+    cube.getModel().position.z < -41
   ) {
     atGoalZ = true;
   }
