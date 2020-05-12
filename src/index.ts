@@ -236,15 +236,17 @@ const setupGraphics = async () => {
 
   let geoL = new THREE.BoxGeometry(1, 1, 1);
   let matL = new THREE.MeshPhongMaterial({
-    /*opacity: 0.3,
-    transparent: true,*/
+    opacity: 0.3,
+    transparent: true,
     color: 0xffff,
     side: DoubleSide,
   });
 
   for (let i = 0; i < posArr.length; i++) {
-    let light = new THREE.PointLight(0xfffff, 5, 20)
+    let light = new THREE.PointLight(0xfffff, 5, 20);
+    light.name = "Light-" + i;
     let MeshL = new THREE.Mesh(geoL, matL);
+    light.name = "Mesh-" + i;
     const lichter = new Light();
     await lichter.init(MeshL, posArr[i], light);
     scene.add(light);
