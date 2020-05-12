@@ -14,6 +14,7 @@ import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
 
+let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
@@ -21,12 +22,14 @@ let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let clock: THREE.Clock;
 let cube: Cube;
+let world: World;
 let stats = new Stats();
 let portalTexture;
 let portal: Portal;
 let licht1;
 let licht2;
 let gui: GUI;
+let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
 export let timer: Timer;
@@ -132,12 +135,14 @@ const setupLights = (scene: THREE.Scene) => {
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
 
-  //Add directional light
-  let dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
-  dirLight.color.setHSL(0.1, 1, 0.95);
-  dirLight.position.set(-1, 1.75, 1);
-  dirLight.position.multiplyScalar(100);
-  scene.add(dirLight);
+  if (debugging) {
+    //Add directional light
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-1, 1.75, 1);
+    dirLight.position.multiplyScalar(100);
+    scene.add(dirLight);
+  }
 };
 
 /*
@@ -185,7 +190,7 @@ const setupGraphics = async () => {
   /**
    * Start loading Testmodule
    */
-  const world = await new World().init();
+  world = await new World().init();
   scene.add(world.getModel());
   physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
   /**
@@ -246,15 +251,20 @@ const getPlayerMovement = () => {
  */
 const checkIfWon = () => {
   let atGoalX: boolean = false;
+  let atGoalY: boolean = false;
   let atGoalZ: boolean = false;
 
-  if (0.58 < cube.getModel().position.x && cube.getModel().position.x < 1) {
+  if (8 < cube.getModel().position.x && cube.getModel().position.x < 13) {
+    atGoalX = true;
+  }
+
+  if (0 < cube.getModel().position.y && cube.getModel().position.y < 2) {
     atGoalX = true;
   }
 
   if (
-    -21.5 < cube.getModel().position.z &&
-    cube.getModel().position.z < -20.5
+    -45 < cube.getModel().position.z &&
+    cube.getModel().position.z < -41
   ) {
     atGoalZ = true;
   }
@@ -271,7 +281,6 @@ const checkIfWon = () => {
 const animate = async () => {
   stats.begin();
   let deltaTime = clock.getDelta();
-
   //GUI
   //TODO collected Lights
   gui.updateCollectedLights(1);
@@ -279,7 +288,11 @@ const animate = async () => {
   cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
-  //debugDrawer.animate();
+
+  if (debugging) {
+    debugDrawer.animate();
+  }
+
   renderer.render(scene, camera);
 
   checkIfWon();
@@ -330,6 +343,8 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  //debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   setupStartScreen();
+  if (debugging) {
+    debugDrawer.initDebug(scene, physics.getPhysicsWorld());
+  }
 }
