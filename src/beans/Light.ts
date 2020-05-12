@@ -12,36 +12,31 @@ import {
   BufferGeometry,
   Geometry,
   Matrix4,
+  Box3,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
 
 export default class Light {
-  //make model with three.js
-  private modelMaterial: Material = new MeshPhongMaterial({
-    opacity: 0.3,
-    transparent: true,
-    color: 0xffff,
-    side: DoubleSide,
-  });
-
   private rigidBody: Ammo.btRigidBody;
   private model: Mesh;
   private light: PointLight;
-  private scale = {x: 1, y: 1, z: 1};
-  private pos = {x: 1, y: 0, z: 0};
-  private quat = {x: 0, y: 0, z: 0, w: 1};
+  private scale = { x: 1, y: 1, z: 1 };
+  private initialPos = { x: 0, y: 0, z: 0 };
+  private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
 
-  async init(object: Mesh, pos, light): Promise<Object> {
-    this.light=light;
+  async init(object: Mesh, initialPos, light): Promise<Light> {
+    this.light = light;
     this.model = object;
-    this.pos = pos;
+    this.initialPos = initialPos;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
+    this.model.add(light);
+
+    //set the light to the cube's origin
     light.position.set(0, 0, 0);
-    const PivotPoint = new Object3D();
-    PivotPoint.add(light);
-    this.model.add(PivotPoint);
+
+    console.log(light.getWorldPosition(new Vector3()));
     //Licht aus dem Würfel heraus
     return this;
   }
@@ -55,14 +50,20 @@ export default class Light {
 
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
+    transform.setOrigin(
+      new Ammo.btVector3(
+        this.initialPos.x,
+        this.initialPos.y,
+        this.initialPos.z
+      )
+    );
     transform.setRotation(
-        new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
+      new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
     let motionState = new Ammo.btDefaultMotionState(transform);
 
     const scale = new Vector3(0, 0, 0).setFromMatrixScale(
-        new Matrix4().fromArray(this.model.matrixWorld.elements)
+      new Matrix4().fromArray(this.model.matrixWorld.elements)
     );
 
     const shape = new Ammo.btTriangleMesh();
@@ -78,19 +79,29 @@ export default class Light {
 
       shape.addTriangle(va, vb, vc, true);
     }
+    console.log(this.model);
 
+    const appliedScale = new Box3()
+      .setFromObject(this.model)
+      .getSize(new Vector3(0, 0, 0));
+
+    // box extends are defined as half the box width. Passing the whole width will make them "float". Beware! Different implementation in Movable.ts
     let colShape = new Ammo.btBoxShape(
-        new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
+      new Ammo.btVector3(
+        appliedScale.x / 2,
+        appliedScale.y / 2,
+        appliedScale.z / 2
+      )
     );
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);
 
     let rbInfo = new Ammo.btRigidBodyConstructionInfo(
-        this.mass,
-        motionState,
-        colShape,
-        localInertia
+      this.mass,
+      motionState,
+      colShape,
+      localInertia
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
