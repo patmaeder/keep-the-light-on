@@ -36,6 +36,14 @@ export default class Movable {
     this.pos = pos;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
+    let pointLight0 = new PointLight(0xfffff, 5, 20);
+    pointLight0.position.set(0, 0, 0);
+
+    const PivotPoint = new Object3D();
+    PivotPoint.add(pointLight0);
+    this.model.add(PivotPoint);
+    console.log(pointLight0.getWorldPosition(new Vector3()));
+
     return this;
   }
 
