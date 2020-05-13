@@ -254,17 +254,17 @@ const checkIfWon = () => {
   let atGoalY: boolean = false;
   let atGoalZ: boolean = false;
 
-  if (8 < cube.getModel().position.x && cube.getModel().position.x < 13) {
+  if (9 < cube.getModel().position.x && cube.getModel().position.x < 10.5) {
     atGoalX = true;
   }
 
-  if (0 < cube.getModel().position.y && cube.getModel().position.y < 2) {
+  if (0 < cube.getModel().position.y && cube.getModel().position.y < 1) {
     atGoalX = true;
   }
 
   if (
-    -45 < cube.getModel().position.z &&
-    cube.getModel().position.z < -41
+    -48 < cube.getModel().position.z &&
+    cube.getModel().position.z < -45
   ) {
     atGoalZ = true;
   }
