@@ -14,6 +14,7 @@ import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
 
+let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
@@ -77,51 +78,24 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-  let previousValue: number;
-  let isPressed: boolean = false;
-  let angle: number = 0;
+  let reference: number  = window.innerWidth/2;
+  
+  document.addEventListener("mousemove", function getDifference(
+    event: MouseEvent
+  ) {
+      let difference = reference - event.clientX;
+      let radians = difference * (Math.PI*2/reference);
+      let xValue = Math.sin(radians) * 10;
+      let zValue = Math.cos(radians) * 10;
 
-  function setCameraPosition() {
-    document.addEventListener("mousemove", function getDifference(
-      event: MouseEvent
-    ) {
-      if (isPressed) {
-        let difference = previousValue - event.clientX;
-        console.log("Differenz: " + difference);
-        previousValue = event.clientX;
-
-        if (difference < 0) {
-          difference = difference * -1;
-          angle = angle + Math.round(Math.sqrt(difference)) * -1;
-        } else {
-          angle = angle + Math.round(Math.sqrt(difference));
-        }
-
-        let radians = angle * (Math.PI / 180);
-        let xValue = Math.sin(radians) * 20;
-        let zValue = Math.cos(radians) * 20;
-        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
-        camera.position.set(xValue, 4, zValue);
-        camera.lookAt(
-          cube.getModel().position.x,
-          cube.getModel().position.y + 1,
-          cube.getModel().position.z
-        );
-      } else {
-        document.removeEventListener("mousemove", getDifference);
-      }
-    });
-  }
-
-  document.addEventListener("mousedown", (event: MouseEvent) => {
-    previousValue = event.clientX;
-    setCameraPosition();
-    isPressed = true;
-  });
-
-  document.addEventListener("mouseup", (event: MouseEvent) => {
-    isPressed = false;
-  });
+      camera.position.set(xValue, 4, zValue);
+      camera.lookAt(
+        cube.getModel().position.x,
+        cube.getModel().position.y + 2,
+        cube.getModel().position.z
+      );
+    }
+  )  
 };
 
 /*
@@ -134,12 +108,14 @@ const setupLights = (scene: THREE.Scene) => {
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
 
-  //Add directional light
-  let dirLight = new THREE.DirectionalLight(0xffffff, 1);
-  dirLight.color.setHSL(0.1, 1, 0.95);
-  dirLight.position.set(-1, 1.75, 1);
-  dirLight.position.multiplyScalar(100);
-  scene.add(dirLight);
+  if (debugging) {
+    //Add directional light
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-1, 1.75, 1);
+    dirLight.position.multiplyScalar(100);
+    scene.add(dirLight);
+  }
 };
 
 /*
@@ -248,15 +224,20 @@ const getPlayerMovement = () => {
  */
 const checkIfWon = () => {
   let atGoalX: boolean = false;
+  let atGoalY: boolean = false;
   let atGoalZ: boolean = false;
 
-  if (0.58 < cube.getModel().position.x && cube.getModel().position.x < 1) {
+  if (9 < cube.getModel().position.x && cube.getModel().position.x < 10.5) {
+    atGoalX = true;
+  }
+
+  if (0 < cube.getModel().position.y && cube.getModel().position.y < 1) {
     atGoalX = true;
   }
 
   if (
-    -21.5 < cube.getModel().position.z &&
-    cube.getModel().position.z < -20.5
+    -48 < cube.getModel().position.z &&
+    cube.getModel().position.z < -45
   ) {
     atGoalZ = true;
   }
@@ -277,10 +258,14 @@ const animate = async () => {
   //TODO collected Lights
   gui.updateCollectedLights(1);
   gui.updateTime(timer.Time);
-  cube.move(getPlayerMovement(), physics.getPhysicsWorld(), scene);
+  cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
-  debugDrawer.animate();
+
+  if (debugging) {
+    debugDrawer.animate();
+  }
+
   renderer.render(scene, camera);
 
   checkIfWon();
@@ -331,6 +316,8 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
-  debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   setupStartScreen();
+  if (debugging) {
+    debugDrawer.initDebug(scene, physics.getPhysicsWorld());
+  }
 }

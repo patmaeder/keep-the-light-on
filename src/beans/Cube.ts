@@ -144,49 +144,19 @@ export default class Cube {
     return this.model;
   }
 
-  move(
-    changedAxes: Ammo.btVector3,
-    physicsWorld: Ammo.btDiscreteDynamicsWorld,
-    scene: Scene
-  ) {
+  move(changedAxes: Ammo.btVector3) {
     if (changedAxes.length() === 0) return;
 
     this.rigidBody.activate();
 
-    if (changedAxes.y() !== 0) {
-      const position = this.rigidBody.getWorldTransform().getOrigin();
-      console.log(position.y());
-      const to = new Ammo.btVector3(position.x(), 1, position.z());
-
-      const rayResult = new Ammo.ClosestRayResultCallback(position, to);
-
-      physicsWorld.rayTest(position, to, rayResult);
-
-      const arrow = new ArrowHelper(
-        new Vector3(position.x(), position.y(), position.z()),
-        new Vector3(
-          rayResult.get_m_hitPointWorld().x(),
-          rayResult.get_m_hitPointWorld().y(),
-          rayResult.get_m_hitPointWorld().z()
-        ),
-        1,
-        0xff0000
+    if (
+      changedAxes.y() !== 0 &&
+      Math.abs(this.rigidBody.getLinearVelocity().y()) < 0.01
+    ) {
+      console.log("jump");
+      this.rigidBody.applyCentralImpulse(
+        new Ammo.btVector3(0, this.mass * 12, 0)
       );
-      scene.add(arrow);
-      setTimeout(() => {
-        scene.remove(arrow);
-      }, 1500);
-
-      console.log(
-        "closest hit fraction is < 0.1",
-        rayResult.get_m_closestHitFraction() < 0.1,
-        rayResult.get_m_closestHitFraction()
-      );
-
-      if (rayResult.get_m_closestHitFraction() < 0.1 || true)
-        this.rigidBody.applyCentralImpulse(
-          new Ammo.btVector3(0, this.mass / 2, 0)
-        );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
