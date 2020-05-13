@@ -123,7 +123,7 @@ export default class Movable {
       shininess: 30,
       flatShading: true,
       transparent: true,
-      color: 0xff2056,
+      color: 0xf58a0c,
       opacity: 0.95,
     });
     let box = new THREE.Mesh(geometry, material);
