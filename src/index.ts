@@ -206,6 +206,7 @@ const setupGraphics = async () => {
         z: -24.838674545288086,
       })
       .show(scene, physics);
+
 };
 
 /**

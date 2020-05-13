@@ -29,9 +29,7 @@ export default class Cube {
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 34,
-    y: 1.3399999141693115,
-    z: -24.838674545288086, };
+  private pos = { x:10.5, y: 0.5, z: -44};
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
 

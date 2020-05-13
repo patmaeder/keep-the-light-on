@@ -23,15 +23,13 @@ import THREE = require("three");
 
 /*
 ##############Position Rätsel##################
-##Rätsel1:dünne tür, die sich aufdreht
+##Rätsel1:dünne tür, die sich aufdreht: Already done!
 x: 28.081180572509766
 y: 1.3399999141693115
 z: -24.838674545288086
 
 ##Rätsel2: cube, den mann verschieben kann um wieder die treppe hochzukommen
-x: 15.198495864868164
-y: 3.8061068058013916
-z: -1.1404633522033691
+neue Position muss her: alte ergibt keinen Sinn
 
 ##Rätsel3: Block zum Runterstoßen, damit Weg fei wird zum Lichtwürfel holen oder runterspringen
 x: 40.72705078125
