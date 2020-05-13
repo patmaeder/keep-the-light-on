@@ -207,6 +207,274 @@ const setupGraphics = async () => {
       })
       .show(scene, physics);
 
+  /* Rätsel 1 - Türme */
+  new Movable()
+      .init(Movable.createBox(1, 7, 2), {
+        x: 126,
+        y: 1.3399999141693115,
+        z: -19,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(4, 4, 4), {
+        x: 99,
+        y: -17.199995040893555,
+        z: -41.74705123901367,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 2, 4), {
+        x: 99,
+        y: -13,
+        z: -41.74705123901367,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 1, 3), {
+        x: 99,
+        y: -11,
+        z: -41.74705123901367,
+      })
+      .show(scene, physics);
+  
+  new Movable()
+      .init(Movable.createBox(6, 2, 3), {
+        x: 104,
+        y: -17.199996948242188,
+        z: -46.39596176147461,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 2, 3), {
+        x: 104,
+        y: -15,
+        z: -46.39596176147461,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 2, 3), {
+        x: 104,
+        y: -13,
+        z: -46.39596176147461,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(4, 3, 5), {
+        x: 102,
+        y: -17.199995040893555,
+        z: -37.59646224975586,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 6, 2), {
+        x: 102,
+        y: -14,
+        z: -37.59646224975586,
+      })
+      .show(scene, physics);
+
+  new Movable()
+      .init(Movable.createBox(2, 9, 2), {
+        x: 107,
+        y: -17.199993133544922,
+        z: -32.21832275390625,
+      })
+      .show(scene, physics);
+
+
+
+
+  new Movable()
+      .init(Movable.createBox(10, 2, 1), {
+        x: 110,
+        y: -17.199996948242188,
+        z: -46.61009216308594,
+      })
+      .show(scene, physics);
+
+
+      /* Rätsel 2 - Treppe bauen */
+  new Movable()
+  .init(Movable.createBox(3, 2, 3), {
+    x: 21.553131103515625,
+    y: 3.8061070442199707,
+    z: -8.099748611450195,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(3, 1, 3), {
+    x: 8.890450477600098,
+    y: 13.219998359680176,
+    z: -10.046850204467773,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(3, 5, 3), {
+    x: 72.5328598022461,
+    y: 1.3399999141693115,
+    z: -9.398832321166992,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(6, 4, 3), {
+    x: 68.68604278564453,
+    y: 1.339999794960022,
+    z: -19.65791130065918,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(3, 3, 3), {
+    x: 62.535186767578125,
+    y: 1.339999794960022,
+    z: -9.57660961151123,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(3, 2, 5), {
+    x: 67.32130432128906,
+    y: 1.339999794960022,
+    z: -27.18347930908203,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(1, 1, 1), {
+    x: 96.60997772216797,
+    y: 4.519998073577881,
+    z: -28.77609634399414,
+  })
+  .show(scene, physics);
+
+
+  
+
+
+  /* Rätsel 3 - Weg bahnen */
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 105.61286163330078
+    y: 1.3399999141693115,
+    z: -100.41109466552734,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 99.084716796875
+    y: 1.3399999141693115,
+    z: -104.68998718261719,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 97.084716796875
+    y: 1.3399999141693115,
+    z: -102.68998718261719,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 91.52635192871094
+    y: 1.3399999141693115,
+    z: -102.28218078613281,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 91.18050384521484
+    y: 1.339999794960022,
+    z: -97.33890533447266,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 110.90746307373047
+    y: 1.339999794960022,
+    z: -93.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 103.90746307373047
+    y: 1.339999794960022,
+    z: -90.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 100.90746307373047
+    y: 1.339999794960022,
+    z: -88.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 101.90746307373047
+    y: 1.339999794960022,
+    z: -85.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 101.90746307373047
+    y: 1.339999794960022,
+    z: -98.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 106.90746307373047
+    y: 1.339999794960022,
+    z: -104.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 117.90746307373047
+    y: 1.339999794960022,
+    z: -99.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 115.90746307373047
+    y: 1.339999794960022,
+    z: -85.74198150634766,
+  })
+  .show(scene, physics);
+
+  new Movable()
+  .init(Movable.createBox(4, 4, 4), {
+    x: 117.90746307373047
+    y: 1.339999794960022,
+    z: -96.74198150634766,
+  })
+  .show(scene, physics);
+
 };
 
 /**
