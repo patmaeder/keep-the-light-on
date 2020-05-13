@@ -16,6 +16,12 @@ import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
 
 export default class Cube {
+  set intensity(value: number) {
+    this._intensity = value;
+    this.lights.forEach(value1 => {
+      value1.intensity = this._intensity
+    })
+  }
   //make model with three.js
   private modelMaterial: Material = new MeshPhongMaterial({
     color: 0xffffff,
@@ -29,6 +35,8 @@ export default class Cube {
   private pos = { x: 26, y: 28, z: -16 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
+  private _intensity: number = 5;
+  private lights: Array<PointLight> = [];
 
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(modelModel);
@@ -47,77 +55,30 @@ export default class Cube {
     console.log(this.model.position, this.model.scale);
 
     //create light to shine on environment and on cube
-    //strong light
     //Licht aus dem Würfel nach außen heraus
-    let pointLight0 = new PointLight(0xfffff, 5, 20);
+    let intensity: number = 5;
+    let pointLight0 = new PointLight(0xfffff, this._intensity, 20);
     pointLight0.position.set(0, 0, 0);
+    this.lights.push(pointLight0);
     //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
-    let pointLight11 = new PointLight(0xfffff, 5, 3);
+    let pointLight11 = new PointLight(0xfffff, this._intensity, 3);
     pointLight11.position.set(0, 0, 3);
-    let pointLight12 = new PointLight(0xfffff, 5, 3);
+    this.lights.push(pointLight11);
+    let pointLight12 = new PointLight(0xfffff, this._intensity, 3);
     pointLight12.position.set(3, 0, 0);
-    let pointLight13 = new PointLight(0xfffff, 5, 3);
+    this.lights.push(pointLight12);
+    let pointLight13 = new PointLight(0xfffff, this._intensity, 3);
     pointLight13.position.set(-3, 0, 0);
-    let pointLight14 = new PointLight(0xfffff, 5, 3);
+    this.lights.push(pointLight13);
+    let pointLight14 = new PointLight(0xfffff, this._intensity, 3);
     pointLight14.position.set(0, 0, -3);
-    let pointLight15 = new PointLight(0xfffff, 5, 3);
+    this.lights.push(pointLight14);
+    let pointLight15 = new PointLight(0xfffff, this._intensity, 3);
     pointLight15.position.set(0, 3, 0);
-    let pointLight16 = new PointLight(0xfffff, 5, 3);
+    this.lights.push(pointLight15);
+    let pointLight16 = new PointLight(0xfffff, this._intensity, 3);
     pointLight16.position.set(0, -3, 0);
-
-    //medium light
-    //Licht aus dem Würfel nach außen heraus
-    /*let pointLight0 = new PointLight(0xfffff, 5, 20);
-    pointLight0.position.set(0, 0, 0);
-          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
-    let pointLight11 = new PointLight(0xfffff, 3, 3);
-    pointLight11.position.set(0, 0, 3);
-    let pointLight12 = new PointLight(0xfffff, 3, 3);
-    pointLight12.position.set(3, 0, 0);
-    let pointLight13 = new PointLight(0xfffff, 3, 3);
-    pointLight13.position.set(-3, 0, 0);
-    let pointLight14 = new PointLight(0xfffff, 3, 3);
-    pointLight14.position.set(0, 0, -3);
-    let pointLight15 = new PointLight(0xfffff, 3, 3);
-    pointLight15.position.set(0, 3, 0);
-    let pointLight16 = new PointLight(0xfffff, 3, 3);
-    pointLight16.position.set(0, -3, 0);*/
-
-    //gonna die light
-    //Licht aus dem Würfel nach außen heraus
-    /*let pointLight0 = new PointLight(0xfffff, 3, 12);
-    pointLight0.position.set(0, 0, 0);
-          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
-    let pointLight11 = new PointLight(0xfffff, 1, 3);
-    pointLight11.position.set(0, 0, 3);
-    let pointLight12 = new PointLight(0xfffff, 1, 3);
-    pointLight12.position.set(3, 0, 0);
-    let pointLight13 = new PointLight(0xfffff, 1, 3);
-    pointLight13.position.set(-3, 0, 0);
-    let pointLight14 = new PointLight(0xfffff, 1, 3);
-    pointLight14.position.set(0, 0, -3);
-    let pointLight15 = new PointLight(0xfffff, 1, 3);
-    pointLight15.position.set(0, 3, 0);
-    let pointLight16 = new PointLight(0xfffff, 1, 3);
-    pointLight16.position.set(0, -3, 0);*/
-
-    //gonna die light in a few secs light
-    //Licht aus dem Würfel nach außen heraus
-    /*let pointLight0 = new PointLight(0xfffff, 0.5, 12);
-    pointLight0.position.set(0, 0, 0);
-          //Licht von außen auf den Würfel drauf (zum Bestrahlen des Würfels)
-    let pointLight11 = new PointLight(0xfffff, 0.3, 3);
-    pointLight11.position.set(0, 0, 3);
-    let pointLight12 = new PointLight(0xfffff, 0.3, 3);
-    pointLight12.position.set(3, 0, 0);
-    let pointLight13 = new PointLight(0xfffff, 0.3, 3);
-    pointLight13.position.set(-3, 0, 0);
-    let pointLight14 = new PointLight(0xfffff, 0.3, 3);
-    pointLight14.position.set(0, 0, -3);
-    let pointLight15 = new PointLight(0xfffff, 0.3, 3);
-    pointLight15.position.set(0, 3, 0);
-    let pointLight16 = new PointLight(0xfffff, 0.3, 3);
-    pointLight16.position.set(0, -3, 0);*/
+    this.lights.push(pointLight16);
 
     //Camera + light moves/turns with model move
     const PivotPoint = new Object3D();
