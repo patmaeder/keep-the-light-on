@@ -21,6 +21,34 @@ import { State } from "../utils/Constants";
 import PhysicsHandler from "../Physics";
 import THREE = require("three");
 
+/*
+##############Position Rätsel##################
+##Rätsel1:dünne tür, die sich aufdreht
+x: 28.081180572509766
+y: 1.3399999141693115
+z: -24.838674545288086
+
+##Rätsel2: cube, den mann verschieben kann um wieder die treppe hochzukommen
+x: 15.198495864868164
+y: 3.8061068058013916
+z: -1.1404633522033691
+
+##Rätsel3: Block zum Runterstoßen, damit Weg fei wird zum Lichtwürfel holen oder runterspringen
+x: 40.72705078125
+y: 15.548308372497559
+z: -29.615190505981445
+
+##Rätsel4: Blockwand zum Hineinschieben, damit Weg frei wird
+x: 33.65906524658203
+y: 1.339999794960022
+z: -25.238832473754883
+
+##Rätsel5: Block durch Tunnel schieben
+x: 46.48160171508789
+y: 1.339999794960022
+z: -40.937355041503906
+*/
+
 export default class Movable {
   //make model with three.js
   private modelMaterial: Material = new MeshPhongMaterial({

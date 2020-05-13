@@ -191,13 +191,21 @@ const setupGraphics = async () => {
     })
     .show(scene, physics);
 
-  new Movable()
+  /*new Movable()
     .init(Movable.createBox(10, 5, 2), {
       x: 43,
       y: 48,
       z: -20,
     })
-    .show(scene, physics);
+    .show(scene, physics);*/
+
+  new Movable()
+      .init(Movable.createBox(1, 7, 10), {
+        x: 27,
+        y: 1.3399999141693115,
+        z: -24.838674545288086,
+      })
+      .show(scene, physics);
 };
 
 /**
