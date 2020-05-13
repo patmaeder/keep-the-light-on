@@ -21,12 +21,22 @@ export default class Cube {
     color: 0xffffff,
     side: DoubleSide,
   });
-
+/*{ x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605 },
+  { x: 22, y: 48, z: -20 },
+  { x: 26.181129455566406, y: 17.419992446899414, z: -10.475132942199707 },
+  { x: 51.5322151184082, y: 17.419994354248047, z: -3.3070199489593506 },
+  { x: 12.259516716003418, y: 17.419992446899414, z: -40.222694396972656 },
+  { x: 40.884971618652344, y: 12.319998741149902, z: -63.711273193359375 },
+  { x: 66.48548889160156, y: 15.548307418823242, z: -75.95284271240234 },
+  { x: 59.88838195800781, y: 1.339999794960022, z: -98.68903350830078 },
+  { x: 20.116077423095703, y: 6.679998874664307, z: -30.966354370117188}
+* */
   private camera: Camera;
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 26, y: 28, z: -16 };
+
+  private pos = {x:66.48548889160156, y: 15.548307418823242, z: -75.95284271240234 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
 
@@ -152,7 +162,7 @@ export default class Cube {
     ) {
       console.log("jump");
       this.rigidBody.applyCentralImpulse(
-        new Ammo.btVector3(0, this.mass * 10, 0)
+        new Ammo.btVector3(0, this.mass * 12, 0)
       );
     }
 
@@ -182,6 +192,8 @@ export default class Cube {
         ).op_mul(this.mass * 10 * -changedAxes.z())
       );
     }
+    console.log(this.model.position);
+
   }
 
   initRigidBody(): Ammo.btRigidBody {
