@@ -14,9 +14,12 @@ import {
   Geometry,
   Matrix4,
   Box3,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
+import PhysicsHandler from "../Physics";
+import THREE = require("three");
 
 export default class Movable {
   //make model with three.js
@@ -28,23 +31,20 @@ export default class Movable {
   private rigidBody: Ammo.btRigidBody;
   private model: Mesh;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 0, y: 0, z: 0 };
+  private initialPos;
   private quat = { x: 0, y: 0, z: 0, w: 1 };
 
-  private mass = 10;
+  private mass;
 
-  async init(object: Mesh, pos): Promise<Object> {
+  init(
+    object: Mesh,
+    initialPos = { x: 0, y: 0, z: 0 },
+    mass: number = 10
+  ): Movable {
     this.model = object;
-    this.pos = pos;
+    this.initialPos = initialPos;
+    this.mass = mass;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
-
-    let pointLight0 = new PointLight(0xfffff, 5, 20);
-    pointLight0.position.set(0, 0, 0);
-
-    const PivotPoint = new Object3D();
-    PivotPoint.add(pointLight0);
-    this.model.add(PivotPoint);
-    console.log(pointLight0.getWorldPosition(new Vector3()));
 
     return this;
   }
@@ -58,7 +58,13 @@ export default class Movable {
 
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
+    transform.setOrigin(
+      new Ammo.btVector3(
+        this.initialPos.x,
+        this.initialPos.y,
+        this.initialPos.z
+      )
+    );
     transform.setRotation(
       new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
@@ -107,5 +113,28 @@ export default class Movable {
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
     return this.rigidBody;
+  }
+
+  static createBox(width, height, depth): Mesh {
+    let geometry = new THREE.BoxGeometry(width, height, depth);
+    let material = new THREE.MeshPhongMaterial({
+      refractionRatio: 0.92,
+      reflectivity: 0.5,
+      shininess: 30,
+      flatShading: true,
+      transparent: true,
+      color: 0xff2056,
+      opacity: 0.95,
+    });
+    let box = new THREE.Mesh(geometry, material);
+    box.castShadow = true;
+    box.receiveShadow = true;
+
+    return box;
+  }
+
+  show(scene: Scene, physics: PhysicsHandler) {
+    scene.add(this.model);
+    physics.addPhysicsToMesh(this.model, this.initRigidBody());
   }
 }
