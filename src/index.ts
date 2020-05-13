@@ -13,6 +13,9 @@ import Movable from "./beans/Movable";
 import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
+import {LostScreen} from "./screens/LostScreen";
+import {VictoryScreen} from "./screens/VictoryScreen";
+import {log} from "three";
 
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
@@ -39,6 +42,7 @@ export let timer: Timer;
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
  */
+
 const setupInputHandler = () => {
   inputHandler = new InputHandler();
   const detachWindow = inputHandler.attach(window);
@@ -88,9 +92,8 @@ const setupCameraMovement = () => {
     ) {
       if (isPressed) {
         let difference = previousValue - event.clientX;
-        console.log("Differenz: " + difference);
+        //console.log("Differenz: " + difference);
         previousValue = event.clientX;
-
         if (difference < 0) {
           difference = difference * -1;
           angle = angle + Math.round(Math.sqrt(difference)) * -1;
@@ -270,6 +273,7 @@ const checkIfWon = () => {
   }
 
   if (atGoalX && atGoalZ) {
+    new VictoryScreen(0,1,timer.Time);
     alert("YOU WON!");
     location.reload();
   }
@@ -294,6 +298,7 @@ const animate = async () => {
   }
 
   renderer.render(scene, camera);
+  cube.intensity = timer.Time/15;
 
   checkIfWon();
   requestAnimationFrame(animate);
