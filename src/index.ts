@@ -14,7 +14,7 @@ import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
 import Light from "./beans/Light";
-import { Object3D, PointLight } from "three";
+import {Material, Mesh, Object3D, PointLight} from "three";
 import { DoubleSide } from "three";
 
 let debugging = window.location.pathname.includes("debug");
@@ -270,13 +270,19 @@ const collectLights = () => {
         (posArr[i].z + 1) > cube.getModel().position.z && (posArr[i].z -1) < cube.getModel().position.z);*/
     if ((posArr[i].x + 1) > cube.getModel().position.x && (posArr[i].x -1) < cube.getModel().position.x
         && (posArr[i].y + 1) > cube.getModel().position.y && (posArr[i].y - 1) < cube.getModel().position.y){
-      console.log(scene.getObjectByName("Mesh-" + i));
       if (lichterArr[i]){
+        console.log(scene.getObjectByName("Mesh-" + i));
         lightCounter+=1;
         console.log("licht entfernt")
         let MeshL = scene.getObjectByName("Mesh-" + i);
-        scene.remove(MeshL);
-        physics.getPhysicsWorld().removeRigidBody(lichterArr[i]);
+        scene.remove(MeshL.parent);
+        console.log(MeshL.parent);
+        physics.getPhysicsWorld().removeRigidBody(MeshL.parent.userData.rigidBody);
+        var meshPar: Mesh = <Mesh> MeshL.parent;
+        /*var meshParMat = <Material> meshPar.material;
+        meshParMat.dispose();
+        meshPar.geometry.dispose();*/
+        meshPar.remove(MeshL);
         lichterArr[i] = undefined;
       }
     }
