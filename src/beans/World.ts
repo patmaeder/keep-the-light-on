@@ -118,7 +118,6 @@ export default class World {
 
     //rigidBody.setActivationState(State.DISABLE_DEACTIVATION);
     rigidBody.setCollisionFlags(Flags.CF_KINEMATIC_OBJECT);
-
     return rigidBody;
   }
 }

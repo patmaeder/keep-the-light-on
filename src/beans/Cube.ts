@@ -10,7 +10,10 @@ import {
   Camera,
   Object3D,
   Mesh,
+  ArrowHelper,
   Material /*default as THREE,*/,
+  ZeroCurvatureEnding,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";

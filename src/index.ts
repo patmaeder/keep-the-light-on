@@ -78,24 +78,23 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-  let reference: number  = window.innerWidth/2;
-  
+  let reference: number = window.innerWidth / 2;
+
   document.addEventListener("mousemove", function getDifference(
     event: MouseEvent
   ) {
-      let difference = reference - event.clientX;
-      let radians = difference * (Math.PI*2/reference);
-      let xValue = Math.sin(radians) * 10;
-      let zValue = Math.cos(radians) * 10;
+    let difference = reference - event.clientX;
+    let radians = difference * ((Math.PI * 2) / reference);
+    let xValue = Math.sin(radians) * 10;
+    let zValue = Math.cos(radians) * 10;
 
-      camera.position.set(xValue, 4, zValue);
-      camera.lookAt(
-        cube.getModel().position.x,
-        cube.getModel().position.y + 2,
-        cube.getModel().position.z
-      );
-    }
-  )  
+    camera.position.set(xValue, 4, zValue);
+    camera.lookAt(
+      cube.getModel().position.x,
+      cube.getModel().position.y + 2,
+      cube.getModel().position.z
+    );
+  });
 };
 
 /*
@@ -181,23 +180,24 @@ const setupGraphics = async () => {
    */
 
   /**
-   * Start movable object
+   * Start movable objects
    */
-  let geometry = new THREE.BoxGeometry(1, 1, 1);
-  let material = new THREE.MeshPhongMaterial({
-    refractionRatio: 0.92,
-    reflectivity: 0,
-    shininess: 30,
-    flatShading: true,
-  });
-  let box = new THREE.Mesh(geometry, material);
-  box.castShadow = true;
-  box.receiveShadow = true;
-  const movable = new Movable();
-  console.log(box);
-  await movable.init(box, { x: 26, y: 48, z: -20 });
-  scene.add(box);
-  physics.addPhysicsToMesh(box, movable.initRigidBody());
+
+  new Movable()
+    .init(Movable.createBox(1, 1, 1), {
+      x: 26,
+      y: 48,
+      z: -20,
+    })
+    .show(scene, physics);
+
+  new Movable()
+    .init(Movable.createBox(10, 5, 2), {
+      x: 43,
+      y: 48,
+      z: -20,
+    })
+    .show(scene, physics);
 };
 
 /**
@@ -235,10 +235,7 @@ const checkIfWon = () => {
     atGoalX = true;
   }
 
-  if (
-    -48 < cube.getModel().position.z &&
-    cube.getModel().position.z < -45
-  ) {
+  if (-48 < cube.getModel().position.z && cube.getModel().position.z < -45) {
     atGoalZ = true;
   }
 
