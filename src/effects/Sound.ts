@@ -23,6 +23,7 @@ export default class Sound {
     });
    }
   toggleBackgroundMusic() {
-     this.sound.paused ?  this.sound.play() :  this.sound.pause();
+     //this.sound.paused ?  this.sound.play() :  this.sound.pause();
+     this.sound.play();
    }
 }
