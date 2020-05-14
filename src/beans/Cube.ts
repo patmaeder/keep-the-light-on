@@ -187,7 +187,6 @@ export default class Cube {
       );
     }
     console.log(this.model.position);
-
   }
 
   initRigidBody(): Ammo.btRigidBody {

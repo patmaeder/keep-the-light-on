@@ -1,5 +1,3 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -11,44 +9,35 @@ import {
   Object3D,
   Mesh,
   Material /*default as THREE,*/,
+  BufferGeometry,
+  Geometry,
+  Matrix4,
+  Box3,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
-import Cube from "./Cube";
 
-export default class Light extends Cube {
-  //make model with three.js
-  private modelMaterial: Material = new MeshPhongMaterial({
-    color: 0xffffff,
-    side: DoubleSide,
-    opacity: 0.7,
-    transparent: true,
-  });
-
+export default class Light {
   private rigidBody: Ammo.btRigidBody;
-  private model: Object3D;
+  private model: Mesh;
+  private light: PointLight;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 26, y: 28, z: -16 };
+  private initialPos = { x: 0, y: 0, z: 0 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
 
-  async init(camera: Camera): Promise<Light> {
-    const gltf = await loadModel(modelModel);
-    this.model = gltf.scene;
-    this.model.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.material = this.modelMaterial;
-      }
-    });
-
+  async init(object: Mesh, initialPos, light): Promise<Light> {
+    this.light = light;
+    this.model = object;
+    this.initialPos = initialPos;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
-    console.log(this.model.position, this.model.scale);
+    this.model.add(light);
 
-    //create light to shine on environment and on cube
-    let pointLight1 = new PointLight(0xfffff, 30, 50);
-    pointLight1.position.set(this.pos.x, this.pos.y, this.pos.z);
-    //let pointLight2 = new PointLight(0xfffff, 30, 5);
-    //pointLight2.position.set(0, 2, 0);
+    //set the light to the cube's origin
+    light.position.set(0, 0, 0);
+
+    console.log(light.getWorldPosition(new Vector3()));
+    //Licht aus dem Würfel heraus
     return this;
   }
 
@@ -57,18 +46,53 @@ export default class Light extends Cube {
   }
 
   initRigidBody(): Ammo.btRigidBody {
+    let geometry = <Geometry>this.model.geometry;
+
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
+    transform.setOrigin(
+      new Ammo.btVector3(
+        this.initialPos.x,
+        this.initialPos.y,
+        this.initialPos.z
+      )
+    );
     transform.setRotation(
       new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
     let motionState = new Ammo.btDefaultMotionState(transform);
 
-    let colShape = new Ammo.btBoxShape(
-      new Ammo.btVector3(this.scale.x, this.scale.y, this.scale.z)
+    const scale = new Vector3(0, 0, 0).setFromMatrixScale(
+      new Matrix4().fromArray(this.model.matrixWorld.elements)
     );
-    colShape.setMargin(0.1);
+
+    const shape = new Ammo.btTriangleMesh();
+
+    for (let face of geometry.faces) {
+      let a = geometry.vertices[face.a].clone().multiply(scale);
+      let b = geometry.vertices[face.b].clone().multiply(scale);
+      let c = geometry.vertices[face.c].clone().multiply(scale);
+
+      let va = new Ammo.btVector3(a.x, a.y, a.z);
+      let vb = new Ammo.btVector3(b.x, b.y, b.z);
+      let vc = new Ammo.btVector3(c.x, c.y, c.z);
+
+      shape.addTriangle(va, vb, vc, true);
+    }
+    console.log(this.model);
+
+    const appliedScale = new Box3()
+      .setFromObject(this.model)
+      .getSize(new Vector3(0, 0, 0));
+
+    // box extends are defined as half the box width. Passing the whole width will make them "float". Beware! Different implementation in Movable.ts
+    let colShape = new Ammo.btBoxShape(
+      new Ammo.btVector3(
+        appliedScale.x / 2,
+        appliedScale.y / 2,
+        appliedScale.z / 2
+      )
+    );
 
     let localInertia = new Ammo.btVector3(0, 0, 0);
     colShape.calculateLocalInertia(this.mass, localInertia);
@@ -81,7 +105,6 @@ export default class Light extends Cube {
     );
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
-
     return this.rigidBody;
   }
 }
