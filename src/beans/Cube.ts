@@ -1,5 +1,5 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
+import { loadModelObj, loadModel } from "../Loader";
+import cuby from "../../assets/models/cube/cube.glb";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -35,7 +35,7 @@ export default class Cube {
   private mass = 10;
 
   async init(camera: Camera): Promise<Cube> {
-    const gltf = await loadModel(modelModel);
+    const gltf = await loadModel(cuby);
 
     this.camera = camera;
     this.model = gltf.scene;
