@@ -93,50 +93,22 @@ const setupEventListeners = () => {
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-  let previousValue: number;
-  let isPressed: boolean = false;
-  let angle: number = 0;
+  let reference: number = window.innerWidth / 2;
 
-  function setCameraPosition() {
-    document.addEventListener("mousemove", function getDifference(
-      event: MouseEvent
-    ) {
-      if (isPressed) {
-        let difference = previousValue - event.clientX;
-        console.log("Differenz: " + difference);
-        previousValue = event.clientX;
+  document.addEventListener("mousemove", function getDifference(
+    event: MouseEvent
+  ) {
+    let difference = reference - event.clientX;
+    let radians = difference * ((Math.PI * 2) / reference);
+    let xValue = Math.sin(radians) * 10;
+    let zValue = Math.cos(radians) * 10;
 
-        if (difference < 0) {
-          difference = difference * -1;
-          angle = angle + Math.round(Math.sqrt(difference)) * -1;
-        } else {
-          angle = angle + Math.round(Math.sqrt(difference));
-        }
-
-        let radians = angle * (Math.PI / 180);
-        let xValue = Math.sin(radians) * 20;
-        let zValue = Math.cos(radians) * 20;
-        console.log("Y-Wert: " + xValue, "X-Wert: " + zValue);
-        camera.position.set(xValue, 4, zValue);
-        camera.lookAt(
-          cube.getModel().position.x,
-          cube.getModel().position.y + 1,
-          cube.getModel().position.z
-        );
-      } else {
-        document.removeEventListener("mousemove", getDifference);
-      }
-    });
-  }
-
-  document.addEventListener("mousedown", (event: MouseEvent) => {
-    previousValue = event.clientX;
-    setCameraPosition();
-    isPressed = true;
-  });
-
-  document.addEventListener("mouseup", (event: MouseEvent) => {
-    isPressed = false;
+    camera.position.set(xValue, 4, zValue);
+    camera.lookAt(
+      cube.getModel().position.x,
+      cube.getModel().position.y + 2,
+      cube.getModel().position.z
+    );
   });
 };
 
@@ -218,7 +190,7 @@ const setupGraphics = async () => {
    */
 
   /**
-   * Start movable object
+   * Start movable objects
    */
   let geometry = new THREE.BoxGeometry(1, 1, 1);
   let material = new THREE.MeshPhongMaterial({
@@ -261,6 +233,22 @@ const setupGraphics = async () => {
       cons.getWorldTransform().getOrigin().z()
     );
   }
+
+  new Movable()
+    .init(Movable.createBox(1, 1, 1), {
+      x: 26,
+      y: 48,
+      z: -20,
+    })
+    .show(scene, physics);
+
+  new Movable()
+    .init(Movable.createBox(10, 5, 2), {
+      x: 43,
+      y: 48,
+      z: -20,
+    })
+    .show(scene, physics);
 };
 
 const collectLights = () => {
@@ -317,15 +305,15 @@ const checkIfWon = () => {
   let atGoalY: boolean = false;
   let atGoalZ: boolean = false;
 
-  if (8 < cube.getModel().position.x && cube.getModel().position.x < 13) {
+  if (9 < cube.getModel().position.x && cube.getModel().position.x < 10.5) {
     atGoalX = true;
   }
 
-  if (0 < cube.getModel().position.y && cube.getModel().position.y < 2) {
+  if (0 < cube.getModel().position.y && cube.getModel().position.y < 1) {
     atGoalX = true;
   }
 
-  if (-45 < cube.getModel().position.z && cube.getModel().position.z < -41) {
+  if (-48 < cube.getModel().position.z && cube.getModel().position.z < -45) {
     atGoalZ = true;
   }
 

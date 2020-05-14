@@ -10,7 +10,10 @@ import {
   Camera,
   Object3D,
   Mesh,
+  ArrowHelper,
   Material /*default as THREE,*/,
+  ZeroCurvatureEnding,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -152,7 +155,7 @@ export default class Cube {
     ) {
       console.log("jump");
       this.rigidBody.applyCentralImpulse(
-        new Ammo.btVector3(0, this.mass * 10, 0)
+        new Ammo.btVector3(0, this.mass * 12, 0)
       );
     }
 
