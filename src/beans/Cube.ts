@@ -29,7 +29,8 @@ export default class Cube {
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 26, y: 28, z: -16 };
+  /*private pos = { x:10.5, y: 0.5, z: -44}; Portal */
+  private pos = { x:103.10820770263672, y: -17.199993133544922, z: -41.651947021484375};
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
 
@@ -185,7 +186,7 @@ export default class Cube {
         ).op_mul(this.mass * 10 * -changedAxes.z())
       );
     }
-    //console.log(this.model.position);
+    console.log(this.model.position);
   }
 
   initRigidBody(): Ammo.btRigidBody {
