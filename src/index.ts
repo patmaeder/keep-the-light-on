@@ -162,7 +162,11 @@ const setupGraphics = async () => {
     antialias: true,
     powerPreference: "high-performance",
   });
-  renderer.setPixelRatio(window.devicePixelRatio);
+
+  // this should be opt-in because it reduces framerate significantly on some devices:
+
+  // renderer.setPixelRatio(window.devicePixelRatio);
+
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   document.body.appendChild(renderer.domElement);
