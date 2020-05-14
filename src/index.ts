@@ -13,6 +13,10 @@ import Movable from "./beans/Movable";
 import Sound, { toggleBackgroundMusic } from "./effects/Sound";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
+import { Introduction } from "./screens/introduction/introduction";
+import { IntroPage1 } from "./screens/introduction/introduction-page1";
+import { IntroPage2 } from "./screens/introduction/introduction-page2";
+import { LOD } from "three";
 
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
@@ -32,6 +36,8 @@ let gui: GUI;
 let debugDrawer = new DebugDrawer();
 
 let pause = new BreakScreen();
+export let introScreen1: Introduction;
+export let introScreen2: Introduction;
 export let timer: Timer;
 
 // TODO rewrite input handler to update ammo physics
@@ -302,11 +308,53 @@ const animate = async () => {
 };
 
 /**
+ * SetUp Screen for Game Introduction
+ */
+function setUpGameIntroduction() {
+  introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
+  introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
+  introScreen1.addButton("Weiter", "continue",() => {introScreen1.switchVisibleStatus(); introScreen2.switchVisibleStatus()});
+  introScreen2.addButton("Schließen", "continue",() => {introScreen2.switchVisibleStatus()});
+}
+
+async function playGameIntroduction() {
+  introScreen1.switchVisibleStatus();
+  setInterval(() => {
+    /*if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+      console.log("resolved");
+      resolve();
+      clearInterval(interval);
+    }*/
+  }, 100)
+}
+
+/**
  * Startscreen
  */
 const setupStartScreen = () => {
   let test = new StartScreen();
-  test.addButton("start", "start", () => {
+  test.addButton("start", "start", async () => {
+    //hide main menu
+    test.switchVisibleStatus();
+
+    //Check if Player plays for the first time
+    let storage;
+    for (let i = 0; i < localStorage.length; i++) {
+      storage = localStorage.key(i)!;
+    }
+    if (storage === undefined) {
+      await new Promise((resolve,reject) => {
+        introScreen1.switchVisibleStatus();
+        let interval = setInterval(() => {
+        if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+          console.log("resolved");
+          resolve();
+          clearInterval(interval);
+        }
+      }, 100)});
+      localStorage.setItem("returning player", "true");
+    }
+
     //Init Timer
     timer = new Timer();
     timer.start(100);
@@ -317,8 +365,6 @@ const setupStartScreen = () => {
     toggleBackgroundMusic();
     //Start game
     animate();
-    //hide main menu
-    test.switchVisibleStatus();
 
     //Start Break Menu Event Listener
     window.addEventListener("keydown", ({ key }) => {
@@ -343,6 +389,7 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  setUpGameIntroduction();
   setupStartScreen();
   if (debugging) {
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
