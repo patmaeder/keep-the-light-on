@@ -212,7 +212,6 @@ const setupGraphics = async () => {
   box.castShadow = true;
   box.receiveShadow = true;
   const movable = new Movable();
-  console.log(box);
   await movable.init(box, { x: 26, y: 48, z: -20 });
   scene.add(box);
   physics.addPhysicsToMesh(box, movable.initRigidBody());
@@ -236,11 +235,6 @@ const setupGraphics = async () => {
     physics.addPhysicsToMesh(MeshL, lichter.initRigidBody());
     var cons: Ammo.btRigidBody = lichter.getModel().userData.rigidBody;
     lichterArr.push(cons);
-    console.log(
-      cons.getWorldTransform().getOrigin().x(),
-      cons.getWorldTransform().getOrigin().y(),
-      cons.getWorldTransform().getOrigin().z()
-    );
   }
 
   new Movable()
@@ -576,7 +570,7 @@ const getPlayerMovement = () => {
   let moveX = Number(right) - Number(left);
   let moveY = Number(space);
   let moveZ = Number(down) - Number(up);
-  return new Ammo.btVector3(moveX, moveY, moveZ);
+  return [moveX, moveY, moveZ];
 };
 
 /**
@@ -638,8 +632,13 @@ const animate = async () => {
 function setUpGameIntroduction() {
   introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
   introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
-  introScreen1.addButton("Weiter", "continue",() => {introScreen1.switchVisibleStatus(); introScreen2.switchVisibleStatus()});
-  introScreen2.addButton("Schließen", "continue",() => {introScreen2.switchVisibleStatus()});
+  introScreen1.addButton("Weiter", "continue", () => {
+    introScreen1.switchVisibleStatus();
+    introScreen2.switchVisibleStatus();
+  });
+  introScreen2.addButton("Schließen", "continue", () => {
+    introScreen2.switchVisibleStatus();
+  });
 }
 
 async function playGameIntroduction() {
@@ -650,7 +649,7 @@ async function playGameIntroduction() {
       resolve();
       clearInterval(interval);
     }*/
-  }, 100)
+  }, 100);
 }
 
 /**
@@ -668,15 +667,15 @@ const setupStartScreen = () => {
       storage = localStorage.key(i)!;
     }
     if (storage === undefined) {
-      await new Promise((resolve,reject) => {
+      await new Promise((resolve, reject) => {
         introScreen1.switchVisibleStatus();
         let interval = setInterval(() => {
-        if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-          console.log("resolved");
-          resolve();
-          clearInterval(interval);
-        }
-      }, 100)});
+          if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+            resolve();
+            clearInterval(interval);
+          }
+        }, 100);
+      });
       localStorage.setItem("returning player", "true");
     }
 
