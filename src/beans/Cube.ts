@@ -1,5 +1,5 @@
 import { loadModelObj, loadModel } from "../Loader";
-import cuby from "../../assets/models/cube/cube.glb";
+import cuby from "../../assets/models/cube/cuby.glb";
 import {
   PointLight,
   MeshPhongMaterial,
