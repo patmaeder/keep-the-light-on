@@ -1,12 +1,8 @@
-
 import {
     AudioLoader, Audio, AudioListener
   } from "three";
 
-
 export default class Sound {
-    // create an AudioListener and add it to the camera
-
 
     private listener = new AudioListener();
     private audioLoader = new AudioLoader();
@@ -17,14 +13,7 @@ export default class Sound {
         this.initSound(src);
         
     }
-    
-
-   
-    
-
- // load a sound and set it as the Audio object's buffer
- // './assets/music/Melt-Down_Looping.mp3'
-
+ //Background musik  './assets/music/Melt-Down_Looping.mp3'
    private initSound(src:string){
     this.audioLoader.load( src, function( buffer ) {
         this.sound.setBuffer( buffer );
@@ -33,26 +22,7 @@ export default class Sound {
         this.sound.play();
     });
    }
-
+  toggleBackgroundMusic() {
+     this.sound.paused ?  this.sound.play() :  this.sound.pause();
+   }
 }
-   
-
-
-
-
-
-
-
-//{
-//    constructor(){
-//        this.init()
-//
-//    }
-//    init() {
-//        const audio = document.querySelector("audio");
-//        audio.volume = 0.2;
-//        audio.loop = true;
- //       audio.play();
- //   }
-//}
-

@@ -1,11 +1,11 @@
 {
-  "name": "Cube Adventure Game",
-  "short_name": "Cube-Game",
+  "name": "Keep the light on",
+  "short_name": "Keep the light on",
   "lang": "de-DE",
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#000",
-  "background_color": "#000",
+  "theme_color": "#1A1A1A",
+  "background_color": "#1A1A1A",
   "icons": [
       {
         "src": "./assets/favicon/android-chrome-256x256.png",

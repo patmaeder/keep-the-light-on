@@ -2,9 +2,9 @@ import Ammo from "ammojs-typed";
 import { Object3D } from "three";
 
 export default class PhysicsHandler {
-  private physicsWorld: Ammo.btDiscreteDynamicsWorld;
-  private tmpTrans: Ammo.btTransform;
-  private objects: Object3D[];
+  private readonly physicsWorld: Ammo.btDiscreteDynamicsWorld;
+  private readonly tmpTrans: Ammo.btTransform;
+  private readonly objects: Object3D[];
 
   constructor() {
     const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
