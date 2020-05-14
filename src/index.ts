@@ -167,6 +167,7 @@ const setupGraphics = async () => {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.physicallyCorrectLights = true;
   document.body.appendChild(renderer.domElement);
 
   raycaster = new Raycaster();
@@ -554,9 +555,7 @@ const collectLights = () => {
       if (index === -1) {
         return;
       }
-
-      destroyElement(scene, light, false);
-      arrLights.splice(index, 1);
+      light.visible = false;
       lightCounter++;
     });
   }
@@ -626,6 +625,13 @@ const animate = async () => {
   }
 
   renderer.render(scene, camera);
+
+  arrLights
+    .filter((light) => !light.visible)
+    .forEach((light) => {
+      arrLights.splice(arrLights.indexOf(light), 1);
+      destroyElement(scene, light, true);
+    });
 
   checkIfWon();
   requestAnimationFrame(animate);
