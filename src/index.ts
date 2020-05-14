@@ -158,9 +158,13 @@ const setupGraphics = async () => {
   );
   camera.position.set(0, 4, 20);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    powerPreference: "high-performance",
+  });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+
   document.body.appendChild(renderer.domElement);
 
   /**
@@ -520,6 +524,8 @@ const setupGraphics = async () => {
       z: -96.74198150634766,
     })
     .show(scene, physics);
+
+  renderer.compile(scene, camera);
 };
 
 const collectLights = () => {
@@ -543,11 +549,11 @@ const collectLights = () => {
         physics
           .getPhysicsWorld()
           .removeRigidBody(MeshL.parent.userData.rigidBody);
-        var meshPar: Mesh = <Mesh>MeshL.parent;
+        //var meshPar: Mesh = <Mesh>MeshL.parent;
         /*var meshParMat = <Material> meshPar.material;
         meshParMat.dispose();
         meshPar.geometry.dispose();*/
-        meshPar.remove(MeshL);
+        //meshPar.remove(MeshL);
         lichterArr[i] = undefined;
       }
     }
@@ -655,7 +661,7 @@ async function playGameIntroduction() {
 /**
  * Startscreen
  */
-const setupStartScreen = () => {
+const setupStartScreen = (callback) => {
   let test = new StartScreen();
   test.addButton("start", "start", async () => {
     //hide main menu
@@ -689,7 +695,7 @@ const setupStartScreen = () => {
 
     new Sound(camera, music);
     //Start game
-    animate();
+    callback();
 
     //Start Break Menu Event Listener
     window.addEventListener("keydown", ({ key }) => {
@@ -714,8 +720,12 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+
   setUpGameIntroduction();
-  setupStartScreen();
+  setupStartScreen(() => {
+    animate();
+  });
+
   if (debugging) {
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   }
