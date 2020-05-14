@@ -2,6 +2,7 @@ import {
   PointLight,
   MeshPhongMaterial,
   DoubleSide,
+  BoxHelper,
   BoxGeometry,
   Vector3,
   Group,
@@ -13,31 +14,64 @@ import {
   Geometry,
   Matrix4,
   Box3,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
+import PhysicsHandler from "../Physics";
+import THREE = require("three");
 
-export default class Light {
+/*
+##############Position Rätsel##################
+##Rätsel1:dünne tür, die sich aufdreht: Already done!
+x: 28.081180572509766
+y: 1.3399999141693115
+z: -24.838674545288086
+
+##Rätsel2: cube, den mann verschieben kann um wieder die treppe hochzukommen
+neue Position muss her: alte ergibt keinen Sinn
+
+##Rätsel3: Block zum Runterstoßen, damit Weg fei wird zum Lichtwürfel holen oder runterspringen
+x: 40.72705078125
+y: 15.548308372497559
+z: -29.615190505981445
+
+##Rätsel4: Blockwand zum Hineinschieben, damit Weg frei wird
+x: 33.65906524658203
+y: 1.339999794960022
+z: -25.238832473754883
+
+##Rätsel5: Block durch Tunnel schieben
+x: 46.48160171508789
+y: 1.339999794960022
+z: -40.937355041503906
+*/
+
+export default class Movable {
+  //make model with three.js
+  private modelMaterial: Material = new MeshPhongMaterial({
+    color: 0xffffff,
+    side: DoubleSide,
+  });
+
   private rigidBody: Ammo.btRigidBody;
   private model: Mesh;
-  private light: PointLight;
   private scale = { x: 1, y: 1, z: 1 };
-  private initialPos = { x: 0, y: 0, z: 0 };
+  private initialPos;
   private quat = { x: 0, y: 0, z: 0, w: 1 };
-  private mass = 10;
 
-  async init(object: Mesh, initialPos, light): Promise<Light> {
-    this.light = light;
+  private mass;
+
+  init(
+    object: Mesh,
+    initialPos = { x: 0, y: 0, z: 0 },
+    mass: number = 10
+  ): Movable {
     this.model = object;
     this.initialPos = initialPos;
+    this.mass = mass;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
-    this.model.add(light);
 
-    //set the light to the cube's origin
-    light.position.set(0, 0, 0);
-
-    console.log(light.getWorldPosition(new Vector3()));
-    //Licht aus dem Würfel heraus
     return this;
   }
 
@@ -85,7 +119,6 @@ export default class Light {
       .setFromObject(this.model)
       .getSize(new Vector3(0, 0, 0));
 
-    // box extends are defined as half the box width. Passing the whole width will make them "float". Beware! Different implementation in Movable.ts
     let colShape = new Ammo.btBoxShape(
       new Ammo.btVector3(
         appliedScale.x / 2,
@@ -106,5 +139,28 @@ export default class Light {
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
     return this.rigidBody;
+  }
+
+  static createBox(width, height, depth): Mesh {
+    let geometry = new THREE.BoxGeometry(width, height, depth);
+    let material = new THREE.MeshPhongMaterial({
+      refractionRatio: 0.92,
+      reflectivity: 0.5,
+      shininess: 30,
+      flatShading: true,
+      transparent: true,
+      color: 0xf58a0c,
+      opacity: 0.95,
+    });
+    let box = new THREE.Mesh(geometry, material);
+    box.castShadow = true;
+    box.receiveShadow = true;
+
+    return box;
+  }
+
+  show(scene: Scene, physics: PhysicsHandler) {
+    scene.add(this.model);
+    physics.addPhysicsToMesh(this.model, this.initRigidBody());
   }
 }
