@@ -10,7 +10,8 @@ import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
 import Timer from "./Timer";
 import Movable from "./beans/Movable";
-import Sound, { toggleBackgroundMusic } from "./effects/Sound";
+import Sound from "./effects/Sound";
+import music from "../assets/music/Melt-Down_Looping.mp3";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
 import Light from "./beans/Light";
@@ -416,7 +417,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 105.61286163330078
+    x: 105.61286163330078,
     y: 1.3399999141693115,
     z: -100.41109466552734,
   })
@@ -424,7 +425,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 99.084716796875
+    x: 99.084716796875,
     y: 1.3399999141693115,
     z: -104.68998718261719,
   })
@@ -432,7 +433,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 97.084716796875
+    x: 97.084716796875,
     y: 1.3399999141693115,
     z: -102.68998718261719,
   })
@@ -440,7 +441,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 91.52635192871094
+    x: 91.52635192871094,
     y: 1.3399999141693115,
     z: -102.28218078613281,
   })
@@ -448,7 +449,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 91.18050384521484
+    x: 91.18050384521484,
     y: 1.339999794960022,
     z: -97.33890533447266,
   })
@@ -456,7 +457,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 110.90746307373047
+    x: 110.90746307373047,
     y: 1.339999794960022,
     z: -93.74198150634766,
   })
@@ -464,7 +465,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 103.90746307373047
+    x: 103.90746307373047,
     y: 1.339999794960022,
     z: -90.74198150634766,
   })
@@ -472,7 +473,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 100.90746307373047
+    x: 100.90746307373047,
     y: 1.339999794960022,
     z: -88.74198150634766,
   })
@@ -480,7 +481,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 101.90746307373047
+    x: 101.90746307373047,
     y: 1.339999794960022,
     z: -85.74198150634766,
   })
@@ -488,7 +489,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 101.90746307373047
+    x: 101.90746307373047,
     y: 1.339999794960022,
     z: -98.74198150634766,
   })
@@ -496,7 +497,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 106.90746307373047
+    x: 106.90746307373047,
     y: 1.339999794960022,
     z: -104.74198150634766,
   })
@@ -504,7 +505,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 117.90746307373047
+    x: 117.90746307373047,
     y: 1.339999794960022,
     z: -99.74198150634766,
   })
@@ -512,7 +513,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 115.90746307373047
+    x: 115.90746307373047,
     y: 1.339999794960022,
     z: -85.74198150634766,
   })
@@ -520,7 +521,7 @@ const setupGraphics = async () => {
 
   new Movable()
   .init(Movable.createBox(4, 4, 4), {
-    x: 117.90746307373047
+    x: 117.90746307373047,
     y: 1.339999794960022,
     z: -96.74198150634766,
   })
@@ -642,7 +643,8 @@ const setupStartScreen = () => {
     gui = new GUI();
     //toggle sound on
     //TODO make sound class able to put this in start()
-    toggleBackgroundMusic();
+    
+    new Sound(camera, music).toggleBackgroundMusic();
     //Start game
     animate();
     //hide main menu
