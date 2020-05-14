@@ -35,6 +35,13 @@ export default class PhysicsHandler {
     this.objects.push(mesh);
   }
 
+  destroy(mesh: Object3D) {
+    const index = this.objects.indexOf(mesh);
+
+    this.physicsWorld.removeRigidBody(mesh.userData.rigidBody);
+    this.objects.splice(index, 1);
+  }
+
   updatePhysics(deltaTime: number) {
     // Step world
     this.physicsWorld.stepSimulation(deltaTime, 10);
