@@ -1,5 +1,5 @@
 import {Screens} from "./Screens";
-import {toggleBackgroundMusic} from "../effects/Sound";
+import {toggleMusic} from "../effects/Sound";
 import {introScreen1, introScreen2} from "../index";
 
 export class BreakScreen extends Screens{
@@ -12,7 +12,7 @@ export class BreakScreen extends Screens{
             super.switchVisibleStatus();
         });
         super.addButton("toggle sound","resume", () => {
-            toggleBackgroundMusic();
+            toggleMusic();
         });
         super.addButton("main menu","backToMain", () => {
             location.reload();

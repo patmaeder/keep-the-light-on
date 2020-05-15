@@ -1,5 +1,5 @@
 import {Screens} from "./Screens";
-import {toggleBackgroundMusic} from "../effects/Sound";
+import {toggleMusic} from "../effects/Sound";
 
 export class VictoryScreen extends Screens{
     constructor(totalTime: number, totalLights: number, timeLeft: number) {
@@ -13,7 +13,7 @@ export class VictoryScreen extends Screens{
             location.reload();
         });
         super.addButton("toggle sound","resume", () => {
-            toggleBackgroundMusic();
+            toggleMusic();
         });
         super.addButton("Main Menu","backToMain", () => {
             location.reload();
