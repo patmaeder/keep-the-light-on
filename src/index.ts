@@ -123,7 +123,7 @@ const setupCameraMovement = () => {
   let scale = 1;
 
   document.addEventListener("wheel", (event) => {
-    scale += event.deltaY * 0.01;
+    scale += event.deltaY * 0.05;
     scale = Math.min(Math.max(30, scale), 60);
 
     camera.fov = scale;
