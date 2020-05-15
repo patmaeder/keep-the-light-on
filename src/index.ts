@@ -136,6 +136,17 @@ const setupCameraMovement = () => {
       cube.getModel().position.z
     );
   });
+
+  let scale = 1;
+
+  document.addEventListener("wheel", (event) => {
+    scale += event.deltaY * 0.05;
+    scale = Math.min(Math.max(30, scale), 60);
+
+    camera.fov = scale;
+
+    camera.updateProjectionMatrix();
+  });
 };
 
 /*
