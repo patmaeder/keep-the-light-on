@@ -87,9 +87,9 @@ export let timer: Timer;
 const setupInputHandler = () => {
     document.addEventListener("visibilitychange", function() {
         if (document.hidden){
-            console.log("Browser tab is hidden")
+            toggleBreak();
         } else {
-            console.log("Browser tab is visible")
+            toggleBreak();
         }
     });
 
