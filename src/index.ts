@@ -119,6 +119,17 @@ const setupCameraMovement = () => {
       cube.getModel().position.z
     );
   });
+
+  let scale = 1;
+
+  document.addEventListener("wheel", (event) => {
+    scale += event.deltaY * 0.01;
+    scale = Math.min(Math.max(30, scale), 60);
+
+    camera.fov = scale;
+
+    camera.updateProjectionMatrix();
+  });
 };
 
 /*
@@ -638,8 +649,13 @@ const animate = async () => {
 function setUpGameIntroduction() {
   introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
   introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
-  introScreen1.addButton("Weiter", "continue",() => {introScreen1.switchVisibleStatus(); introScreen2.switchVisibleStatus()});
-  introScreen2.addButton("Schließen", "continue",() => {introScreen2.switchVisibleStatus()});
+  introScreen1.addButton("Weiter", "continue", () => {
+    introScreen1.switchVisibleStatus();
+    introScreen2.switchVisibleStatus();
+  });
+  introScreen2.addButton("Schließen", "continue", () => {
+    introScreen2.switchVisibleStatus();
+  });
 }
 
 async function playGameIntroduction() {
@@ -650,7 +666,7 @@ async function playGameIntroduction() {
       resolve();
       clearInterval(interval);
     }*/
-  }, 100)
+  }, 100);
 }
 
 /**
@@ -668,15 +684,16 @@ const setupStartScreen = () => {
       storage = localStorage.key(i)!;
     }
     if (storage === undefined) {
-      await new Promise((resolve,reject) => {
+      await new Promise((resolve, reject) => {
         introScreen1.switchVisibleStatus();
         let interval = setInterval(() => {
-        if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-          console.log("resolved");
-          resolve();
-          clearInterval(interval);
-        }
-      }, 100)});
+          if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+            console.log("resolved");
+            resolve();
+            clearInterval(interval);
+          }
+        }, 100);
+      });
       localStorage.setItem("returning player", "true");
     }
 
