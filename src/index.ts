@@ -745,7 +745,7 @@ const setupStartScreen = (callback) => {
         }
         //Init Timer
         timer = new Timer();
-        timer.start(100);
+        timer.start(101);
         //init GUI
         gui = new GUI();
         //toggle sound on
