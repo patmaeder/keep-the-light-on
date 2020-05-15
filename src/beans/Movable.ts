@@ -14,9 +14,38 @@ import {
   Geometry,
   Matrix4,
   Box3,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
+import PhysicsHandler from "../Physics";
+import THREE = require("three");
+
+/*
+##############Position Rätsel##################
+##Rätsel1:dünne tür, die sich aufdreht: Already done!
+x: 28.081180572509766
+y: 1.3399999141693115
+z: -24.838674545288086
+
+##Rätsel2: cube, den mann verschieben kann um wieder die treppe hochzukommen
+neue Position muss her: alte ergibt keinen Sinn
+
+##Rätsel3: Block zum Runterstoßen, damit Weg fei wird zum Lichtwürfel holen oder runterspringen
+x: 40.72705078125
+y: 15.548308372497559
+z: -29.615190505981445
+
+##Rätsel4: Blockwand zum Hineinschieben, damit Weg frei wird
+x: 33.65906524658203
+y: 1.339999794960022
+z: -25.238832473754883
+
+##Rätsel5: Block durch Tunnel schieben
+x: 46.48160171508789
+y: 1.339999794960022
+z: -40.937355041503906
+*/
 
 export default class Movable {
   //make model with three.js
@@ -28,14 +57,19 @@ export default class Movable {
   private rigidBody: Ammo.btRigidBody;
   private model: Mesh;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 0, y: 0, z: 0 };
+  private initialPos;
   private quat = { x: 0, y: 0, z: 0, w: 1 };
 
-  private mass = 10;
+  private mass;
 
-  async init(object: Mesh, pos): Promise<Object> {
+  init(
+    object: Mesh,
+    initialPos = { x: 0, y: 0, z: 0 },
+    mass: number = 10
+  ): Movable {
     this.model = object;
-    this.pos = pos;
+    this.initialPos = initialPos;
+    this.mass = mass;
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
     return this;
@@ -50,7 +84,13 @@ export default class Movable {
 
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(this.pos.x, this.pos.y, this.pos.z));
+    transform.setOrigin(
+      new Ammo.btVector3(
+        this.initialPos.x,
+        this.initialPos.y,
+        this.initialPos.z
+      )
+    );
     transform.setRotation(
       new Ammo.btQuaternion(this.quat.x, this.quat.y, this.quat.z, this.quat.w)
     );
@@ -99,5 +139,28 @@ export default class Movable {
 
     this.rigidBody = new Ammo.btRigidBody(rbInfo);
     return this.rigidBody;
+  }
+
+  static createBox(width, height, depth): Mesh {
+    let geometry = new THREE.BoxGeometry(width, height, depth);
+    let material = new THREE.MeshPhongMaterial({
+      refractionRatio: 0.92,
+      reflectivity: 0.5,
+      shininess: 30,
+      flatShading: true,
+      transparent: true,
+      color: 0xf58a0c,
+      opacity: 0.95,
+    });
+    let box = new THREE.Mesh(geometry, material);
+    box.castShadow = true;
+    box.receiveShadow = true;
+
+    return box;
+  }
+
+  show(scene: Scene, physics: PhysicsHandler) {
+    scene.add(this.model);
+    physics.addPhysicsToMesh(this.model, this.initRigidBody());
   }
 }

@@ -1,5 +1,5 @@
-import { loadModel } from "../Loader";
-import modelModel from "../../assets/models/cube/cube_white.glb";
+import { loadModelObj, loadModel } from "../Loader";
+import cuby from "../../assets/models/cube/cuby.glb";
 import {
   PointLight,
   MeshPhongMaterial,
@@ -10,7 +10,10 @@ import {
   Camera,
   Object3D,
   Mesh,
+  ArrowHelper,
   Material /*default as THREE,*/,
+  ZeroCurvatureEnding,
+  Scene,
 } from "three";
 import Ammo from "ammojs-typed";
 import { State } from "../utils/Constants";
@@ -32,14 +35,14 @@ export default class Cube {
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 26, y: 28, z: -16 };
+  private pos = { x: 70.54938507080078, y: 19.69999122619629, z: -21.15215492248535 };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
   private _intensity: number = 5;
   private lights: Array<PointLight> = [];
 
   async init(camera: Camera): Promise<Cube> {
-    const gltf = await loadModel(modelModel);
+    const gltf = await loadModel(cuby);
 
     this.camera = camera;
     this.model = gltf.scene;
@@ -113,7 +116,7 @@ export default class Cube {
     ) {
       console.log("jump");
       this.rigidBody.applyCentralImpulse(
-        new Ammo.btVector3(0, this.mass * 10, 0)
+        new Ammo.btVector3(0, this.mass * 12, 0)
       );
     }
 
@@ -143,6 +146,7 @@ export default class Cube {
         ).op_mul(this.mass * 10 * -changedAxes.z())
       );
     }
+    console.log(this.model.position);
   }
 
   initRigidBody(): Ammo.btRigidBody {
