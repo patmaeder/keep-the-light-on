@@ -22,6 +22,7 @@ import {IntroPage1} from "./screens/introduction/introduction-page1";
 import {IntroPage2} from "./screens/introduction/introduction-page2";
 import Light from "./beans/Light";
 import {destroyElement, drawArrow} from "./utils/Utils";
+import Alert from "./Alert";
 
 
 let debugging = window.location.pathname.includes("debug");
@@ -600,6 +601,7 @@ const collectLights = () => {
             new Sound(camera, lightCollect);
             light.visible = false;
             timer.increase(10)
+            new Alert(10, "+"," seconds");
             lightCounter++;
         });
     }
