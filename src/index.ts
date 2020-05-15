@@ -73,7 +73,7 @@ export function toggleBreak(){
 }
 
 //###############################################################################Start: Alischa Thomas
-let lightCounter = 0;
+export let lightCounter = 0;
 //###############################################################################Ende: Alischa Thomas
 
 export let timer: Timer;
@@ -599,6 +599,7 @@ const collectLights = () => {
             }
             new Sound(camera, lightCollect);
             light.visible = false;
+            timer.increase(10)
             lightCounter++;
         });
     }
@@ -644,7 +645,7 @@ const checkIfWon = () => {
     }
 
     if (atGoalX && atGoalZ) {
-        new VictoryScreen(0, 1, timer.Time);
+        new VictoryScreen(timer.timeLeft.hour + " hours " + timer.timeLeft.minute + " minutes " + timer.timeLeft.seconds + " seconds", lightCounter, timer.Time);
         alert("YOU WON!");
         location.reload();
     }

@@ -47,11 +47,11 @@ export class Screens {
     this.buttons.appendChild(p);
   }
 
-  setStatsBar(totalTime: number, totalLights: number, timeLeft: number){
+  setStatsBar(totalTime: string, totalLights: number, timeLeft: number){
     let side = document.createElement("aside");
 
     let time = document.createElement("P");
-    time.appendChild(document.createTextNode(totalTime + " total time spent"));
+    time.appendChild(document.createTextNode(totalTime + " played"));
     let lights = document.createElement("P");
     lights.appendChild(document.createTextNode(totalLights + " total lights collected"));
     let left = document.createElement("P");
