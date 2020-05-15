@@ -72,9 +72,8 @@ export default class World {
     const compoundShape = new Ammo.btCompoundShape();
 
     for (let mesh of this.meshes) {
-      let geometry = new Geometry();
       const buffer = <BufferGeometry>mesh.geometry;
-      geometry.fromBufferGeometry(buffer);
+      const geometry = new Geometry().fromBufferGeometry(buffer);
 
       const scale = new Vector3(0, 0, 0).setFromMatrixScale(
         new Matrix4().fromArray(mesh.matrixWorld.elements)

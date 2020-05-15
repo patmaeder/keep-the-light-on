@@ -35,7 +35,11 @@ export default class Cube {
   private rigidBody: Ammo.btRigidBody;
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
-  private pos = { x: 70.54938507080078, y: 19.69999122619629, z: -21.15215492248535 };
+  private pos = {
+    x: 70.54938507080078,
+    y: 19.69999122619629,
+    z: -21.15215492248535,
+  };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
   private _intensity: number = 5;
@@ -55,7 +59,6 @@ export default class Cube {
     });
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
-    console.log(this.model.position, this.model.scale);
 
     //create light to shine on environment and on cube
     //Licht aus dem Würfel nach außen heraus
@@ -146,7 +149,6 @@ export default class Cube {
         ).op_mul(this.mass * 10 * -changedAxes.z())
       );
     }
-    console.log(this.model.position);
   }
 
   initRigidBody(): Ammo.btRigidBody {
