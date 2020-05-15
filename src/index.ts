@@ -14,6 +14,9 @@ import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
+import {LostScreen} from "./screens/LostScreen";
+import {VictoryScreen} from "./screens/VictoryScreen";
+import {log} from "three";
 import { Introduction } from "./screens/introduction/introduction";
 import { IntroPage1 } from "./screens/introduction/introduction-page1";
 import { IntroPage2 } from "./screens/introduction/introduction-page2";
@@ -63,6 +66,7 @@ export let timer: Timer;
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
  */
+
 const setupInputHandler = () => {
   inputHandler = new InputHandler();
   const detachWindow = inputHandler.attach(window);
@@ -103,7 +107,6 @@ const setupEventListeners = () => {
  */
 const setupCameraMovement = () => {
   let reference: number = window.innerWidth / 2;
-
   document.addEventListener("mousemove", function getDifference(
     event: MouseEvent
   ) {
@@ -600,6 +603,7 @@ const checkIfWon = () => {
   }
 
   if (atGoalX && atGoalZ) {
+    new VictoryScreen(0,1,timer.Time);
     alert("YOU WON!");
     location.reload();
   }
@@ -625,6 +629,7 @@ const animate = async () => {
   }
 
   renderer.render(scene, camera);
+  cube.intensity = timer.Time/15;
 
   checkIfWon();
   requestAnimationFrame(animate);

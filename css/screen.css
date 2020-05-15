@@ -36,3 +36,13 @@
      cursor: pointer;
      width: 15%;
 }
+#stats {
+     position: absolute;
+     top: 25vh;
+     right: 1vw;
+     width: 350px;
+}
+#stats p{
+     font-size: 25px;
+     font-family: Arial, sans-serif;
+}

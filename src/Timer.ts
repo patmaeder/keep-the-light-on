@@ -13,7 +13,7 @@ export default class Timer {
             this.remainingTime = this.remainingTime - 1;
             if(this.remainingTime === 0) {
                 clearInterval(this.countdown);
-                new LostScreen();
+                new LostScreen(0,0,0).switchVisibleStatus();
                 //Spiel beenden (PlayerMovement anhalten) + Ausgabe LostScreen 
             }
         },1000);
