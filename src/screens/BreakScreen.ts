@@ -1,6 +1,6 @@
 import {Screens} from "./Screens";
 import {toggleMusic} from "../effects/Sound";
-import {introScreen1, introScreen2} from "../index";
+import {introScreen1, introScreen2, toggleBreak} from "../index";
 
 export class BreakScreen extends Screens {
     constructor() {
@@ -11,6 +11,7 @@ export class BreakScreen extends Screens {
     private initButtons() {
         super.addButton("resume", "resume", () => {
             super.switchVisibleStatus();
+            toggleBreak();
         });
         super.addButton("toggle sound", "resume", () => {
             toggleMusic();

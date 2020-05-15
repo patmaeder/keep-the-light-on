@@ -23,6 +23,7 @@ import {IntroPage2} from "./screens/introduction/introduction-page2";
 import Light from "./beans/Light";
 import {destroyElement, drawArrow} from "./utils/Utils";
 
+
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
@@ -57,9 +58,19 @@ let posArrLights = [
 
 let arrLights: Mesh[] = [];
 let pause = new BreakScreen();
+let play = true;
 
 export let introScreen1: Introduction;
 export let introScreen2: Introduction;
+export function toggleBreak(){
+    if(play){
+        play = false;
+        timer.pause();
+    } else {
+        play = true;
+        timer.resume();
+    }
+}
 
 //###############################################################################Start: Alischa Thomas
 let lightCounter = 0;
@@ -74,6 +85,14 @@ export let timer: Timer;
  */
 
 const setupInputHandler = () => {
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden){
+            console.log("Browser tab is hidden")
+        } else {
+            console.log("Browser tab is visible")
+        }
+    });
+
     inputHandler = new InputHandler();
     const detachWindow = inputHandler.attach(window);
     inputHandler.observeKeys([
@@ -640,19 +659,22 @@ const animate = async () => {
     //GUI
 
     //###############################################################################Start: Alischa Thomas
-    physics.updatePhysics(deltaTime);
+    if(play){
+        physics.updatePhysics(deltaTime);
+        renderer.render(scene, camera);
+        cube.move(getPlayerMovement());
+    }
     gui.updateCollectedLights(collectLights());
     //###############################################################################Ende: Alischa Thomas
 
     gui.updateTime(timer.Time);
-    cube.move(getPlayerMovement());
     backgroundMusic.setPlaybackSpeed(2 - timer.Time / 100)
 
     if (debugging) {
         debugDrawer.animate();
     }
 
-    renderer.render(scene, camera);
+
     cube.intensity = timer.Time / 15;
 
     arrLights
@@ -720,7 +742,6 @@ const setupStartScreen = (callback) => {
             });
             localStorage.setItem("returning player", "true");
         }
-
         //Init Timer
         timer = new Timer();
         timer.start(100);
@@ -737,6 +758,7 @@ const setupStartScreen = (callback) => {
         window.addEventListener("keydown", ({key}) => {
             if (key === Key.Escape) {
                 pause.switchVisibleStatus();
+                toggleBreak();
             }
         });
     });
