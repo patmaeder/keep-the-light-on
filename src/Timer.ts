@@ -42,10 +42,10 @@ export default class Timer {
 
                     break;
                 case 30:
-                    new Alert(30, "You have "," seconds left");
+                    new Alert(30, "You have ", " seconds left");
                     break;
                 case 5:
-                    new Alert(5, "You have "," seconds left");
+                    new Alert(5, "You have ", " seconds left");
                     break;
                 case 0:
                     clearInterval(this.countdown);

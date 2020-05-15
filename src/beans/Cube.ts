@@ -6,6 +6,9 @@ import {Camera, DoubleSide, Material, Mesh, MeshPhongMaterial, Object3D, PointLi
 import Ammo from "ammojs-typed";
 import Sound from "../effects/Sound";
 
+let mute: boolean = false;
+let movingSound: Sound;
+let jumpingSound: Sound;
 
 export default class Cube {
     //make model with three.js
@@ -13,8 +16,6 @@ export default class Cube {
         color: 0xffffff,
         side: DoubleSide,
     });
-    private movingSound: Sound;
-    private jumpingSound: Sound;
     private camera: Camera;
     private rigidBody: Ammo.btRigidBody;
     private model: Object3D;
@@ -27,7 +28,7 @@ export default class Cube {
     private quat = {x: 0, y: 0, z: 0, w: 1};
     private mass = 10;
     private lights: Array<PointLight> = [];
-    private vector1: Vector3;
+    private readonly vector1: Vector3;
     private vector2: Vector3;
     private vectorBt: Ammo.btVector3;
 
@@ -47,14 +48,14 @@ export default class Cube {
     }
 
     async init(camera: Camera): Promise<Cube> {
-        this.movingSound = new Sound(camera, moving);
-        this.movingSound.setVolume(0.1);
-        this.movingSound.setLoop(true)
-        this.movingSound.pause();
-        this.jumpingSound = new Sound(camera, jumping);
-        this.jumpingSound.setVolume(0.1);
-        this.jumpingSound.setLoop(false)
-        this.jumpingSound.pause();
+        movingSound = await new Sound(camera, moving);
+        await movingSound.setVolume(0.1);
+        movingSound.setLoop(true)
+        movingSound.pause();
+        jumpingSound = await new Sound(camera, jumping);
+        jumpingSound.setVolume(0.1);
+        jumpingSound.setLoop(false)
+        jumpingSound.pause();
 
 
         const gltf = await loadModel(cuby);
@@ -122,8 +123,8 @@ export default class Cube {
     }
 
     move(changedAxes: Number[]) {
-        if (!changedAxes[0] && !changedAxes[1] && !changedAxes[2]){
-            this.movingSound.pause()
+        if (!changedAxes[0] && !changedAxes[1] && !changedAxes[2]) {
+            movingSound.pause()
             return;
         }
 
@@ -136,8 +137,8 @@ export default class Cube {
             this.rigidBody.applyCentralImpulse(
                 new Ammo.btVector3(0, this.mass * 12, 0)
             );
-            if(!this.jumpingSound.isPlaying()){
-                this.jumpingSound.play();
+            if (!jumpingSound.isPlaying()) {
+                jumpingSound.play();
             }
         }
 
@@ -161,9 +162,9 @@ export default class Cube {
                 this.vectorBt.op_mul(this.mass * 10 * -changedAxes[2])
             );
         }
-        if(changedAxes[2] !== 0 || changedAxes[0] !== 0 ){
-            if(!this.movingSound.isPlaying()){
-                this.movingSound.play();
+        if (changedAxes[2] !== 0 || changedAxes[0] !== 0) {
+            if (!movingSound.isPlaying()) {
+                movingSound.play();
             }
         }
     }
@@ -196,5 +197,17 @@ export default class Cube {
         this.rigidBody.setAngularFactor(new Ammo.btVector3(0, 1, 0));
         this.rigidBody.setDamping(0.65, 1);
         return this.rigidBody;
+    }
+}
+
+export function toggleCubeSound() {
+    if (!mute) {
+        movingSound.setVolume(0)
+        jumpingSound.setVolume(0)
+        mute = true
+    } else {
+        movingSound.setVolume(0.3)
+        jumpingSound.setVolume(0.3)
+        mute = false
     }
 }

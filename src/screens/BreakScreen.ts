@@ -1,6 +1,6 @@
 import {Screens} from "./Screens";
-import {toggleMusic} from "../effects/Sound";
-import {introScreen1, introScreen2, toggleBreak} from "../index";
+import {introScreen1, introScreen2, toggleBackgroundSound, toggleBreak} from "../index";
+import {toggleCubeSound} from "../beans/Cube";
 
 export class BreakScreen extends Screens {
     constructor() {
@@ -14,7 +14,8 @@ export class BreakScreen extends Screens {
             toggleBreak();
         });
         super.addButton("toggle sound", "resume", () => {
-            toggleMusic();
+            toggleBackgroundSound();
+            toggleCubeSound();
         });
         super.addButton("main menu", "backToMain", () => {
             location.reload();

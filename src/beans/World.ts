@@ -1,28 +1,18 @@
-import { loadModel } from "../Loader";
+import {loadModel} from "../Loader";
 import labyrinth from "../../assets/models/world/labyrinth.glb";
 import {
-  MeshPhongMaterial,
-  DoubleSide,
-  BoxGeometry,
-  Vector3,
-  Group,
-  Camera,
-  Object3D,
-  Mesh,
-  Material,
   BufferGeometry,
-  Matrix4,
+  DoubleSide,
   Geometry,
-  Face3,
+  Material,
+  Matrix4,
+  Mesh,
+  MeshPhongMaterial,
+  Object3D,
+  Vector3,
 } from "three";
 import Ammo from "ammojs-typed";
-import { State, Flags } from "../utils/Constants";
-import {
-  TYPE,
-  FIT,
-  iterateGeometries,
-  createCollisionShapes,
-} from "three-to-ammo";
+import {Flags} from "../utils/Constants";
 
 export default class World {
   //make cube with three.js
