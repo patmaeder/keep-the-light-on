@@ -2,7 +2,7 @@ import {Screens} from "./Screens";
 import {toggleMusic} from "../effects/Sound";
 
 export class LostScreen extends Screens {
-    constructor(totalTime: number, totalLights: number, timeLeft: number) {
+    constructor(totalTime: string, totalLights: number, timeLeft: number) {
         super("You Lost");
         this.initButtons();
         this.initSide(totalTime, totalLights, timeLeft);
@@ -21,7 +21,7 @@ export class LostScreen extends Screens {
         });
     }
 
-    private initSide(totalTime: number, totalLights: number, timeLeft: number) {
+    private initSide(totalTime: string, totalLights: number, timeLeft: number) {
         super.setStatsBar(totalTime, totalLights, timeLeft);
     }
 }
