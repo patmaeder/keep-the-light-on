@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import {BoxGeometry, DoubleSide, Intersection, Mesh, Raycaster} from "three";
 import Ammo from "ammojs-typed";
-import { BreakScreen } from "./screens/BreakScreen";
-import { InputHandler, Key } from "./input/InputHandler";
+import {BreakScreen} from "./screens/BreakScreen";
+import {InputHandler, Key} from "./input/InputHandler";
 import PhysicsHandler from "./Physics";
 import Cube from "./beans/Cube";
 import Stats from "stats-js";
@@ -14,30 +15,13 @@ import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
 import lightCollect from "../assets/music/sammeln/SynthChime2.mp3";
 import GUI from "./GUI";
-import { StartScreen } from "./screens/StartScreen";
-import { LostScreen } from "./screens/LostScreen";
-import { VictoryScreen } from "./screens/VictoryScreen";
-import { log } from "three";
-import { Introduction } from "./screens/introduction/introduction";
-import { IntroPage1 } from "./screens/introduction/introduction-page1";
-import { IntroPage2 } from "./screens/introduction/introduction-page2";
-import { LOD } from "three";
+import {StartScreen} from "./screens/StartScreen";
+import {VictoryScreen} from "./screens/VictoryScreen";
+import {Introduction} from "./screens/introduction/introduction";
+import {IntroPage1} from "./screens/introduction/introduction-page1";
+import {IntroPage2} from "./screens/introduction/introduction-page2";
 import Light from "./beans/Light";
-import {
-  Material,
-  Mesh,
-  Object3D,
-  PointLight,
-  Geometry,
-  Intersection,
-  BoxGeometry,
-  Vector3,
-  Scene,
-  Raycaster,
-  Ray,
-} from "three";
-import { DoubleSide } from "three";
-import { drawArrow, destroyElement } from "./utils/Utils";
+import {destroyElement, drawArrow} from "./utils/Utils";
 
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
@@ -54,19 +38,20 @@ let portalTexture;
 let portal: Portal;
 let gui: GUI;
 let debugDrawer = new DebugDrawer();
+let backgroundMusic: Sound;
 //###############################################################################Start: Alischa Thomas
 
 let posArrLights = [
-  { x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605 },
-  { x: 22, y: 48, z: -20 },
-  { x: 26.181129455566406, y: 17.419992446899414, z: -10.475132942199707 },
-  { x: 51.5322151184082, y: 17.419994354248047, z: -3.3070199489593506 },
-  { x: 12.259516716003418, y: 17.419992446899414, z: -40.222694396972656 },
-  { x: 40.884971618652344, y: 12.319998741149902, z: -63.711273193359375 },
-  { x: 66.48548889160156, y: 15.548307418823242, z: -75.95284271240234 },
-  { x: 59.88838195800781, y: 1.339999794960022, z: -98.68903350830078 },
-  { x: 20.116077423095703, y: 6.679998874664307, z: -30.966354370117188 },
-  { x: 47.247779846191406, y: 17.419992446899414, z: -12.239371299743652 },
+    {x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605},
+    {x: 22, y: 48, z: -20},
+    {x: 26.181129455566406, y: 17.419992446899414, z: -10.475132942199707},
+    {x: 51.5322151184082, y: 17.419994354248047, z: -3.3070199489593506},
+    {x: 12.259516716003418, y: 17.419992446899414, z: -40.222694396972656},
+    {x: 40.884971618652344, y: 12.319998741149902, z: -63.711273193359375},
+    {x: 66.48548889160156, y: 15.548307418823242, z: -75.95284271240234},
+    {x: 59.88838195800781, y: 1.339999794960022, z: -98.68903350830078},
+    {x: 20.116077423095703, y: 6.679998874664307, z: -30.966354370117188},
+    {x: 47.247779846191406, y: 17.419992446899414, z: -12.239371299743652},
 ];
 //###############################################################################Ende: Alischa Thomas
 
@@ -89,71 +74,71 @@ export let timer: Timer;
  */
 
 const setupInputHandler = () => {
-  inputHandler = new InputHandler();
-  const detachWindow = inputHandler.attach(window);
-  inputHandler.observeKeys([
-    Key.ArrowUp,
-    Key.ArrowLeft,
-    Key.ArrowRight,
-    Key.ArrowDown,
-    "W",
-    "A",
-    "S",
-    "D",
-    " ",
-  ]);
+    inputHandler = new InputHandler();
+    const detachWindow = inputHandler.attach(window);
+    inputHandler.observeKeys([
+        Key.ArrowUp,
+        Key.ArrowLeft,
+        Key.ArrowRight,
+        Key.ArrowDown,
+        "W",
+        "A",
+        "S",
+        "D",
+        " ",
+    ]);
 };
 
 /**
  * Event handlers regarding single-time events
  */
 const setupEventListeners = () => {
-  window.addEventListener("resize", () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    window.addEventListener("resize", () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // without updating the camera aspect ration, our scene will be distorted
-    camera.aspect = window.innerWidth / window.innerHeight;
+        // without updating the camera aspect ration, our scene will be distorted
+        camera.aspect = window.innerWidth / window.innerHeight;
 
-    // needs to be called in order to have changes taking effect
-    camera.updateProjectionMatrix();
-  });
+        // needs to be called in order to have changes taking effect
+        camera.updateProjectionMatrix();
+    });
 
-  window.addEventListener("contextmenu", (event) => {
-    if (!pause.isVisible()) event.preventDefault();
-  });
+    window.addEventListener("contextmenu", (event) => {
+        if (!pause.isVisible()) event.preventDefault();
+    });
 };
 
 /**
  * Event handlers regarding mouse input to rotate the camera
  */
 const setupCameraMovement = () => {
-  let reference: number = window.innerWidth / 2;
-  document.addEventListener("mousemove", function getDifference(
-    event: MouseEvent
-  ) {
-    let difference = reference - event.clientX;
-    let radians = difference * ((Math.PI * 2) / reference);
-    let xValue = Math.sin(radians) * 10;
-    let zValue = Math.cos(radians) * 10;
+    let reference: number = window.innerWidth / 2;
+    document.addEventListener("mousemove", function getDifference(
+        event: MouseEvent
+    ) {
+        let difference = reference - event.clientX;
+        let radians = difference * ((Math.PI * 2) / reference);
+        let xValue = Math.sin(radians) * 10;
+        let zValue = Math.cos(radians) * 10;
 
-    camera.position.set(xValue, 4, zValue);
-    camera.lookAt(
-      cube.getModel().position.x,
-      cube.getModel().position.y + 2,
-      cube.getModel().position.z
-    );
-  });
+        camera.position.set(xValue, 4, zValue);
+        camera.lookAt(
+            cube.getModel().position.x,
+            cube.getModel().position.y + 2,
+            cube.getModel().position.z
+        );
+    });
 
-  let scale = 1;
+    let scale = 1;
 
-  document.addEventListener("wheel", (event) => {
-    scale += event.deltaY * 0.05;
-    scale = Math.min(Math.max(30, scale), 60);
+    document.addEventListener("wheel", (event) => {
+        scale += event.deltaY * 0.05;
+        scale = Math.min(Math.max(30, scale), 60);
 
-    camera.fov = scale;
+        camera.fov = scale;
 
-    camera.updateProjectionMatrix();
-  });
+        camera.updateProjectionMatrix();
+    });
 };
 
 /*
@@ -161,20 +146,20 @@ const setupCameraMovement = () => {
  */
 //###############################################################################Start: Alischa Thomas
 const setupLights = (scene: THREE.Scene) => {
-  let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
-  hemiLight.color.setHSL(0.6, 0.6, 0.6);
-  hemiLight.groundColor.setHSL(0.1, 1, 0.4);
-  hemiLight.position.set(0, 50, 0);
-  scene.add(hemiLight);
+    let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+    hemiLight.color.setHSL(0.6, 0.6, 0.6);
+    hemiLight.groundColor.setHSL(0.1, 1, 0.4);
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
 
-  if (debugging) {
-    //Add directional light
-    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.color.setHSL(0.1, 1, 0.95);
-    dirLight.position.set(-1, 1.75, 1);
-    dirLight.position.multiplyScalar(100);
-    scene.add(dirLight);
-  }
+    if (debugging) {
+        //Add directional light
+        let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.color.setHSL(0.1, 1, 0.95);
+        dirLight.position.set(-1, 1.75, 1);
+        dirLight.position.multiplyScalar(100);
+        scene.add(dirLight);
+    }
 };
 //###############################################################################Ende: Alischa Thomas
 
@@ -462,322 +447,322 @@ const setupMoveables = async () => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
-  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-  document.body.appendChild(stats.dom);
+    stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(stats.dom);
 
-  scene = new THREE.Scene();
-  setupLights(scene);
-  camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.5,
-    10000
-  );
-  camera.position.set(0, 4, 20);
+    scene = new THREE.Scene();
+    setupLights(scene);
+    camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.5,
+        10000
+    );
+    camera.position.set(0, 4, 20);
 
-  renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    powerPreference: "high-performance",
-  });
+    renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: "high-performance",
+    });
 
-  // this should be opt-in because it reduces framerate significantly on some devices:
+    // this should be opt-in because it reduces framerate significantly on some devices:
 
-  // renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.setPixelRatio(window.devicePixelRatio);
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.physicallyCorrectLights = true;
-  document.body.appendChild(renderer.domElement);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.physicallyCorrectLights = true;
+    document.body.appendChild(renderer.domElement);
 
-  raycaster = new Raycaster();
+    raycaster = new Raycaster();
 
-  /**
-   * Start loading Cube
-   */
-  cube = await new Cube().init(camera);
+    /**
+     * Start loading Cube
+     */
+    cube = await new Cube().init(camera);
 
-  //Add to Scene
-  scene.add(cube.getModel());
+    //Add to Scene
+    scene.add(cube.getModel());
 
-  //Add to PhysicsWorld
-  physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
+    //Add to PhysicsWorld
+    physics.addPhysicsToMesh(cube.getModel(), cube.initRigidBody());
 
-  /**
-   * End loading Cube
-   */
+    /**
+     * End loading Cube
+     */
 
-  /**
-   * Start loading Testmodule
-   */
-  world = await new World().init();
-  scene.add(world.getModel());
-  physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
-  /**
-   * End loading Testmodule
-   */
+    /**
+     * Start loading Testmodule
+     */
+    world = await new World().init();
+    scene.add(world.getModel());
+    physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
+    /**
+     * End loading Testmodule
+     */
 
-  /**
-   * Start loading Portal
-   */
-  portal = await new Portal().init();
-  //Add to Scene
-  scene.add(portal.getModel());
-  /**
-   * End loading Portal
-   */
+    /**
+     * Start loading Portal
+     */
+    portal = await new Portal().init();
+    //Add to Scene
+    scene.add(portal.getModel());
+    /**
+     * End loading Portal
+     */
 
-  /**
-   * Start movable objects
-   */
+    /**
+     * Start movable objects
+     */
 
-  //###############################################################################Start: Alischa Thomas
-  let geoL = new THREE.BoxGeometry(1, 1, 1);
-  let matL = new THREE.MeshPhongMaterial({
-    opacity: 0.3,
-    transparent: true,
-    color: 0xffff,
-    side: DoubleSide,
-  });
+        //###############################################################################Start: Alischa Thomas
+    let geoL = new THREE.BoxGeometry(1, 1, 1);
+    let matL = new THREE.MeshPhongMaterial({
+        opacity: 0.3,
+        transparent: true,
+        color: 0xffff,
+        side: DoubleSide,
+    });
 
-  posArrLights.forEach(async (pos) => {
-    let light = new THREE.PointLight(0x751085, 3, 3);
-    let MeshL = new THREE.Mesh(geoL, matL);
+    posArrLights.forEach(async (pos) => {
+        let light = new THREE.PointLight(0x751085, 3, 3);
+        let MeshL = new THREE.Mesh(geoL, matL);
 
-    const collectableLight = new Light();
-    await collectableLight.init(MeshL, pos, light);
-    scene.add(MeshL);
-    arrLights.push(<Mesh>collectableLight.getModel());
-  });
-  setupMoveables();
+        const collectableLight = new Light();
+        await collectableLight.init(MeshL, pos, light);
+        scene.add(MeshL);
+        arrLights.push(<Mesh>collectableLight.getModel());
+    });
+    setupMoveables();
 
-  renderer.compile(scene, camera);
+    renderer.compile(scene, camera);
 };
 
 const box = new BoxGeometry(1, 1, 1);
 const collisionCheckingRays = [
-  ...box.vertices,
-  new THREE.Vector3(-1, 0, 0),
-  new THREE.Vector3(1, 0, 0),
-  new THREE.Vector3(0, 0, 1),
-  new THREE.Vector3(0, 0, -1),
-  new THREE.Vector3(0, 1, 0),
-  new THREE.Vector3(0, -1, 0),
+    ...box.vertices,
+    new THREE.Vector3(-1, 0, 0),
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(0, 0, -1),
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(0, -1, 0),
 ];
 box.dispose();
 
 const collectLights = () => {
-  var originPoint = cube.getModel().position.clone();
+    var originPoint = cube.getModel().position.clone();
 
-  for (
-    var vertexIndex = 0;
-    vertexIndex < collisionCheckingRays.length;
-    vertexIndex++
-  ) {
-    if (debugging) {
-      drawArrow(
-        scene,
-        cube.getModel().position,
-        collisionCheckingRays[vertexIndex]
-      );
+    for (
+        var vertexIndex = 0;
+        vertexIndex < collisionCheckingRays.length;
+        vertexIndex++
+    ) {
+        if (debugging) {
+            drawArrow(
+                scene,
+                cube.getModel().position,
+                collisionCheckingRays[vertexIndex]
+            );
+        }
+        raycaster.set(cube.getModel().position, collisionCheckingRays[vertexIndex]);
+        var collisionResults: Intersection[] = raycaster.intersectObjects(
+            arrLights
+        );
+        collisionResults.forEach((intersection: Intersection) => {
+            if (intersection.distance <= 1 || intersection.distance >= 2) {
+                return;
+            }
+            const light = <Mesh>intersection.object;
+            const index = arrLights.indexOf(<Mesh>intersection.object);
+
+            if (index === -1) {
+                return;
+            }
+            new Sound(camera, lightCollect);
+            light.visible = false;
+            lightCounter++;
+        });
     }
-    raycaster.set(cube.getModel().position, collisionCheckingRays[vertexIndex]);
-    var collisionResults: Intersection[] = raycaster.intersectObjects(
-      arrLights
-    );
-    collisionResults.forEach((intersection: Intersection) => {
-      if (intersection.distance <= 1 || intersection.distance >= 2) {
-        return;
-      }
-      const light = <Mesh>intersection.object;
-      const index = arrLights.indexOf(<Mesh>intersection.object);
-
-      if (index === -1) {
-        return;
-      }
-      new Sound(camera,lightCollect);
-      light.visible = false;
-      lightCounter++;
-    });
-  }
-  return lightCounter;
+    return lightCounter;
 };
 
 /**
  * Userinput for Cube Movement
  */
 const getPlayerMovement = () => {
-  let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
-  let right = inputHandler.isPressed([Key.ArrowRight, "D"]);
+    let left = inputHandler.isPressed([Key.ArrowLeft, "A"]);
+    let right = inputHandler.isPressed([Key.ArrowRight, "D"]);
 
-  let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
-  let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
+    let up = inputHandler.isPressed([Key.ArrowUp, "W"]);
+    let down = inputHandler.isPressed([Key.ArrowDown, "S"]);
 
-  let space = inputHandler.isPressed(" ");
+    let space = inputHandler.isPressed(" ");
 
-  let moveX = Number(right) - Number(left);
-  let moveY = Number(space);
-  let moveZ = Number(down) - Number(up);
-  return [moveX, moveY, moveZ];
+    let moveX = Number(right) - Number(left);
+    let moveY = Number(space);
+    let moveZ = Number(down) - Number(up);
+    return [moveX, moveY, moveZ];
 };
 
 /**
  * Winning condition
  */
 const checkIfWon = () => {
-  let atGoalX: boolean = false;
-  let atGoalY: boolean = false;
-  let atGoalZ: boolean = false;
+    let atGoalX: boolean = false;
+    let atGoalY: boolean = false;
+    let atGoalZ: boolean = false;
 
-  if (9 < cube.getModel().position.x && cube.getModel().position.x < 10.5) {
-    atGoalX = true;
-  }
+    if (9 < cube.getModel().position.x && cube.getModel().position.x < 10.5) {
+        atGoalX = true;
+    }
 
-  if (0 < cube.getModel().position.y && cube.getModel().position.y < 1) {
-    atGoalX = true;
-  }
+    if (0 < cube.getModel().position.y && cube.getModel().position.y < 1) {
+        atGoalX = true;
+    }
 
-  if (-48 < cube.getModel().position.z && cube.getModel().position.z < -45) {
-    atGoalZ = true;
-  }
+    if (-48 < cube.getModel().position.z && cube.getModel().position.z < -45) {
+        atGoalZ = true;
+    }
 
-  if (atGoalX && atGoalZ) {
-    new VictoryScreen(0, 1, timer.Time);
-    alert("YOU WON!");
-    location.reload();
-  }
+    if (atGoalX && atGoalZ) {
+        new VictoryScreen(0, 1, timer.Time);
+        alert("YOU WON!");
+        location.reload();
+    }
 };
 
 /**
  * Frame animation - Called on every Frame
  */
 const animate = async () => {
-  stats.begin();
-  let deltaTime = clock.getDelta();
-  //GUI
-  //TODO collected Lights
+    stats.begin();
+    let deltaTime = clock.getDelta();
+    //GUI
 
-  //###############################################################################Start: Alischa Thomas
-  physics.updatePhysics(deltaTime);
-  gui.updateCollectedLights(collectLights());
-  //###############################################################################Ende: Alischa Thomas
+    //###############################################################################Start: Alischa Thomas
+    physics.updatePhysics(deltaTime);
+    gui.updateCollectedLights(collectLights());
+    //###############################################################################Ende: Alischa Thomas
 
-  gui.updateTime(timer.Time);
-  cube.move(getPlayerMovement());
+    gui.updateTime(timer.Time);
+    cube.move(getPlayerMovement());
+    backgroundMusic.setPlaybackSpeed(2 - timer.Time / 100)
 
-  if (debugging) {
-    debugDrawer.animate();
-  }
+    if (debugging) {
+        debugDrawer.animate();
+    }
 
-  renderer.render(scene, camera);
-  cube.intensity = timer.Time / 15;
+    renderer.render(scene, camera);
+    cube.intensity = timer.Time / 15;
 
-  arrLights
-    .filter((light) => !light.visible)
-    .forEach((light) => {
-      arrLights.splice(arrLights.indexOf(light), 1);
-      destroyElement(scene, light, true);
-    });
+    arrLights
+        .filter((light) => !light.visible)
+        .forEach((light) => {
+            arrLights.splice(arrLights.indexOf(light), 1);
+            destroyElement(scene, light, true);
+        });
 
-  checkIfWon();
-  requestAnimationFrame(animate);
+    checkIfWon();
+    requestAnimationFrame(animate);
 
-  stats.end();
+    stats.end();
 };
 
 /**
  * SetUp Screen for Game Introduction
  */
 function setUpGameIntroduction() {
-  introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
-  introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
-  introScreen1.addButton("Weiter", "continue", () => {
-    introScreen1.switchVisibleStatus();
-    introScreen2.switchVisibleStatus();
-  });
-  introScreen2.addButton("Schließen", "continue", () => {
-    introScreen2.switchVisibleStatus();
-  });
+    introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
+    introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
+    introScreen1.addButton("Weiter", "continue", () => {
+        introScreen1.switchVisibleStatus();
+        introScreen2.switchVisibleStatus();
+    });
+    introScreen2.addButton("Schließen", "continue", () => {
+        introScreen2.switchVisibleStatus();
+    });
 }
 
 async function playGameIntroduction() {
-  introScreen1.switchVisibleStatus();
-  setInterval(() => {
-    /*if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-      console.log("resolved");
-      resolve();
-      clearInterval(interval);
-    }*/
-  }, 100);
+    introScreen1.switchVisibleStatus();
+    setInterval(() => {
+        /*if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+          console.log("resolved");
+          resolve();
+          clearInterval(interval);
+        }*/
+    }, 100);
 }
 
 /**
  * Startscreen
  */
 const setupStartScreen = (callback) => {
-  let test = new StartScreen();
-  test.addButton("start", "start", async () => {
-    //hide main menu
-    test.switchVisibleStatus();
+    let test = new StartScreen();
+    test.addButton("start", "start", async () => {
+        //hide main menu
+        test.switchVisibleStatus();
 
-    //Check if Player plays for the first time
-    let storage;
-    for (let i = 0; i < localStorage.length; i++) {
-      storage = localStorage.key(i)!;
-    }
-    if (storage === undefined) {
-      await new Promise((resolve, reject) => {
-        introScreen1.switchVisibleStatus();
-        let interval = setInterval(() => {
-          if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-            resolve();
-            clearInterval(interval);
-          }
-        }, 100);
-      });
-      localStorage.setItem("returning player", "true");
-    }
+        //Check if Player plays for the first time
+        let storage;
+        for (let i = 0; i < localStorage.length; i++) {
+            storage = localStorage.key(i)!;
+        }
+        if (storage === undefined) {
+            await new Promise((resolve, reject) => {
+                introScreen1.switchVisibleStatus();
+                let interval = setInterval(() => {
+                    if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+                        resolve();
+                        clearInterval(interval);
+                    }
+                }, 100);
+            });
+            localStorage.setItem("returning player", "true");
+        }
 
-    //Init Timer
-    timer = new Timer();
-    timer.start(100);
-    //init GUI
-    gui = new GUI();
-    //toggle sound on
+        //Init Timer
+        timer = new Timer();
+        timer.start(100);
+        //init GUI
+        gui = new GUI();
+        //toggle sound on
+        backgroundMusic = new Sound(camera, music);
+        backgroundMusic.setLoop(true);
+        //Start game
+        callback();
 
-    let backgroundMusic = new Sound(camera, music);
-    backgroundMusic.setLoop(true);
-    //Start game
-    callback();
-
-    //Start Break Menu Event Listener
-    window.addEventListener("keydown", ({ key }) => {
-      if (key === Key.Escape) {
-        pause.switchVisibleStatus();
-      }
+        //Start Break Menu Event Listener
+        window.addEventListener("keydown", ({key}) => {
+            if (key === Key.Escape) {
+                pause.switchVisibleStatus();
+            }
+        });
     });
-  });
-  test.initButtons();
-  test.switchVisibleStatus();
+    test.initButtons();
+    test.switchVisibleStatus();
 };
 
 /**
  * Async application start
  */
 Ammo(Ammo).then(start);
+
 async function start() {
-  globalThis.Ammo = Ammo;
-  clock = new THREE.Clock();
-  physics = new PhysicsHandler();
-  setupEventListeners();
-  setupInputHandler();
-  await setupGraphics();
-  setupCameraMovement();
+    globalThis.Ammo = Ammo;
+    clock = new THREE.Clock();
+    physics = new PhysicsHandler();
+    setupEventListeners();
+    setupInputHandler();
+    await setupGraphics();
+    setupCameraMovement();
 
-  setUpGameIntroduction();
-  setupStartScreen(() => {
-    animate();
-  });
+    setUpGameIntroduction();
+    setupStartScreen(() => {
+        animate();
+    });
 
-  if (debugging) {
-    debugDrawer.initDebug(scene, physics.getPhysicsWorld());
-  }
+    if (debugging) {
+        debugDrawer.initDebug(scene, physics.getPhysicsWorld());
+    }
 }
