@@ -708,6 +708,7 @@ async function playGameIntroduction() {
  * Startscreen
  */
 const setupStartScreen = (callback) => {
+    localStorage.setItem("returning player", "true");
   let test = new StartScreen();
   test.addButton("start", "start", async () => {
     //hide main menu

@@ -36,9 +36,9 @@ export default class Cube {
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
   private pos = {
-    x: 70.54938507080078,
-    y: 19.69999122619629,
-    z: -21.15215492248535,
+    x: 17.868093490600586,
+    y: 17.419992446899414,
+    z: -4.350305080413818,
   };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;
@@ -157,6 +157,7 @@ export default class Cube {
         this.vectorBt.op_mul(this.mass * 10 * -changedAxes[2])
       );
     }
+    console.log(this.getModel().position);
   }
 
   initRigidBody(): Ammo.btRigidBody {
