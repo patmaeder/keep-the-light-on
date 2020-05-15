@@ -14,6 +14,13 @@ import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
+import {LostScreen} from "./screens/LostScreen";
+import {VictoryScreen} from "./screens/VictoryScreen";
+import {log} from "three";
+import { Introduction } from "./screens/introduction/introduction";
+import { IntroPage1 } from "./screens/introduction/introduction-page1";
+import { IntroPage2 } from "./screens/introduction/introduction-page2";
+import { LOD } from "three";
 import Light from "./beans/Light";
 import { Material, Mesh, Object3D, PointLight } from "three";
 import { DoubleSide } from "three";
@@ -45,6 +52,10 @@ let posArr = [
   { x: 47.247779846191406, y: 17.419992446899414, z: -12.239371299743652 },
 ];
 let pause = new BreakScreen();
+
+export let introScreen1: Introduction;
+export let introScreen2: Introduction;
+
 let lightCounter = 0;
 let lichterArr: Array<Ammo.btRigidBody> = [];
 
@@ -55,6 +66,7 @@ export let timer: Timer;
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
  */
+
 const setupInputHandler = () => {
   inputHandler = new InputHandler();
   const detachWindow = inputHandler.attach(window);
@@ -95,7 +107,6 @@ const setupEventListeners = () => {
  */
 const setupCameraMovement = () => {
   let reference: number = window.innerWidth / 2;
-
   document.addEventListener("mousemove", function getDifference(
     event: MouseEvent
   ) {
@@ -592,6 +603,7 @@ const checkIfWon = () => {
   }
 
   if (atGoalX && atGoalZ) {
+    new VictoryScreen(0,1,timer.Time);
     alert("YOU WON!");
     location.reload();
   }
@@ -617,6 +629,7 @@ const animate = async () => {
   }
 
   renderer.render(scene, camera);
+  cube.intensity = timer.Time/15;
 
   checkIfWon();
   requestAnimationFrame(animate);
@@ -625,11 +638,53 @@ const animate = async () => {
 };
 
 /**
+ * SetUp Screen for Game Introduction
+ */
+function setUpGameIntroduction() {
+  introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
+  introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
+  introScreen1.addButton("Weiter", "continue",() => {introScreen1.switchVisibleStatus(); introScreen2.switchVisibleStatus()});
+  introScreen2.addButton("Schließen", "continue",() => {introScreen2.switchVisibleStatus()});
+}
+
+async function playGameIntroduction() {
+  introScreen1.switchVisibleStatus();
+  setInterval(() => {
+    /*if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+      console.log("resolved");
+      resolve();
+      clearInterval(interval);
+    }*/
+  }, 100)
+}
+
+/**
  * Startscreen
  */
 const setupStartScreen = () => {
   let test = new StartScreen();
-  test.addButton("start", "start", () => {
+  test.addButton("start", "start", async () => {
+    //hide main menu
+    test.switchVisibleStatus();
+
+    //Check if Player plays for the first time
+    let storage;
+    for (let i = 0; i < localStorage.length; i++) {
+      storage = localStorage.key(i)!;
+    }
+    if (storage === undefined) {
+      await new Promise((resolve,reject) => {
+        introScreen1.switchVisibleStatus();
+        let interval = setInterval(() => {
+        if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+          console.log("resolved");
+          resolve();
+          clearInterval(interval);
+        }
+      }, 100)});
+      localStorage.setItem("returning player", "true");
+    }
+
     //Init Timer
     timer = new Timer();
     timer.start(100);
@@ -641,8 +696,6 @@ const setupStartScreen = () => {
     new Sound(camera, music);
     //Start game
     animate();
-    //hide main menu
-    test.switchVisibleStatus();
 
     //Start Break Menu Event Listener
     window.addEventListener("keydown", ({ key }) => {
@@ -667,6 +720,7 @@ async function start() {
   setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  setUpGameIntroduction();
   setupStartScreen();
   if (debugging) {
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
