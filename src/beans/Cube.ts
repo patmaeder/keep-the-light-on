@@ -45,6 +45,16 @@ export default class Cube {
   private _intensity: number = 5;
   private lights: Array<PointLight> = [];
 
+  private vector1: Vector3;
+  private vector2: Vector3;
+  private vectorBt: Ammo.btVector3;
+
+  constructor() {
+    this.vector1 = new Vector3();
+    this.vector2 = new Vector3();
+    this.vectorBt = new Ammo.btVector3();
+  }
+
   async init(camera: Camera): Promise<Cube> {
     const gltf = await loadModel(cuby);
 
@@ -112,45 +122,39 @@ export default class Cube {
     return this.model;
   }
 
-  move(changedAxes: Ammo.btVector3) {
-    if (changedAxes.length() === 0) return;
+  move(changedAxes: Number[]) {
+    if (!changedAxes[0] && !changedAxes[1] && !changedAxes[2]) return;
 
     this.rigidBody.activate();
 
     if (
-      changedAxes.y() !== 0 &&
+      changedAxes[1] !== 0 &&
       Math.abs(this.rigidBody.getLinearVelocity().y()) < 0.01
     ) {
-      console.log("jump");
       this.rigidBody.applyCentralImpulse(
         new Ammo.btVector3(0, this.mass * 12, 0)
       );
     }
 
     //Triggerd on player move (WASD, Arrow Keys)
-    changedAxes.setY(0);
 
-    const vectorForward = this.camera.getWorldDirection(new Vector3());
+    const vectorForward = this.camera.getWorldDirection(this.vector1);
     // cross product will give us a vector that is orthogonal to the other vectors, thus pointing to the right
-    const vectorRight = this.camera.up.clone().cross(vectorForward);
+    const vectorRight = this.vector2.copy(this.camera.up).cross(vectorForward);
 
     vectorForward.normalize();
     vectorRight.normalize();
 
-    if (changedAxes.x() !== 0) {
+    if (changedAxes[0] !== 0) {
+      this.vectorBt.setValue(vectorRight.x, vectorRight.y, vectorRight.z);
       this.rigidBody.applyCentralForce(
-        new Ammo.btVector3(vectorRight.x, vectorRight.y, vectorRight.z).op_mul(
-          this.mass * 10 * -changedAxes.x()
-        )
+        this.vectorBt.op_mul(this.mass * 10 * -changedAxes[0])
       );
     }
-    if (changedAxes.z() !== 0) {
+    if (changedAxes[2] !== 0) {
+      this.vectorBt.setValue(vectorForward.x, vectorForward.y, vectorForward.z);
       this.rigidBody.applyCentralForce(
-        new Ammo.btVector3(
-          vectorForward.x,
-          vectorForward.y,
-          vectorForward.z
-        ).op_mul(this.mass * 10 * -changedAxes.z())
+        this.vectorBt.op_mul(this.mass * 10 * -changedAxes[2])
       );
     }
   }

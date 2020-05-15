@@ -14,9 +14,9 @@ import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
-import {LostScreen} from "./screens/LostScreen";
-import {VictoryScreen} from "./screens/VictoryScreen";
-import {log} from "three";
+import { LostScreen } from "./screens/LostScreen";
+import { VictoryScreen } from "./screens/VictoryScreen";
+import { log } from "three";
 import { Introduction } from "./screens/introduction/introduction";
 import { IntroPage1 } from "./screens/introduction/introduction-page1";
 import { IntroPage2 } from "./screens/introduction/introduction-page2";
@@ -177,7 +177,6 @@ const setupLights = (scene: THREE.Scene) => {
 };
 //###############################################################################Ende: Alischa Thomas
 
-
 /*
  * Initialize Graphics
  */
@@ -195,8 +194,15 @@ const setupGraphics = async () => {
   );
   camera.position.set(0, 4, 20);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    powerPreference: "high-performance",
+  });
+
+  // this should be opt-in because it reduces framerate significantly on some devices:
+
+  // renderer.setPixelRatio(window.devicePixelRatio);
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.physicallyCorrectLights = true;
   document.body.appendChild(renderer.domElement);
@@ -242,8 +248,8 @@ const setupGraphics = async () => {
    * Start movable objects
    */
 
-    //###############################################################################Start: Alischa Thomas
-    let geoL = new THREE.BoxGeometry(1, 1, 1);
+  //###############################################################################Start: Alischa Thomas
+  let geoL = new THREE.BoxGeometry(1, 1, 1);
   let matL = new THREE.MeshPhongMaterial({
     opacity: 0.3,
     transparent: true,
@@ -261,7 +267,7 @@ const setupGraphics = async () => {
     arrLights.push(<Mesh>collectableLight.getModel());
   });
 
-    new Movable()
+  new Movable()
     .init(Movable.createBox(1, 1, 1), {
       x: 26,
       y: 48,
@@ -269,15 +275,15 @@ const setupGraphics = async () => {
     })
     .show(scene, physics);
 
-    //###############################################################################Start: Alischa Thomas
-    new Movable()
+  //###############################################################################Start: Alischa Thomas
+  new Movable()
     .init(Movable.createBox(1, 7, 10), {
       x: 27,
       y: 1.3399999141693115,
       z: -24.838674545288086,
     })
     .show(scene, physics);
-    //###############################################################################Ende: Alischa Thomas
+  //###############################################################################Ende: Alischa Thomas
 
   /* Rätsel 1 - Türme */
   new Movable()
@@ -538,6 +544,8 @@ const setupGraphics = async () => {
       z: -96.74198150634766,
     })
     .show(scene, physics);
+
+  renderer.compile(scene, camera);
 };
 
 const box = new BoxGeometry(1, 1, 1);
@@ -603,7 +611,7 @@ const getPlayerMovement = () => {
   let moveX = Number(right) - Number(left);
   let moveY = Number(space);
   let moveZ = Number(down) - Number(up);
-  return new Ammo.btVector3(moveX, moveY, moveZ);
+  return [moveX, moveY, moveZ];
 };
 
 /**
@@ -627,7 +635,7 @@ const checkIfWon = () => {
   }
 
   if (atGoalX && atGoalZ) {
-    new VictoryScreen(0,1,timer.Time);
+    new VictoryScreen(0, 1, timer.Time);
     alert("YOU WON!");
     location.reload();
   }
@@ -642,12 +650,12 @@ const animate = async () => {
   //GUI
   //TODO collected Lights
 
-    //###############################################################################Start: Alischa Thomas
+  //###############################################################################Start: Alischa Thomas
   physics.updatePhysics(deltaTime);
   gui.updateCollectedLights(collectLights());
-    //###############################################################################Ende: Alischa Thomas
+  //###############################################################################Ende: Alischa Thomas
 
-    gui.updateTime(timer.Time);
+  gui.updateTime(timer.Time);
   cube.move(getPlayerMovement());
 
   if (debugging) {
@@ -655,7 +663,7 @@ const animate = async () => {
   }
 
   renderer.render(scene, camera);
-  cube.intensity = timer.Time/15;
+  cube.intensity = timer.Time / 15;
 
   arrLights
     .filter((light) => !light.visible)
@@ -699,7 +707,7 @@ async function playGameIntroduction() {
 /**
  * Startscreen
  */
-const setupStartScreen = () => {
+const setupStartScreen = (callback) => {
   let test = new StartScreen();
   test.addButton("start", "start", async () => {
     //hide main menu
@@ -715,7 +723,6 @@ const setupStartScreen = () => {
         introScreen1.switchVisibleStatus();
         let interval = setInterval(() => {
           if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-            console.log("resolved");
             resolve();
             clearInterval(interval);
           }
@@ -734,7 +741,7 @@ const setupStartScreen = () => {
 
     new Sound(camera, music);
     //Start game
-    animate();
+    callback();
 
     //Start Break Menu Event Listener
     window.addEventListener("keydown", ({ key }) => {
@@ -756,11 +763,15 @@ async function start() {
   clock = new THREE.Clock();
   physics = new PhysicsHandler();
   setupEventListeners();
-  setupCameraMovement();
   setupInputHandler();
   await setupGraphics();
+  setupCameraMovement();
+
   setUpGameIntroduction();
-  setupStartScreen();
+  setupStartScreen(() => {
+    animate();
+  });
+
   if (debugging) {
     debugDrawer.initDebug(scene, physics.getPhysicsWorld());
   }
