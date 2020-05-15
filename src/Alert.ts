@@ -1,9 +1,9 @@
 export default class Alert{
     private popup = document.createElement("DIV");
 
-    constructor(timeLeft: number) {
+    constructor(number: number, prefix: string, suffix: string) {
         this.popup.id = "popup";
-        this.popup.appendChild(document.createTextNode("You have " + timeLeft + " seconds left"));
+        this.popup.appendChild(document.createTextNode(prefix + number + suffix));
         document.body.appendChild(this.popup);
         this.openPopup();
     }
