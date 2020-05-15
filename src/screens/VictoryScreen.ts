@@ -1,5 +1,6 @@
 import {Screens} from "./Screens";
-import {toggleMusic} from "../effects/Sound";
+import {toggleBackgroundSound} from "../index";
+import {toggleCubeSound} from "../beans/Cube";
 
 export class VictoryScreen extends Screens {
     constructor(totalTime: string, totalLights: number, timeLeft: number) {
@@ -14,7 +15,8 @@ export class VictoryScreen extends Screens {
             location.reload();
         });
         super.addButton("toggle sound", "resume", () => {
-            toggleMusic();
+            toggleBackgroundSound();
+            toggleCubeSound();
         });
         super.addButton("Main Menu", "backToMain", () => {
             location.reload();
