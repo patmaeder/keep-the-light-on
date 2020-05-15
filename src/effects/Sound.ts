@@ -30,12 +30,12 @@ export default class Sound {
     public pause() {
         this.sound.pause();
     }
-    public isPlaying(): boolean{
+
+    public isPlaying(): boolean {
         return this.sound.isPlaying;
     }
-    //Background musik  './assets/music/Melt-Down_Looping.mp3'
+
     private initSound(src: string) {
-        console.log(src);
         this.audioLoader.load(
             src,
             function (buffer) {
