@@ -39,13 +39,13 @@ export default class Timer {
             this.remainingTime = this.remainingTime - 1;
             switch (this.remainingTime) {
                 case 100:
-                    new Alert(100);
+
                     break;
                 case 30:
-                    new Alert(30);
+                    new Alert(30, "You have "," seconds left");
                     break;
                 case 5:
-                    new Alert(5);
+                    new Alert(5, "You have "," seconds left");
                     break;
                 case 0:
                     clearInterval(this.countdown);
