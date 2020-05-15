@@ -63,8 +63,9 @@ let play = true;
 
 export let introScreen1: Introduction;
 export let introScreen2: Introduction;
-export function toggleBreak(){
-    if(play){
+
+export function toggleBreak() {
+    if (play) {
         play = false;
         timer.pause();
     } else {
@@ -79,6 +80,14 @@ export let lightCounter = 0;
 
 export let timer: Timer;
 
+export function toggleBackgroundSound() {
+    if (backgroundMusic.isPlaying()) {
+        backgroundMusic.pause()
+    } else {
+        backgroundMusic.play()
+    }
+}
+
 // TODO rewrite input handler to update ammo physics
 
 /**
@@ -86,8 +95,8 @@ export let timer: Timer;
  */
 
 const setupInputHandler = () => {
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden){
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
             toggleBreak();
         } else {
             toggleBreak();
@@ -601,7 +610,7 @@ const collectLights = () => {
             new Sound(camera, lightCollect);
             light.visible = false;
             timer.increase(10)
-            new Alert(10, "+"," seconds");
+            new Alert(10, "+", " seconds");
             lightCounter++;
         });
     }
@@ -662,7 +671,7 @@ const animate = async () => {
     //GUI
 
     //###############################################################################Start: Alischa Thomas
-    if(play){
+    if (play) {
         physics.updatePhysics(deltaTime);
         renderer.render(scene, camera);
         cube.move(getPlayerMovement());
@@ -723,10 +732,10 @@ async function playGameIntroduction() {
  * Startscreen
  */
 const setupStartScreen = (callback) => {
-    let test = new StartScreen();
-    test.addButton("start", "start", async () => {
+    let start = new StartScreen();
+    start.addButton("start", "start", async () => {
         //hide main menu
-        test.switchVisibleStatus();
+        start.switchVisibleStatus();
 
         //Check if Player plays for the first time
         let storage;
@@ -753,7 +762,7 @@ const setupStartScreen = (callback) => {
         //toggle sound on
         backgroundMusic = new Sound(camera, music);
         backgroundMusic.setLoop(true);
-        backgroundMusic.setVolume(0.8)
+        backgroundMusic.setVolume(1)
         //Start game
         callback();
 
@@ -765,8 +774,7 @@ const setupStartScreen = (callback) => {
             }
         });
     });
-    test.initButtons();
-    test.switchVisibleStatus();
+    start.switchVisibleStatus();
 };
 
 /**
