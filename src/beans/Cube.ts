@@ -161,7 +161,7 @@ export default class Cube {
                 this.vectorBt.op_mul(this.mass * 10 * -changedAxes[2])
             );
         }
-        if(changedAxes[2] !== 0 || changedAxes[2] !== 0 ){
+        if(changedAxes[2] !== 0 || changedAxes[0] !== 0 ){
             if(!this.movingSound.isPlaying()){
                 this.movingSound.play();
             }

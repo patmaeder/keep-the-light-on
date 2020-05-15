@@ -729,6 +729,7 @@ const setupStartScreen = (callback) => {
         //toggle sound on
         backgroundMusic = new Sound(camera, music);
         backgroundMusic.setLoop(true);
+        backgroundMusic.setVolume(0.8)
         //Start game
         callback();
 
