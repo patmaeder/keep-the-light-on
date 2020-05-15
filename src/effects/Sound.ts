@@ -16,13 +16,24 @@ export default class Sound {
       src,
       function (buffer) {
         this.sound.setBuffer(buffer);
-        this.sound.setLoop(true);
-        this.sound.setVolume(0.2);
+        this.sound.setVolume(0.5);
         this.sound.play();
       }.bind(this)
     );
   }
-  toggleBackgroundMusic() {
-    //this.sound.paused ?  this.sound.play() :  this.sound.pause();
+  public setPlaybackSpeed(rate: number){
+      this.sound.setPlaybackRate(rate);
   }
+  public setLoop(loop: boolean){
+        this.sound.setLoop(loop);
+    }
+    public play(){
+        this.sound.play();
+    }
+    public pause(){
+        this.sound.pause();
+    }
+}
+export function toggleMusic() {
+    this.sound.isPlaying ?  this.sound.play() :  this.sound.pause();
 }
