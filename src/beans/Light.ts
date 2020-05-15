@@ -1,3 +1,4 @@
+//###############################################################################Start: Alischa Thomas
 import {
   PointLight,
   Object3D,
@@ -33,3 +34,6 @@ export default class Light {
     return this.model;
   }
 }
+
+//###############################################################################Ende: Alischa Thomas
+

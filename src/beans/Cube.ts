@@ -60,6 +60,7 @@ export default class Cube {
 
     this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
 
+    //###############################################################################Start: Alischa Thomas
     //create light to shine on environment and on cube
     //Licht aus dem Würfel nach außen heraus
     let intensity: number = 5;
@@ -103,6 +104,9 @@ export default class Cube {
 
     return this;
   }
+
+  //###############################################################################Ende: Alischa Thomas
+
 
   getModel(): Object3D {
     return this.model;
