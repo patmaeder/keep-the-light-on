@@ -1,5 +1,6 @@
 import {LostScreen} from "./screens/LostScreen";
 import {lightCounter} from "./index";
+import Alert from "./Alert";
 
 export default class Timer {
 
@@ -36,10 +37,20 @@ export default class Timer {
         this.startTime = new Date;
         this.countdown = setInterval(() => {
             this.remainingTime = this.remainingTime - 1;
-            if (this.remainingTime === 0) {
-                clearInterval(this.countdown);
-                new LostScreen(this.timeLeft.hour + " hours " + this.timeLeft.minute + " minutes " + this.timeLeft.seconds + " seconds ", lightCounter, 0).switchVisibleStatus();
-                //Spiel beenden (PlayerMovement anhalten) + Ausgabe LostScreen
+            switch (this.remainingTime) {
+                case 100:
+                    new Alert(100);
+                    break;
+                case 30:
+                    new Alert(30);
+                    break;
+                case 5:
+                    new Alert(5);
+                    break;
+                case 0:
+                    clearInterval(this.countdown);
+                    new LostScreen(this.timeLeft.hour + " hours " + this.timeLeft.minute + " minutes " + this.timeLeft.seconds + " seconds ", lightCounter, 0).switchVisibleStatus();
+                    break;
             }
         }, 1000);
     }
