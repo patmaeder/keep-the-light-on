@@ -1,3 +1,4 @@
+//###############################################################################Start: Alischa Thomas
 import {
   PointLight,
   MeshPhongMaterial,
@@ -108,3 +109,6 @@ export default class Light {
     return this.rigidBody;
   }
 }
+
+//###############################################################################Ende: Alischa Thomas
+

@@ -36,6 +36,8 @@ let portalTexture;
 let portal: Portal;
 let gui: GUI;
 let debugDrawer = new DebugDrawer();
+
+//###############################################################################Start: Alischa Thomas
 let posArr = [
   { x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605 },
   { x: 22, y: 48, z: -20 },
@@ -48,12 +50,17 @@ let posArr = [
   { x: 20.116077423095703, y: 6.679998874664307, z: -30.966354370117188 },
   { x: 47.247779846191406, y: 17.419992446899414, z: -12.239371299743652 },
 ];
+//###############################################################################Ende: Alischa Thomas
+
 let pause = new BreakScreen();
 
 export let introScreen1: Introduction;
 export let introScreen2: Introduction;
 
+//###############################################################################Start: Alischa Thomas
 let lightCounter = 0;
+//###############################################################################Ende: Alischa Thomas
+
 let lichterArr: Array<Ammo.btRigidBody> = [];
 
 export let timer: Timer;
@@ -124,6 +131,7 @@ const setupCameraMovement = () => {
 /*
  * Initialize Lights
  */
+//###############################################################################Start: Alischa Thomas
 const setupLights = (scene: THREE.Scene) => {
   let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
   hemiLight.color.setHSL(0.6, 0.6, 0.6);
@@ -140,6 +148,8 @@ const setupLights = (scene: THREE.Scene) => {
     scene.add(dirLight);
   }
 };
+//###############################################################################Ende: Alischa Thomas
+
 
 /*
  * Initialize Graphics
@@ -217,7 +227,8 @@ const setupGraphics = async () => {
   scene.add(box);
   physics.addPhysicsToMesh(box, movable.initRigidBody());
 
-  let geoL = new THREE.BoxGeometry(1, 1, 1);
+    //###############################################################################Start: Alischa Thomas
+    let geoL = new THREE.BoxGeometry(1, 1, 1);
   let matL = new THREE.MeshPhongMaterial({
     opacity: 0.3,
     transparent: true,
@@ -242,8 +253,10 @@ const setupGraphics = async () => {
       cons.getWorldTransform().getOrigin().z()
     );
   }
+    //###############################################################################Ende: Alischa Thomas
 
-  new Movable()
+
+    new Movable()
     .init(Movable.createBox(1, 1, 1), {
       x: 26,
       y: 48,
@@ -251,21 +264,15 @@ const setupGraphics = async () => {
     })
     .show(scene, physics);
 
-  /*new Movable()
-    .init(Movable.createBox(10, 5, 2), {
-      x: 43,
-      y: 48,
-      z: -20,
-    })
-    .show(scene, physics);*/
-
-  new Movable()
+    //###############################################################################Start: Alischa Thomas
+    new Movable()
     .init(Movable.createBox(1, 7, 10), {
       x: 27,
       y: 1.3399999141693115,
       z: -24.838674545288086,
     })
     .show(scene, physics);
+    //###############################################################################Ende: Alischa Thomas
 
   /* Rätsel 1 - Türme */
   new Movable()
@@ -528,6 +535,7 @@ const setupGraphics = async () => {
     .show(scene, physics);
 };
 
+//###############################################################################Start: Alischa Thomas
 const collectLights = () => {
   for (let i = 0; i < posArr.length; i++) {
     /*console.log((posArr[i].x + 1) > cube.getModel().position.x && (posArr[i].x -1) < cube.getModel().position.x,
@@ -560,6 +568,7 @@ const collectLights = () => {
   }
   return lightCounter;
 };
+//###############################################################################Ende: Alischa Thomas
 
 /**
  * Userinput for Cube Movement
@@ -614,8 +623,11 @@ const animate = async () => {
   //GUI
   //TODO collected Lights
 
+    //    //###############################################################################Start: Alischa Thomas
   gui.updateCollectedLights(collectLights());
-  gui.updateTime(timer.Time);
+    //###############################################################################Ende: Alischa Thomas
+
+    gui.updateTime(timer.Time);
   cube.move(getPlayerMovement());
 
   physics.updatePhysics(deltaTime);
