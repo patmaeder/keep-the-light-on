@@ -87,7 +87,6 @@ export default class Movable {
 
       shape.addTriangle(va, vb, vc, true);
     }
-    console.log(this.model);
 
     const appliedScale = new Box3()
       .setFromObject(this.model)
@@ -115,18 +114,19 @@ export default class Movable {
     return this.rigidBody;
   }
 
+  private static material = new THREE.MeshPhongMaterial({
+    refractionRatio: 0.92,
+    reflectivity: 0.5,
+    shininess: 30,
+    flatShading: true,
+    transparent: true,
+    color: 0xf58a0c,
+    opacity: 0.95,
+  });
+
   static createBox(width, height, depth): Mesh {
     let geometry = new THREE.BoxGeometry(width, height, depth);
-    let material = new THREE.MeshPhongMaterial({
-      refractionRatio: 0.92,
-      reflectivity: 0.5,
-      shininess: 30,
-      flatShading: true,
-      transparent: true,
-      color: 0xf58a0c,
-      opacity: 0.95,
-    });
-    let box = new THREE.Mesh(geometry, material);
+    let box = new THREE.Mesh(geometry, Movable.material);
     box.castShadow = true;
     box.receiveShadow = true;
 

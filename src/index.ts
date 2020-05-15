@@ -14,13 +14,29 @@ import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
 import GUI from "./GUI";
 import { StartScreen } from "./screens/StartScreen";
+import {LostScreen} from "./screens/LostScreen";
+import {VictoryScreen} from "./screens/VictoryScreen";
+import {log} from "three";
 import { Introduction } from "./screens/introduction/introduction";
 import { IntroPage1 } from "./screens/introduction/introduction-page1";
 import { IntroPage2 } from "./screens/introduction/introduction-page2";
 import { LOD } from "three";
 import Light from "./beans/Light";
-import { Material, Mesh, Object3D, PointLight } from "three";
+import {
+  Material,
+  Mesh,
+  Object3D,
+  PointLight,
+  Geometry,
+  Intersection,
+  BoxGeometry,
+  Vector3,
+  Scene,
+  Raycaster,
+  Ray,
+} from "three";
 import { DoubleSide } from "three";
+import { drawArrow, destroyElement } from "./utils/Utils";
 
 let debugging = window.location.pathname.includes("debug");
 let physics: PhysicsHandler;
@@ -32,13 +48,14 @@ let clock: THREE.Clock;
 let cube: Cube;
 let world: World;
 let stats = new Stats();
+let raycaster: Raycaster;
 let portalTexture;
 let portal: Portal;
 let gui: GUI;
 let debugDrawer = new DebugDrawer();
-
 //###############################################################################Start: Alischa Thomas
-let posArr = [
+
+let posArrLights = [
   { x: 22.079566955566406, y: 17.419992446899414, z: -13.481974601745605 },
   { x: 22, y: 48, z: -20 },
   { x: 26.181129455566406, y: 17.419992446899414, z: -10.475132942199707 },
@@ -52,6 +69,7 @@ let posArr = [
 ];
 //###############################################################################Ende: Alischa Thomas
 
+let arrLights: Mesh[] = [];
 let pause = new BreakScreen();
 
 export let introScreen1: Introduction;
@@ -61,8 +79,6 @@ export let introScreen2: Introduction;
 let lightCounter = 0;
 //###############################################################################Ende: Alischa Thomas
 
-let lichterArr: Array<Ammo.btRigidBody> = [];
-
 export let timer: Timer;
 
 // TODO rewrite input handler to update ammo physics
@@ -70,6 +86,7 @@ export let timer: Timer;
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
  */
+
 const setupInputHandler = () => {
   inputHandler = new InputHandler();
   const detachWindow = inputHandler.attach(window);
@@ -110,7 +127,6 @@ const setupEventListeners = () => {
  */
 const setupCameraMovement = () => {
   let reference: number = window.innerWidth / 2;
-
   document.addEventListener("mousemove", function getDifference(
     event: MouseEvent
   ) {
@@ -125,6 +141,17 @@ const setupCameraMovement = () => {
       cube.getModel().position.y + 2,
       cube.getModel().position.z
     );
+  });
+
+  let scale = 1;
+
+  document.addEventListener("wheel", (event) => {
+    scale += event.deltaY * 0.05;
+    scale = Math.min(Math.max(30, scale), 60);
+
+    camera.fov = scale;
+
+    camera.updateProjectionMatrix();
   });
 };
 
@@ -171,7 +198,10 @@ const setupGraphics = async () => {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.physicallyCorrectLights = true;
   document.body.appendChild(renderer.domElement);
+
+  raycaster = new Raycaster();
 
   /**
    * Start loading Cube
@@ -211,21 +241,6 @@ const setupGraphics = async () => {
   /**
    * Start movable objects
    */
-  let geometry = new THREE.BoxGeometry(1, 1, 1);
-  let material = new THREE.MeshPhongMaterial({
-    refractionRatio: 0.92,
-    reflectivity: 0,
-    shininess: 30,
-    flatShading: true,
-  });
-  let box = new THREE.Mesh(geometry, material);
-  box.castShadow = true;
-  box.receiveShadow = true;
-  const movable = new Movable();
-  console.log(box);
-  await movable.init(box, { x: 26, y: 48, z: -20 });
-  scene.add(box);
-  physics.addPhysicsToMesh(box, movable.initRigidBody());
 
     //###############################################################################Start: Alischa Thomas
     let geoL = new THREE.BoxGeometry(1, 1, 1);
@@ -236,25 +251,15 @@ const setupGraphics = async () => {
     side: DoubleSide,
   });
 
-  for (let i = 0; i < posArr.length; i++) {
+  posArrLights.forEach(async (pos) => {
     let light = new THREE.PointLight(0x751085, 3, 3);
     let MeshL = new THREE.Mesh(geoL, matL);
-    light.name = "Mesh-" + i;
-    const lichter = new Light();
-    await lichter.init(MeshL, posArr[i], light);
-    // das mesh muss zur Szene hinzugefügt werden
-    scene.add(MeshL);
-    physics.addPhysicsToMesh(MeshL, lichter.initRigidBody());
-    var cons: Ammo.btRigidBody = lichter.getModel().userData.rigidBody;
-    lichterArr.push(cons);
-    console.log(
-      cons.getWorldTransform().getOrigin().x(),
-      cons.getWorldTransform().getOrigin().y(),
-      cons.getWorldTransform().getOrigin().z()
-    );
-  }
-    //###############################################################################Ende: Alischa Thomas
 
+    const collectableLight = new Light();
+    await collectableLight.init(MeshL, pos, light);
+    scene.add(MeshL);
+    arrLights.push(<Mesh>collectableLight.getModel());
+  });
 
     new Movable()
     .init(Movable.createBox(1, 1, 1), {
@@ -535,40 +540,53 @@ const setupGraphics = async () => {
     .show(scene, physics);
 };
 
-//###############################################################################Start: Alischa Thomas
+const box = new BoxGeometry(1, 1, 1);
+const collisionCheckingRays = [
+  ...box.vertices,
+  new THREE.Vector3(-1, 0, 0),
+  new THREE.Vector3(1, 0, 0),
+  new THREE.Vector3(0, 0, 1),
+  new THREE.Vector3(0, 0, -1),
+  new THREE.Vector3(0, 1, 0),
+  new THREE.Vector3(0, -1, 0),
+];
+box.dispose();
+
 const collectLights = () => {
-  for (let i = 0; i < posArr.length; i++) {
-    /*console.log((posArr[i].x + 1) > cube.getModel().position.x && (posArr[i].x -1) < cube.getModel().position.x,
-        (posArr[i].y + 1) > cube.getModel().position.y && (posArr[i].y - 1) < cube.getModel().position.y ,
-        (posArr[i].z + 1) > cube.getModel().position.z && (posArr[i].z -1) < cube.getModel().position.z);*/
-    if (
-      posArr[i].x + 1 > cube.getModel().position.x &&
-      posArr[i].x - 1 < cube.getModel().position.x &&
-      posArr[i].y + 1 > cube.getModel().position.y &&
-      posArr[i].y - 1 < cube.getModel().position.y
-    ) {
-      if (lichterArr[i]) {
-        console.log(scene.getObjectByName("Mesh-" + i));
-        lightCounter += 1;
-        console.log("licht entfernt");
-        let MeshL = scene.getObjectByName("Mesh-" + i);
-        scene.remove(MeshL.parent);
-        console.log(MeshL.parent);
-        physics
-          .getPhysicsWorld()
-          .removeRigidBody(MeshL.parent.userData.rigidBody);
-        var meshPar: Mesh = <Mesh>MeshL.parent;
-        /*var meshParMat = <Material> meshPar.material;
-        meshParMat.dispose();
-        meshPar.geometry.dispose();*/
-        meshPar.remove(MeshL);
-        lichterArr[i] = undefined;
-      }
+  var originPoint = cube.getModel().position.clone();
+
+  for (
+    var vertexIndex = 0;
+    vertexIndex < collisionCheckingRays.length;
+    vertexIndex++
+  ) {
+    if (debugging) {
+      drawArrow(
+        scene,
+        cube.getModel().position,
+        collisionCheckingRays[vertexIndex]
+      );
     }
+    raycaster.set(cube.getModel().position, collisionCheckingRays[vertexIndex]);
+    var collisionResults: Intersection[] = raycaster.intersectObjects(
+      arrLights
+    );
+    collisionResults.forEach((intersection: Intersection) => {
+      if (intersection.distance <= 1 || intersection.distance >= 2) {
+        return;
+      }
+      const light = <Mesh>intersection.object;
+      const index = arrLights.indexOf(<Mesh>intersection.object);
+
+      if (index === -1) {
+        return;
+      }
+      light.visible = false;
+      lightCounter++;
+    });
   }
   return lightCounter;
 };
-//###############################################################################Ende: Alischa Thomas
 
 /**
  * Userinput for Cube Movement
@@ -609,6 +627,7 @@ const checkIfWon = () => {
   }
 
   if (atGoalX && atGoalZ) {
+    new VictoryScreen(0,1,timer.Time);
     alert("YOU WON!");
     location.reload();
   }
@@ -623,20 +642,27 @@ const animate = async () => {
   //GUI
   //TODO collected Lights
 
-    //    //###############################################################################Start: Alischa Thomas
+    //###############################################################################Start: Alischa Thomas
+  physics.updatePhysics(deltaTime);
   gui.updateCollectedLights(collectLights());
     //###############################################################################Ende: Alischa Thomas
 
     gui.updateTime(timer.Time);
   cube.move(getPlayerMovement());
 
-  physics.updatePhysics(deltaTime);
-
   if (debugging) {
     debugDrawer.animate();
   }
 
   renderer.render(scene, camera);
+  cube.intensity = timer.Time/15;
+
+  arrLights
+    .filter((light) => !light.visible)
+    .forEach((light) => {
+      arrLights.splice(arrLights.indexOf(light), 1);
+      destroyElement(scene, light, true);
+    });
 
   checkIfWon();
   requestAnimationFrame(animate);
@@ -650,8 +676,13 @@ const animate = async () => {
 function setUpGameIntroduction() {
   introScreen1 = new IntroPage1("Spieleinführung", "Spielsteuerung");
   introScreen2 = new IntroPage2("Spieleinführung", "Spielkonzept");
-  introScreen1.addButton("Weiter", "continue",() => {introScreen1.switchVisibleStatus(); introScreen2.switchVisibleStatus()});
-  introScreen2.addButton("Schließen", "continue",() => {introScreen2.switchVisibleStatus()});
+  introScreen1.addButton("Weiter", "continue", () => {
+    introScreen1.switchVisibleStatus();
+    introScreen2.switchVisibleStatus();
+  });
+  introScreen2.addButton("Schließen", "continue", () => {
+    introScreen2.switchVisibleStatus();
+  });
 }
 
 async function playGameIntroduction() {
@@ -662,7 +693,7 @@ async function playGameIntroduction() {
       resolve();
       clearInterval(interval);
     }*/
-  }, 100)
+  }, 100);
 }
 
 /**
@@ -680,15 +711,16 @@ const setupStartScreen = () => {
       storage = localStorage.key(i)!;
     }
     if (storage === undefined) {
-      await new Promise((resolve,reject) => {
+      await new Promise((resolve, reject) => {
         introScreen1.switchVisibleStatus();
         let interval = setInterval(() => {
-        if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-          console.log("resolved");
-          resolve();
-          clearInterval(interval);
-        }
-      }, 100)});
+          if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
+            console.log("resolved");
+            resolve();
+            clearInterval(interval);
+          }
+        }, 100);
+      });
       localStorage.setItem("returning player", "true");
     }
 

@@ -1,6 +1,7 @@
 export class Screens {
   protected screen = document.createElement("DIV");
   private buttons = document.createElement("DIV");
+  private stats = document.createElement("DIV");
   protected visible: boolean = false;
 
   constructor(title: string, imgUrl?: string) {
@@ -44,6 +45,23 @@ export class Screens {
     button.onclick = click;
     p.appendChild(button);
     this.buttons.appendChild(p);
+  }
+
+  setStatsBar(totalTime: number, totalLights: number, timeLeft: number){
+    let side = document.createElement("aside");
+
+    let time = document.createElement("P");
+    time.appendChild(document.createTextNode(totalTime + " total time spent"));
+    let lights = document.createElement("P");
+    lights.appendChild(document.createTextNode(totalLights + " total lights collected"));
+    let left = document.createElement("P");
+    left.appendChild(document.createTextNode(timeLeft + " time left"));
+
+    side.appendChild(time);
+    side.appendChild(lights);
+    side.appendChild(left);
+    side.id = "stats";
+    this.screen.appendChild(side);
   }
 
   isVisible(): boolean {

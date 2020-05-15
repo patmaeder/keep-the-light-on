@@ -2,14 +2,15 @@ import {Screens} from "./Screens";
 import {toggleBackgroundMusic} from "../effects/Sound";
 
 export class LostScreen extends Screens{
-    constructor() {
+    constructor(totalTime: number, totalLights: number, timeLeft: number) {
         super("You Lost");
-        this.initButtons()
+        this.initButtons();
+        this.initSide(totalTime,totalLights,timeLeft);
     }
     private initButtons(){
         super.addButton("restart","resume", () => {
             super.switchVisibleStatus();
-            //TODO Restart Game
+            location.reload();
         });
         super.addButton("toggle sound","resume", () => {
             toggleBackgroundMusic();
@@ -17,5 +18,8 @@ export class LostScreen extends Screens{
         super.addButton("Main Menu","backToMain", () => {
             location.reload();
         });
+    }
+    private initSide(totalTime: number, totalLights: number, timeLeft: number){
+        super.setStatsBar(totalTime,totalLights,timeLeft);
     }
 }
