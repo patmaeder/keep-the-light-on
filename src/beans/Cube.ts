@@ -20,14 +20,18 @@ export default class Cube {
     private rigidBody: Ammo.btRigidBody;
     private model: Object3D;
     private scale = {x: 1, y: 1, z: 1};
+    //###############################################################################Start: Alischa Thomas
     private pos = {
         x: 70.54938507080078,
         y: 19.69999122619629,
         z: -21.15215492248535,
     };
+    //###############################################################################Ende: Alischa Thomas
     private quat = {x: 0, y: 0, z: 0, w: 1};
     private mass = 10;
+    //###############################################################################Start: Alischa Thomas
     private lights: Array<PointLight> = [];
+    //###############################################################################Ende: Alischa Thomas
     private readonly vector1: Vector3;
     private vector2: Vector3;
     private vectorBt: Ammo.btVector3;

@@ -20,7 +20,9 @@ import {VictoryScreen} from "./screens/VictoryScreen";
 import {Introduction} from "./screens/introduction/introduction";
 import {IntroPage1} from "./screens/introduction/introduction-page1";
 import {IntroPage2} from "./screens/introduction/introduction-page2";
+//###############################################################################Start: Alischa Thomas
 import Light from "./beans/Light";
+//###############################################################################Ende: Alischa Thomas
 import {destroyElement, drawArrow} from "./utils/Utils";
 import Alert from "./Alert";
 
@@ -551,6 +553,8 @@ const setupGraphics = async () => {
         color: 0xffff,
         side: DoubleSide,
     });
+    //###############################################################################Ende>: Alischa Thomas
+
 
     posArrLights.forEach(async (pos) => {
         let light = new THREE.PointLight(0x751085, 3, 3);
@@ -670,12 +674,12 @@ const animate = async () => {
     let deltaTime = clock.getDelta();
     //GUI
 
-    //###############################################################################Start: Alischa Thomas
     if (play) {
         physics.updatePhysics(deltaTime);
         renderer.render(scene, camera);
         cube.move(getPlayerMovement());
     }
+    //###############################################################################Start: Alischa Thomas
     gui.updateCollectedLights(collectLights());
     //###############################################################################Ende: Alischa Thomas
 
