@@ -9,7 +9,9 @@ import Stats from "stats-js";
 import World from "./beans/World";
 import DebugDrawer from "./utils/DebugDrawer";
 import Portal from "./beans/Portal";
+//###############################################################################Start: Patrick Mäder
 import Timer from "./Timer";
+//###############################################################################Ende: Patrick Mäder
 import Movable from "./beans/Movable";
 import Sound from "./effects/Sound";
 import music from "../assets/music/Melt-Down_Looping.mp3";
@@ -63,8 +65,10 @@ let arrLights: Mesh[] = [];
 let pause = new BreakScreen();
 let play = true;
 
+//###############################################################################Start: Patrick Mäder
 export let introScreen1: Introduction;
 export let introScreen2: Introduction;
+//###############################################################################Ende: Patrick Mäder
 
 export function toggleBreak() {
     if (play) {
@@ -80,7 +84,9 @@ export function toggleBreak() {
 export let lightCounter = 0;
 //###############################################################################Ende: Alischa Thomas
 
+//###############################################################################Start: Patrick Mäder
 export let timer: Timer;
+//###############################################################################Ende: Patrick Mäder
 
 export function toggleBackgroundSound() {
     if (backgroundMusic.isPlaying()) {
@@ -139,6 +145,7 @@ const setupEventListeners = () => {
     });
 };
 
+//###############################################################################Start: Patrick Mäder
 /**
  * Event handlers regarding mouse input to rotate the camera
  */
@@ -159,8 +166,9 @@ const setupCameraMovement = () => {
             cube.getModel().position.z
         );
     });
+//###############################################################################Ende: Patrick Mäder
 
-    let scale = 1;
+let scale = 1;
 
     document.addEventListener("wheel", (event) => {
         scale += event.deltaY * 0.05;
@@ -171,6 +179,7 @@ const setupCameraMovement = () => {
         camera.updateProjectionMatrix();
     });
 };
+
 
 /*
  * Initialize Lights
@@ -489,7 +498,10 @@ const setupGraphics = async () => {
         0.5,
         10000
     );
+
+    //###############################################################################Start: Patrick Mäder
     camera.position.set(0, 4, 20);
+    //###############################################################################Ende: Patrick Mäder
 
     renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -639,6 +651,7 @@ const getPlayerMovement = () => {
     return [moveX, moveY, moveZ];
 };
 
+//###############################################################################Start: Patrick Mäder
 /**
  * Winning condition
  */
@@ -660,11 +673,12 @@ const checkIfWon = () => {
     }
 
     if (atGoalX && atGoalZ) {
-        new VictoryScreen(timer.timeLeft.hour + " hours " + timer.timeLeft.minute + " minutes " + timer.timeLeft.seconds + " seconds", lightCounter, timer.Time);
-        alert("YOU WON!");
-        location.reload();
+        new VictoryScreen(timer.timeLeft.hour + " hours " + timer.timeLeft.minute + " minutes " + timer.timeLeft.seconds + " seconds", lightCounter, timer.Time).switchVisibleStatus();
+        //alert("YOU WON!");
+        //location.reload();
     }
 };
+//###############################################################################Ende: Patrick Mäder
 
 /**
  * Frame animation - Called on every Frame
@@ -700,12 +714,16 @@ const animate = async () => {
             destroyElement(scene, light, true);
         });
 
+    //###############################################################################Start: Patrick Mäder
     checkIfWon();
+    //###############################################################################Ende: Patrick Mäder
+
     requestAnimationFrame(animate);
 
     stats.end();
 };
 
+//###############################################################################Start: Patrick Mäder
 /**
  * SetUp Screen for Game Introduction
  */
@@ -720,17 +738,7 @@ function setUpGameIntroduction() {
         introScreen2.switchVisibleStatus();
     });
 }
-
-async function playGameIntroduction() {
-    introScreen1.switchVisibleStatus();
-    setInterval(() => {
-        /*if (!introScreen1.isVisible() && !introScreen2.isVisible()) {
-          console.log("resolved");
-          resolve();
-          clearInterval(interval);
-        }*/
-    }, 100);
-}
+//###############################################################################Ende: Patrick Mäder
 
 /**
  * Startscreen
@@ -741,6 +749,7 @@ const setupStartScreen = (callback) => {
         //hide main menu
         start.switchVisibleStatus();
 
+        //###############################################################################Start: Patrick Mäder
         //Check if Player plays for the first time
         let storage;
         for (let i = 0; i < localStorage.length; i++) {
@@ -758,6 +767,8 @@ const setupStartScreen = (callback) => {
             });
             localStorage.setItem("returning player", "true");
         }
+        //###############################################################################Ende: Patrick Mäder
+
         //Init Timer
         timer = new Timer();
         timer.start(101);
@@ -793,9 +804,11 @@ async function start() {
     setupEventListeners();
     setupInputHandler();
     await setupGraphics();
+    //###############################################################################Start: Patrick Mäder
     setupCameraMovement();
 
     setUpGameIntroduction();
+    //###############################################################################Ende: Patrick Mäder
     setupStartScreen(() => {
         animate();
     });

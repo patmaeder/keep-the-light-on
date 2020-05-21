@@ -1,3 +1,4 @@
+//###############################################################################Start: Patrick Mäder
 export class Introduction {
     protected screen = document.createElement("DIV");
     protected wrapper = document.createElement("DIV");
@@ -52,3 +53,4 @@ export class Introduction {
         this.screen.appendChild(headingElement);
     }
 }
+//###############################################################################Ende: Patrick Mäder
