@@ -285,6 +285,9 @@ const setupGraphics = async () => {
     .show(scene, physics);
   //###############################################################################Ende: Alischa Thomas
 
+
+
+  //###############################################################################Start: Livia Maxhaku
   /* Rätsel 1 - Türme */
   new Movable()
     .init(Movable.createBox(1, 7, 2), {
@@ -547,6 +550,7 @@ const setupGraphics = async () => {
 
   renderer.compile(scene, camera);
 };
+//###############################################################################Ende: Livia Maxhaku
 
 const box = new BoxGeometry(1, 1, 1);
 const collisionCheckingRays = [

@@ -36,9 +36,9 @@ export default class Cube {
   private model: Object3D;
   private scale = { x: 1, y: 1, z: 1 };
   private pos = {
-    x: 70.54938507080078,
-    y: 19.69999122619629,
-    z: -21.15215492248535,
+    x: 67,
+    y: 1.339999794960022,
+    z: -8.555699348449707,
   };
   private quat = { x: 0, y: 0, z: 0, w: 1 };
   private mass = 10;

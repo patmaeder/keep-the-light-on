@@ -1,3 +1,4 @@
+//###############################################################################Start: Livia Maxhaku
 import { AudioLoader, Audio, AudioListener } from "three";
 
 export default class Sound {
@@ -26,3 +27,4 @@ export default class Sound {
     //this.sound.paused ?  this.sound.play() :  this.sound.pause();
   }
 }
+//###############################################################################Ende: Livia Maxhaku
