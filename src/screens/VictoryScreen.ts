@@ -4,7 +4,7 @@ import {toggleCubeSound} from "../beans/Cube";
 
 export class VictoryScreen extends Screens {
     constructor(totalTime: string, totalLights: number, timeLeft: number) {
-        super("You Lost");
+        super("You Won");
         this.initButtons();
         this.initSide(totalTime, totalLights, timeLeft);
     }

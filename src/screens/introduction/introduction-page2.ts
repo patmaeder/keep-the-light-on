@@ -1,13 +1,19 @@
+//###############################################################################Start: Patrick Mäder
 import {Introduction} from "./introduction";
+//###############################################################################Ende: Patrick Mäder
+//###############################################################################Start: Calvin Reibenspieß
 import Game from "../../../assets/icons/game.svg";
+//###############################################################################Ende: Calvin Reibenspieß
 
 export class IntroPage2 extends Introduction {
+    //###############################################################################Start: Patrick Mäder
     constructor(title: string, heading: string) {
         super(title, heading);
         this.generateContent();
     }
 
     generateContent() {
+        //Src Attribut des img Tags in der folgenden Zeile geupdated von Calvin Reibenspieß
         this.wrapper.innerHTML = `<img src="${Game}" id="imgBig"></img>
             <p id="teaserText">Bringe den kleinen Würfel sicher ins Ziel bevor deine Zeit abgelaufen ist. Der Ablauf der Zeit wird in der Leiste am oberen 
                 Bildschirmrand visualisiert. <br> Um dir mehr Zeit auf dem Weg in die Freiheit zu verschaffen, sammle kleine, leuchtende Würfel, sogenannte Lichter, ein.
@@ -17,4 +23,5 @@ export class IntroPage2 extends Introduction {
             </p>
             <h2>Beeil dich!</h2>`;
     }
+    //###############################################################################Start: Patrick Mäder
 }

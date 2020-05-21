@@ -24,6 +24,7 @@ export default class Portal {
     }
 
     private setupLights() {
+        //###############################################################################Start: Patrick Mäder
         let pointLightPortal1 = new THREE.PointLight(0xffffff, 1.5, 1.8, 2);
         pointLightPortal1.position.set(0.1, 0.8, -0.1);
         this.model.add(pointLightPortal1);
@@ -47,6 +48,7 @@ export default class Portal {
         let pointLightPortal6 = new THREE.PointLight(0x990e96, 1.7, 8, 2);
         pointLightPortal6.position.set(1, 0.5, 0);
         this.model.add(pointLightPortal6);
+        //###############################################################################Ende: Patrick Mäder
     }
 
 }

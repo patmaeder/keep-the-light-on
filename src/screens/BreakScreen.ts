@@ -20,6 +20,7 @@ export class BreakScreen extends Screens {
         super.addButton("main menu", "backToMain", () => {
             location.reload();
         });
+        //###############################################################################Start: Patrick Mäder
         super.addButton("Game Introduction", "gameIntroduction", async () => {
             super.switchVisibleStatus();
             await new Promise((resolve, reject) => {
@@ -33,5 +34,6 @@ export class BreakScreen extends Screens {
             });
             super.switchVisibleStatus();
         });
+        //###############################################################################Ende: Patrick Mäder
     }
 }

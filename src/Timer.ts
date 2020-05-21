@@ -4,8 +4,10 @@ import Alert from "./Alert";
 
 export default class Timer {
 
+    //###############################################################################Start: Patrick Mäder
     private remainingTime: number;
     private countdown;
+    //###############################################################################Ende: Patrick Mäder
     private startTime;
 
     get Time() {
@@ -55,6 +57,7 @@ export default class Timer {
         }, 1000);
     }
 
+    //###############################################################################Start: Patrick Mäder
     increase(IncreaseValue: number) {
         this.remainingTime = this.remainingTime + IncreaseValue;
     }
@@ -66,4 +69,5 @@ export default class Timer {
     resume() {
         this.start(this.remainingTime);
     }
+    //###############################################################################Ende: Patrick Mäder
 }
