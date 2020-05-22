@@ -48,7 +48,8 @@ export default class Sound {
     }
 }
 //###############################################################################Ende: Livia Maxhaku
-
+//###############################################################################Start: Laurin Dörre
 export function toggleMusic() {
     this.sound.isPlaying ? this.sound.play() : this.sound.pause();
 }
+//###############################################################################Ende: Laurin Dörre

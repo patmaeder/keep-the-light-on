@@ -62,16 +62,16 @@ let posArrLights = [
     {x: 47.247779846191406, y: 17.419992446899414, z: -12.239371299743652},
 ];
 //###############################################################################Ende: Alischa Thomas
-
+//###############################################################################Start: Laurin Dörre
 let arrLights: Mesh[] = [];
 let pause = new BreakScreen();
 let play = true;
-
+//###############################################################################Ende: Laurin Dörre
 //###############################################################################Start: Patrick Mäder
 export let introScreen1: Introduction;
 export let introScreen2: Introduction;
 //###############################################################################Ende: Patrick Mäder
-
+//###############################################################################Start: Laurin Dörre
 export function toggleBreak() {
     if (play) {
         play = false;
@@ -81,7 +81,7 @@ export function toggleBreak() {
         timer.resume();
     }
 }
-
+//###############################################################################Ende: Laurin Dörre
 //###############################################################################Start: Alischa Thomas
 export let lightCounter = 0;
 //###############################################################################Ende: Alischa Thomas
@@ -89,7 +89,7 @@ export let lightCounter = 0;
 //###############################################################################Start: Patrick Mäder
 export let timer: Timer;
 //###############################################################################Ende: Patrick Mäder
-
+//###############################################################################Start: Laurin Dörre
 export function toggleBackgroundSound() {
     if (backgroundMusic.isPlaying()) {
         backgroundMusic.pause()
@@ -97,7 +97,7 @@ export function toggleBackgroundSound() {
         backgroundMusic.play()
     }
 }
-
+//###############################################################################Ende: Laurin Dörre
 //###############################################################################Start: Calvin Reibenspieß
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
@@ -492,9 +492,10 @@ const setupMoveables = async () => {
  * Initialize Graphics
  */
 const setupGraphics = async () => {
+    //###############################################################################Start: Laurin Dörre
     stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(stats.dom);
-
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Calvin Reibenspieß
     scene = new THREE.Scene();
     setupLights(scene);
@@ -587,9 +588,9 @@ const setupGraphics = async () => {
         arrLights.push(<Mesh>collectableLight.getModel());
     });
     //###############################################################################Ende: Calvin Reibenspieß
-
+    //###############################################################################Start: Laurin Dörre
     setupMoveables();
-
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Calvin Reibenspieß
     renderer.compile(scene, camera);
     //###############################################################################Ende: Calvin Reibenspieß
@@ -706,16 +707,17 @@ const animate = async () => {
     let deltaTime = clock.getDelta();
     //###############################################################################Ende: Calvin Reibenspieß
     //GUI
-
+    //###############################################################################Start: Laurin Dörre
     if (play) {
         physics.updatePhysics(deltaTime);
         renderer.render(scene, camera);
         cube.move(getPlayerMovement());
     }
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Alischa Thomas
     gui.updateCollectedLights(collectLights());
     //###############################################################################Ende: Alischa Thomas
-
+    //###############################################################################Start: Laurin Dörre
     gui.updateTime(timer.Time);
     backgroundMusic.setPlaybackSpeed(2 - timer.Time / 100)
 
@@ -725,7 +727,7 @@ const animate = async () => {
 
 
     cube.intensity = timer.Time / 15;
-
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Calvin Reibenspieß
     arrLights
         .filter((light) => !light.visible)
@@ -738,10 +740,11 @@ const animate = async () => {
     //###############################################################################Start: Patrick Mäder
     checkIfWon();
     //###############################################################################Ende: Patrick Mäder
-
+    //###############################################################################Start: Laurin Dörre
     requestAnimationFrame(animate);
 
     stats.end();
+    //###############################################################################Ende: Laurin Dörre
 };
 
 //###############################################################################Start: Patrick Mäder
@@ -765,11 +768,12 @@ function setUpGameIntroduction() {
  * Startscreen
  */
 const setupStartScreen = (callback) => {
+    //###############################################################################Start: Laurin Dörre
     let start = new StartScreen();
     start.addButton("start", "start", async () => {
         //hide main menu
         start.switchVisibleStatus();
-
+        //###############################################################################Ende: Laurin Dörre
         //###############################################################################Start: Patrick Mäder
         //Check if Player plays for the first time
         let storage;
@@ -789,7 +793,7 @@ const setupStartScreen = (callback) => {
             localStorage.setItem("returning player", "true");
         }
         //###############################################################################Ende: Patrick Mäder
-
+        //###############################################################################Start: Laurin Dörre
         //Init Timer
         timer = new Timer();
         timer.start(101);
@@ -811,8 +815,9 @@ const setupStartScreen = (callback) => {
         });
     });
     start.switchVisibleStatus();
-};
 
+};
+//###############################################################################Ende: Laurin Dörre
 //###############################################################################Start: Calvin Reibenspieß
 
 /**
@@ -821,6 +826,7 @@ const setupStartScreen = (callback) => {
 Ammo(Ammo).then(start);
 
 async function start() {
+    //###############################################################################Start: Laurin Dörre
     globalThis.Ammo = Ammo;
     clock = new THREE.Clock();
     physics = new PhysicsHandler();
@@ -832,6 +838,7 @@ async function start() {
 
     setupInputHandler();
     await setupGraphics();
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Patrick Mäder
     setupCameraMovement();
 

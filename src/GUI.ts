@@ -1,3 +1,4 @@
+//###############################################################################Start: Laurin Dörre
 export default class GUI {
     protected gui = document.createElement("DIV");
     protected head = document.createElement("DIV");
@@ -64,3 +65,4 @@ export default class GUI {
         this.head.appendChild(left);
     }
 }
+//###############################################################################Ende: Laurin Dörre

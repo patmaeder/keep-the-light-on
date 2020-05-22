@@ -45,7 +45,7 @@ export default class Cube {
         this.vectorBt = new Ammo.btVector3();
     }
     //###############################################################################Ende: Calvin Reibenspieß
-
+    //###############################################################################Start: Laurin Dörre
     private _intensity: number = 5;
 
     set intensity(value: number) {
@@ -54,7 +54,7 @@ export default class Cube {
             value1.intensity = this._intensity
         })
     }
-
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Calvin Reibenspieß
     async init(camera: Camera): Promise<Cube> {
         movingSound = await new Sound(camera, moving);
@@ -210,7 +210,7 @@ export default class Cube {
     }
 }
 //###############################################################################Ende: Calvin Reibenspieß
-
+//###############################################################################Start: Laurin Dörre
 export function toggleCubeSound() {
     if (!mute) {
         movingSound.setVolume(0)
@@ -222,3 +222,4 @@ export function toggleCubeSound() {
         mute = false
     }
 }
+//###############################################################################Ende: Laurin Dörre
