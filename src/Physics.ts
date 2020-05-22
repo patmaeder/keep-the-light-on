@@ -1,64 +1,70 @@
 import Ammo from "ammojs-typed";
-import { Object3D } from "three";
+import {Object3D} from "three";
 
+/**
+ * Inspired by Blue Magnificent, Apr 3, 2019, https://medium.com/@bluemagnificent/intro-to-javascript-3d-physics-using-ammo-js-and-three-js-dd48df81f591
+ */
+
+//###############################################################################Start: Calvin Reibenspieß
 export default class PhysicsHandler {
-  private readonly physicsWorld: Ammo.btDiscreteDynamicsWorld;
-  private readonly tmpTrans: Ammo.btTransform;
-  private readonly objects: Object3D[];
+    private readonly physicsWorld: Ammo.btDiscreteDynamicsWorld;
+    private readonly tmpTrans: Ammo.btTransform;
+    private readonly objects: Object3D[];
 
-  constructor() {
-    const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
-      dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
-      overlappingPairCache = new Ammo.btDbvtBroadphase(),
-      solver = new Ammo.btSequentialImpulseConstraintSolver();
+    constructor() {
+        const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
+            dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
+            overlappingPairCache = new Ammo.btDbvtBroadphase(),
+            solver = new Ammo.btSequentialImpulseConstraintSolver();
 
-    this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(
-      dispatcher,
-      overlappingPairCache,
-      solver,
-      collisionConfiguration
-    );
-    this.tmpTrans = new Ammo.btTransform();
-    this.objects = [];
+        this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(
+            dispatcher,
+            overlappingPairCache,
+            solver,
+            collisionConfiguration
+        );
+        this.tmpTrans = new Ammo.btTransform();
+        this.objects = [];
 
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
-    //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
-  }
-
-  getPhysicsWorld(): Ammo.btDiscreteDynamicsWorld {
-    return this.physicsWorld;
-  }
-
-  addPhysicsToMesh(mesh: Object3D, rigidBody: Ammo.btRigidBody) {
-    mesh.userData.rigidBody = rigidBody;
-    this.physicsWorld.addRigidBody(rigidBody);
-    this.objects.push(mesh);
-  }
-
-  destroy(mesh: Object3D) {
-    const index = this.objects.indexOf(mesh);
-
-    this.physicsWorld.removeRigidBody(mesh.userData.rigidBody);
-    this.objects.splice(index, 1);
-  }
-
-  updatePhysics(deltaTime: number) {
-    // Step world
-    this.physicsWorld.stepSimulation(deltaTime, 10);
-    // Update rigid bodies
-    for (let i = 0; i < this.objects.length; i++) {
-      let objThree = this.objects[i];
-      let objAmmo = objThree.userData.rigidBody;
-      let ms = objAmmo.getMotionState();
-      if (ms) {
-        ms.getWorldTransform(this.tmpTrans);
-        let p = this.tmpTrans.getOrigin();
-        let q = this.tmpTrans.getRotation();
-        objThree.position.set(p.x(), p.y(), p.z());
-        objThree.quaternion.set(q.x(), q.y(), q.z(), q.w());
-        // console.log("motion state", p.x(), p.y(), p.z());
-        // console.log("rotation state", q.x(), q.y(), q.z());
-      }
+        this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
+        //this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
     }
-  }
+
+    getPhysicsWorld(): Ammo.btDiscreteDynamicsWorld {
+        return this.physicsWorld;
+    }
+
+    addPhysicsToMesh(mesh: Object3D, rigidBody: Ammo.btRigidBody) {
+        mesh.userData.rigidBody = rigidBody;
+        this.physicsWorld.addRigidBody(rigidBody);
+        this.objects.push(mesh);
+    }
+
+    destroy(mesh: Object3D) {
+        const index = this.objects.indexOf(mesh);
+
+        this.physicsWorld.removeRigidBody(mesh.userData.rigidBody);
+        this.objects.splice(index, 1);
+    }
+
+    updatePhysics(deltaTime: number) {
+        // Step world
+        this.physicsWorld.stepSimulation(deltaTime, 10);
+        // Update rigid bodies
+        for (let i = 0; i < this.objects.length; i++) {
+            let objThree = this.objects[i];
+            let objAmmo = objThree.userData.rigidBody;
+            let ms = objAmmo.getMotionState();
+            if (ms) {
+                ms.getWorldTransform(this.tmpTrans);
+                let p = this.tmpTrans.getOrigin();
+                let q = this.tmpTrans.getRotation();
+                objThree.position.set(p.x(), p.y(), p.z());
+                objThree.quaternion.set(q.x(), q.y(), q.z(), q.w());
+                // console.log("motion state", p.x(), p.y(), p.z());
+                // console.log("rotation state", q.x(), q.y(), q.z());
+            }
+        }
+    }
 }
+//###############################################################################Ende: Calvin Reibenspieß

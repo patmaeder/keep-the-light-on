@@ -1,47 +1,50 @@
 <html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="stylesheet" type="text/css" href="/css/introdcution.css">
-    <link rel="stylesheet" type="text/css" href="/css/screen.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/gui.css">
-    <link rel="icon" type="image/png" href="./assets/favicon/favicon-32x32.png">
-    <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png" />
-    <title>Keep the light on</title>
-    <script>
-      const sw = "service-worker.js"; // it is needed because parcel will not recognize this as a file and not precess in its manner
 
-      navigator.serviceWorker
-              .register(sw)
-              .then(registration => {
-                registration.onupdatefound = () => {
-                  const installingWorker = registration.installing;
-                  if (installingWorker == null) {
-                    return;
-                  }
-                  installingWorker.onstatechange = () => {
-                    if (installingWorker.state === "installed") {
-                      if (navigator.serviceWorker.controller) {
-                        console.log(
-                                "New content is available and will be used when all " +
-                                "tabs for this page are closed."
-                        );
-                      } else {
-                        console.log("Content is cached for offline use.");
-                      }
-                    }
-                  };
-                };
-              })
-              .catch(error => {
-                console.error("Error during service worker registration:", error);
-              });
-    </script>
-  </head>
-  <body>
-    <audio src="assets/music/Melt-Down_Looping.mp3"></audio>
-    <noscript>You need to enable JavaScript to run Keep the light on.</noscript>
-    <script src="src/index.ts"></script>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" type="text/css" href="/css/introdcution.css">
+  <link rel="stylesheet" type="text/css" href="/css/screen.css">
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
+  <link rel="stylesheet" type="text/css" href="/css/gui.css">
+  <link rel="stylesheet" type="text/css" href="/css/popup.css">
+  <link rel="icon" type="image/png" href="./assets/favicon/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png" />
+  <title>Keep the light on</title>
+  <script>
+    const sw = "sw.js"; // it is needed because parcel will not recognize this as a file and not precess in its manner
+
+    navigator.serviceWorker
+      .register(sw)
+      .then(registration => {
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker == null) {
+            return;
+          }
+          installingWorker.onstatechange = () => {
+            if (installingWorker.state === "installed") {
+              if (navigator.serviceWorker.controller) {
+                console.log(
+                  "New content is available and will be used when all " +
+                  "tabs for this page are closed."
+                );
+              } else {
+                console.log("Content is cached for offline use.");
+              }
+            }
+          };
+        };
+      })
+      .catch(error => {
+        console.error("Error during service worker registration:", error);
+      });
+  </script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run Keep the light on.</noscript>
+  <script src="src/index.ts"></script>
+</body>
+
 </html>

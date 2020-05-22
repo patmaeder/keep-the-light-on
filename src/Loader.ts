@@ -1,34 +1,35 @@
-import { Loader, Group } from "three";
-import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import {Group} from "three";
+import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader";
 
-
+//###############################################################################Start: Calvin Reibenspieß
 export const loadModel = (model: any) =>
-  new Promise<GLTF>((resolve, reject) => {
-    const loader = new GLTFLoader();
+    new Promise<GLTF>((resolve, reject) => {
+        const loader = new GLTFLoader();
 
-    loader.load(
-      model,
-      (gltf) => resolve(gltf),
-      undefined,
-      function (error) {
-        console.error(error);
-        reject();
-      }
-    );
-  });
+        loader.load(
+            model,
+            (gltf) => resolve(gltf),
+            undefined,
+            function (error) {
+                console.error(error);
+                reject();
+            }
+        );
+    });
+//###############################################################################Ende: Calvin Reibenspieß
 
-  export const loadModelObj = (model: any) =>
-  new Promise<Group>((resolve, reject) => {
-    const loader = new OBJLoader();
+export const loadModelObj = (model: any) =>
+    new Promise<Group>((resolve, reject) => {
+        const loader = new OBJLoader();
 
-    loader.load(
-      model,
-      (gltf) => resolve(gltf),
-      undefined,
-      function (error) {
-        console.error(error);
-        reject();
-      }
-    );
-  });
+        loader.load(
+            model,
+            (gltf) => resolve(gltf),
+            undefined,
+            function (error) {
+                console.error(error);
+                reject();
+            }
+        );
+    });

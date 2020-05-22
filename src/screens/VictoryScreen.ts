@@ -1,25 +1,29 @@
 import {Screens} from "./Screens";
-import {toggleBackgroundMusic} from "../effects/Sound";
+import {toggleBackgroundSound} from "../index";
+import {toggleCubeSound} from "../beans/Cube";
 
-export class VictoryScreen extends Screens{
-    constructor(totalTime: number, totalLights: number, timeLeft: number) {
-        super("You Lost");
+export class VictoryScreen extends Screens {
+    constructor(totalTime: string, totalLights: number, timeLeft: number) {
+        super("You Won");
         this.initButtons();
-        this.initSide(totalTime,totalLights,timeLeft);
+        this.initSide(totalTime, totalLights, timeLeft);
     }
-    private initButtons(){
-        super.addButton("restart","resume", () => {
+
+    private initButtons() {
+        super.addButton("restart", "resume", () => {
             super.switchVisibleStatus();
             location.reload();
         });
-        super.addButton("toggle sound","resume", () => {
-            toggleBackgroundMusic();
+        super.addButton("toggle sound", "resume", () => {
+            toggleBackgroundSound();
+            toggleCubeSound();
         });
-        super.addButton("Main Menu","backToMain", () => {
+        super.addButton("Main Menu", "backToMain", () => {
             location.reload();
         });
     }
-    private initSide(totalTime: number, totalLights: number, timeLeft: number){
-        super.setStatsBar(totalTime,totalLights,timeLeft);
+
+    private initSide(totalTime: string, totalLights: number, timeLeft: number) {
+        super.setStatsBar(totalTime, totalLights, timeLeft);
     }
 }
