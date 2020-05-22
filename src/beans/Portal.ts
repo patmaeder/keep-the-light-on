@@ -1,11 +1,11 @@
-import {loadModel} from "../Loader";
+import { loadModel } from "../Loader";
 import portalModel from "../../assets/portal/portal.glb";
 import * as THREE from "three";
-import {Object3D, Vector3} from "three";
+import { Object3D, Vector3 } from "three";
 
 export default class Portal {
-    private scale = {x: 2, y: 8, z: 8};
-    private _pos = {x: 10.5, y: 0.5, z: -46.78};
+    private scale = { x: 2, y: 8, z: 8 };
+    private _pos = { x: 10.5, y: 0.5, z: -46.78 };
 
     private model: Object3D;
 

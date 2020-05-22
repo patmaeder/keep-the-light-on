@@ -1,5 +1,8 @@
 import {ArrowHelper, Material, Mesh, Scene, Vector3} from "three";
 
+//###############################################################################Start: Calvin Reibenspieß
+
+
 export const destroyElement = (
     scene: Scene,
     mesh: Mesh,
@@ -35,3 +38,5 @@ type VectorLike = {
 export const createVector = (obj: VectorLike): Vector3 => {
     return new Vector3(obj.x, obj.y, obj.z);
 };
+
+//###############################################################################Ende: Calvin Reibenspieß

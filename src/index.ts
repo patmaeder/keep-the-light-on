@@ -28,8 +28,10 @@ import Light from "./beans/Light";
 import {destroyElement, drawArrow} from "./utils/Utils";
 import Alert from "./Alert";
 
-
+//###############################################################################Start: Calvin Reibenspieß
 let debugging = window.location.pathname.includes("debug");
+//###############################################################################Ende: Calvin Reibenspieß
+
 let physics: PhysicsHandler;
 let inputHandler: InputHandler;
 let renderer: THREE.WebGLRenderer;
@@ -96,8 +98,7 @@ export function toggleBackgroundSound() {
     }
 }
 
-// TODO rewrite input handler to update ammo physics
-
+//###############################################################################Start: Calvin Reibenspieß
 /**
  * Input handlers regarding player movement and game mechanics, which will repeat on a regular basis
  */
@@ -125,6 +126,8 @@ const setupInputHandler = () => {
         " ",
     ]);
 };
+//###############################################################################Start: Calvin Reibenspieß
+
 
 /**
  * Event handlers regarding single-time events
@@ -490,6 +493,7 @@ const setupGraphics = async () => {
     stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(stats.dom);
 
+    //###############################################################################Start: Calvin Reibenspieß
     scene = new THREE.Scene();
     setupLights(scene);
     camera = new THREE.PerspectiveCamera(
@@ -498,11 +502,13 @@ const setupGraphics = async () => {
         0.5,
         10000
     );
+    //###############################################################################Ende: Calvin Reibenspieß
 
     //###############################################################################Start: Patrick Mäder
     camera.position.set(0, 4, 20);
     //###############################################################################Ende: Patrick Mäder
 
+    //###############################################################################Start: Calvin Reibenspieß
     renderer = new THREE.WebGLRenderer({
         antialias: true,
         powerPreference: "high-performance",
@@ -534,14 +540,15 @@ const setupGraphics = async () => {
      */
 
     /**
-     * Start loading Testmodule
+     * Start loading World
      */
     world = await new World().init();
     scene.add(world.getModel());
     physics.addPhysicsToMesh(world.getModel(), world.initRigidBody());
     /**
-     * End loading Testmodule
+     * End loading World
      */
+    //###############################################################################Start: Calvin Reibenspieß
 
     /**
      * Start loading Portal
@@ -557,7 +564,7 @@ const setupGraphics = async () => {
      * Start movable objects
      */
 
-        //###############################################################################Start: Alischa Thomas
+    //###############################################################################Start: Alischa Thomas
     let geoL = new THREE.BoxGeometry(1, 1, 1);
     let matL = new THREE.MeshPhongMaterial({
         opacity: 0.3,
@@ -567,7 +574,7 @@ const setupGraphics = async () => {
     });
     //###############################################################################Ende>: Alischa Thomas
 
-
+    //###############################################################################Start: Calvin Reibenspieß
     posArrLights.forEach(async (pos) => {
         let light = new THREE.PointLight(0x751085, 3, 3);
         let MeshL = new THREE.Mesh(geoL, matL);
@@ -577,11 +584,16 @@ const setupGraphics = async () => {
         scene.add(MeshL);
         arrLights.push(<Mesh>collectableLight.getModel());
     });
+    //###############################################################################Ende: Calvin Reibenspieß
+
     setupMoveables();
 
+    //###############################################################################Start: Calvin Reibenspieß
     renderer.compile(scene, camera);
+    //###############################################################################Ende: Calvin Reibenspieß
 };
 
+//###############################################################################Start: Calvin Reibenspieß
 const box = new BoxGeometry(1, 1, 1);
 const collisionCheckingRays = [
     ...box.vertices,
@@ -632,7 +644,9 @@ const collectLights = () => {
     }
     return lightCounter;
 };
+//###############################################################################Ende: Calvin Reibenspieß
 
+//###############################################################################Start: Calvin Reibenspieß
 /**
  * Userinput for Cube Movement
  */
@@ -650,6 +664,7 @@ const getPlayerMovement = () => {
     let moveZ = Number(down) - Number(up);
     return [moveX, moveY, moveZ];
 };
+//###############################################################################Ende: Calvin Reibenspieß
 
 //###############################################################################Start: Patrick Mäder
 /**
@@ -685,7 +700,9 @@ const checkIfWon = () => {
  */
 const animate = async () => {
     stats.begin();
+    //###############################################################################Start: Calvin Reibenspieß
     let deltaTime = clock.getDelta();
+    //###############################################################################Ende: Calvin Reibenspieß
     //GUI
 
     if (play) {
@@ -707,12 +724,14 @@ const animate = async () => {
 
     cube.intensity = timer.Time / 15;
 
+    //###############################################################################Start: Calvin Reibenspieß
     arrLights
         .filter((light) => !light.visible)
         .forEach((light) => {
             arrLights.splice(arrLights.indexOf(light), 1);
             destroyElement(scene, light, true);
         });
+    //###############################################################################Ende: Calvin Reibenspieß
 
     //###############################################################################Start: Patrick Mäder
     checkIfWon();
@@ -792,6 +811,8 @@ const setupStartScreen = (callback) => {
     start.switchVisibleStatus();
 };
 
+//###############################################################################Start: Calvin Reibenspieß
+
 /**
  * Async application start
  */
@@ -802,6 +823,11 @@ async function start() {
     clock = new THREE.Clock();
     physics = new PhysicsHandler();
     setupEventListeners();
+
+    setupStartScreen(() => {
+        animate();
+    });
+
     setupInputHandler();
     await setupGraphics();
     //###############################################################################Start: Patrick Mäder
@@ -809,11 +835,9 @@ async function start() {
 
     setUpGameIntroduction();
     //###############################################################################Ende: Patrick Mäder
-    setupStartScreen(() => {
-        animate();
-    });
 
     if (debugging) {
         debugDrawer.initDebug(scene, physics.getPhysicsWorld());
     }
 }
+//###############################################################################Ende: Calvin Reibenspieß

@@ -1,6 +1,11 @@
 import Ammo from "ammojs-typed";
 import {Object3D} from "three";
 
+/**
+ * Inspired by Blue Magnificent, Apr 3, 2019, https://medium.com/@bluemagnificent/intro-to-javascript-3d-physics-using-ammo-js-and-three-js-dd48df81f591
+ */
+
+//###############################################################################Start: Calvin Reibenspieß
 export default class PhysicsHandler {
     private readonly physicsWorld: Ammo.btDiscreteDynamicsWorld;
     private readonly tmpTrans: Ammo.btTransform;
@@ -62,3 +67,4 @@ export default class PhysicsHandler {
         }
     }
 }
+//###############################################################################Ende: Calvin Reibenspieß
