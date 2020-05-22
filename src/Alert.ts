@@ -1,3 +1,4 @@
+//###############################################################################Start: Laurin Dörre
 export default class Alert {
     private popup = document.createElement("DIV");
 
@@ -18,3 +19,4 @@ export default class Alert {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
+//###############################################################################Ende: Laurin Dörre

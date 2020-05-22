@@ -9,7 +9,7 @@ export default class Timer {
     private countdown;
     //###############################################################################Ende: Patrick Mäder
     private startTime;
-
+    //###############################################################################Start: Laurin Dörre
     get Time() {
         return this.remainingTime;
     }
@@ -56,7 +56,7 @@ export default class Timer {
             }
         }, 1000);
     }
-
+    //###############################################################################Ende: Laurin Dörre
     //###############################################################################Start: Patrick Mäder
     increase(IncreaseValue: number) {
         this.remainingTime = this.remainingTime + IncreaseValue;

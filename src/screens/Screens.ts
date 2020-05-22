@@ -1,3 +1,4 @@
+//###############################################################################Start: Laurin Dörre
 export class Screens {
     protected screen = document.createElement("DIV");
     protected visible: boolean = false;
@@ -68,3 +69,4 @@ export class Screens {
         this.screen.appendChild(titleElement);
     }
 }
+//###############################################################################Ende: Laurin Dörre

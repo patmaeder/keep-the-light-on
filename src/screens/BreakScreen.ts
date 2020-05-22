@@ -1,3 +1,4 @@
+//###############################################################################Start: Laurin Dörre
 import {Screens} from "./Screens";
 import {introScreen1, introScreen2, toggleBackgroundSound, toggleBreak} from "../index";
 import {toggleCubeSound} from "../beans/Cube";
@@ -37,3 +38,4 @@ export class BreakScreen extends Screens {
         //###############################################################################Ende: Patrick Mäder
     }
 }
+//###############################################################################Ende: Laurin Dörre

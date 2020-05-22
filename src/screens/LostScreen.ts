@@ -1,3 +1,4 @@
+//###############################################################################Start: Laurin Dörre
 import {Screens} from "./Screens";
 import {toggleBackgroundSound} from "../index";
 import {toggleCubeSound} from "../beans/Cube";
@@ -27,3 +28,4 @@ export class LostScreen extends Screens {
         super.setStatsBar(totalTime, totalLights, timeLeft);
     }
 }
+//###############################################################################Ende: Laurin Dörre

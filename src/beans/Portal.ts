@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { Object3D, Vector3 } from "three";
 
 export default class Portal {
+    //###############################################################################Start: Laurin Dörre
     private scale = { x: 2, y: 8, z: 8 };
     private _pos = { x: 10.5, y: 0.5, z: -46.78 };
 
@@ -22,7 +23,7 @@ export default class Portal {
     getModel(): Object3D {
         return this.model;
     }
-
+    //###############################################################################Ende: Laurin Dörre
     private setupLights() {
         //###############################################################################Start: Patrick Mäder
         let pointLightPortal1 = new THREE.PointLight(0xffffff, 1.5, 1.8, 2);
