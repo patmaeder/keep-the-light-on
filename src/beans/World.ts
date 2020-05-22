@@ -1,4 +1,4 @@
-import {loadModel} from "../Loader";
+import { loadModel } from "../Loader";
 import labyrinth from "../../assets/models/world/labyrinth.glb";
 import {
   BufferGeometry,
@@ -12,7 +12,7 @@ import {
   Vector3,
 } from "three";
 import Ammo from "ammojs-typed";
-import {Flags} from "../utils/Constants";
+import { Flags } from "../utils/Constants";
 
 export default class World {
   //make cube with three.js

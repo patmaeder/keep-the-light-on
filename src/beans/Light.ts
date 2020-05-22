@@ -1,13 +1,14 @@
 //###############################################################################Start: Alischa Thomas
-import {Mesh, Object3D, PointLight,} from "three";
+import { Mesh, Object3D, PointLight, } from "three";
 
 export default class Light {
     private model: Mesh;
     private light: PointLight;
-    private scale = {x: 1, y: 1, z: 1};
-    private initialPos = {x: 0, y: 0, z: 0};
+    private scale = { x: 1, y: 1, z: 1 };
+    private initialPos = { x: 0, y: 0, z: 0 };
 
     async init(object: Mesh, initialPos, light): Promise<Light> {
+        //###############################################################################Start: Calvin Reibenspieß
         this.light = light;
         this.model = object;
         this.initialPos = initialPos;
@@ -21,6 +22,7 @@ export default class Light {
 
         //Licht aus dem Würfel heraus
         return this;
+        //###############################################################################Start: Calvin Reibenspieß
     }
 
     getModel(): Object3D {

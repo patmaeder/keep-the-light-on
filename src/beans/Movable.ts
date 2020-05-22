@@ -1,8 +1,9 @@
-import {Box3, DoubleSide, Geometry, Material, Matrix4, Mesh, MeshPhongMaterial, Object3D, Scene, Vector3,} from "three";
+import { Box3, DoubleSide, Geometry, Material, Matrix4, Mesh, MeshPhongMaterial, Object3D, Scene, Vector3, } from "three";
 import Ammo from "ammojs-typed";
 import PhysicsHandler from "../Physics";
 import THREE = require("three");
 
+//###############################################################################Start: Calvin Reibenspieß
 export default class Movable {
     private static material = new THREE.MeshPhongMaterial({
         refractionRatio: 0.92,
@@ -20,9 +21,9 @@ export default class Movable {
     });
     private rigidBody: Ammo.btRigidBody;
     private model: Mesh;
-    private scale = {x: 1, y: 1, z: 1};
+    private scale = { x: 1, y: 1, z: 1 };
     private initialPos;
-    private quat = {x: 0, y: 0, z: 0, w: 1};
+    private quat = { x: 0, y: 0, z: 0, w: 1 };
     private mass;
 
     static createBox(width, height, depth): Mesh {
@@ -35,7 +36,7 @@ export default class Movable {
 
     init(
         object: Mesh,
-        initialPos = {x: 0, y: 0, z: 0},
+        initialPos = { x: 0, y: 0, z: 0 },
         mass: number = 10
     ): Movable {
         this.model = object;
@@ -116,3 +117,4 @@ export default class Movable {
         physics.addPhysicsToMesh(this.model, this.initRigidBody());
     }
 }
+//###############################################################################Start: Calvin Reibenspieß

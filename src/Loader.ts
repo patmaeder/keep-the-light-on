@@ -2,7 +2,7 @@ import {Group} from "three";
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader";
 
-
+//###############################################################################Start: Calvin Reibenspieß
 export const loadModel = (model: any) =>
     new Promise<GLTF>((resolve, reject) => {
         const loader = new GLTFLoader();
@@ -17,6 +17,7 @@ export const loadModel = (model: any) =>
             }
         );
     });
+//###############################################################################Ende: Calvin Reibenspieß
 
 export const loadModelObj = (model: any) =>
     new Promise<Group>((resolve, reject) => {

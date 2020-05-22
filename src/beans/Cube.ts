@@ -1,8 +1,8 @@
-import {loadModel} from "../Loader";
+import { loadModel } from "../Loader";
 import cuby from "../../assets/models/cube/cuby.glb";
 import moving from "../../assets/music/bewegen/move.mp3";
 import jumping from "../../assets/music/springen/spring-sound.mp3";
-import {Camera, DoubleSide, Material, Mesh, MeshPhongMaterial, Object3D, PointLight, Vector3,} from "three";
+import { Camera, DoubleSide, Material, Mesh, MeshPhongMaterial, Object3D, PointLight, Vector3, } from "three";
 import Ammo from "ammojs-typed";
 import Sound from "../effects/Sound";
 
@@ -11,6 +11,7 @@ let movingSound: Sound;
 let jumpingSound: Sound;
 
 export default class Cube {
+    //###############################################################################Start: Calvin Reibenspieß
     //make model with three.js
     private modelMaterial: Material = new MeshPhongMaterial({
         color: 0xffffff,
@@ -19,7 +20,8 @@ export default class Cube {
     private camera: Camera;
     private rigidBody: Ammo.btRigidBody;
     private model: Object3D;
-    private scale = {x: 1, y: 1, z: 1};
+    private scale = { x: 1, y: 1, z: 1 };
+    //###############################################################################Ende: Calvin Reibenspieß
     //###############################################################################Start: Alischa Thomas
     private pos = {
         x: 70.54938507080078,
@@ -27,11 +29,12 @@ export default class Cube {
         z: -21.15215492248535,
     };
     //###############################################################################Ende: Alischa Thomas
-    private quat = {x: 0, y: 0, z: 0, w: 1};
+    private quat = { x: 0, y: 0, z: 0, w: 1 };
     private mass = 10;
     //###############################################################################Start: Alischa Thomas
     private lights: Array<PointLight> = [];
     //###############################################################################Ende: Alischa Thomas
+    //###############################################################################Start: Calvin Reibenspieß
     private readonly vector1: Vector3;
     private vector2: Vector3;
     private vectorBt: Ammo.btVector3;
@@ -41,6 +44,7 @@ export default class Cube {
         this.vector2 = new Vector3();
         this.vectorBt = new Ammo.btVector3();
     }
+    //###############################################################################Ende: Calvin Reibenspieß
 
     private _intensity: number = 5;
 
@@ -51,6 +55,7 @@ export default class Cube {
         })
     }
 
+    //###############################################################################Start: Calvin Reibenspieß
     async init(camera: Camera): Promise<Cube> {
         movingSound = await new Sound(camera, moving);
         await movingSound.setVolume(0.1);
@@ -73,6 +78,7 @@ export default class Cube {
             }
         });
         this.model.scale.set(this.scale.x, this.scale.y, this.scale.z);
+        //###############################################################################Ende: Calvin Reibenspieß
 
         //###############################################################################Start: Alischa Thomas
         //create light to shine on environment and on cube
@@ -121,7 +127,7 @@ export default class Cube {
 
     //###############################################################################Ende: Alischa Thomas
 
-
+    //###############################################################################Start: Calvin Reibenspieß
     getModel(): Object3D {
         return this.model;
     }
@@ -203,6 +209,7 @@ export default class Cube {
         return this.rigidBody;
     }
 }
+//###############################################################################Ende: Calvin Reibenspieß
 
 export function toggleCubeSound() {
     if (!mute) {

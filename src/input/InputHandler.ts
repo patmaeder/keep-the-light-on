@@ -1,3 +1,5 @@
+//###############################################################################Start: Calvin Reibenspieß
+
 /**
  * Holds all observed keys and maps them to their pressing state
  */
@@ -8,7 +10,7 @@ export type KeyState = {
 /**
  * Typescript enum for key definitions
  */
-export {Key} from "ts-key-enum";
+export { Key } from "ts-key-enum";
 
 /**
  * Used to track keys and maps their state to an object with boolean values.
@@ -85,3 +87,4 @@ export class InputHandler {
         this.updateKeyInState(event.key, false);
     }
 }
+//###############################################################################Ende: Calvin Reibenspieß
