@@ -1,5 +1,6 @@
 import {Audio, AudioListener, AudioLoader} from "three";
 
+//###############################################################################Start: Livia Maxhaku
 export default class Sound {
     private listener = new AudioListener();
     private audioLoader = new AudioLoader();
@@ -46,6 +47,7 @@ export default class Sound {
         );
     }
 }
+//###############################################################################Ende: Livia Maxhaku
 
 export function toggleMusic() {
     this.sound.isPlaying ? this.sound.play() : this.sound.pause();

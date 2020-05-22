@@ -225,6 +225,7 @@ const setupMoveables = async () => {
         .show(scene, physics);
     //###############################################################################Ende: Alischa Thomas
 
+    //###############################################################################Start: Livia Maxhaku
     /* Rätsel 1 - Türme */
     new Movable()
         .init(Movable.createBox(1, 7, 2), {
@@ -484,6 +485,7 @@ const setupMoveables = async () => {
             z: -96.74198150634766,
         })
         .show(scene, physics);
+    //###############################################################################Ende: Livia Maxhaku
 }
 
 /*
